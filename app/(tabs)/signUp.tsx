@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FormInput } from "@/components/ui/FormInput";
+import { signUp } from "@/services/AuthService";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -22,8 +23,19 @@ type FormData = {
 
 export default function SignUp() {
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
-  const onSubmit = (data: any) => {
-    console.log(data);
+  
+  const onSubmit = async (data: FormData) => {
+  try {
+    const user = await signUp(data.email, data.password);
+    console.log(user);
+  } catch (error: any) {
+    if (error.code === "auth/email-already-in-use") {
+      alert("هذا الإيميل مسجل مسبقاً!");
+    } else {
+      alert("حدث خطأ، حاولي مرة ثانية");
+    }
+  }
+
   };
 
   return (
@@ -123,7 +135,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2d4a5e",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 0,
   },
   button: {
     backgroundColor: "#2d4a5e",
