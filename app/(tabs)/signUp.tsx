@@ -106,20 +106,24 @@ export default function SignUp() {
 
 const styles = StyleSheet.create({
   container: {
-  marginBottom: 16,
-},
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 20,
+  },
   card: {
+    marginTop: 30,
     backgroundColor: "#dde8e8",
     borderRadius: 40,
     padding: 30,
     width: "100%",
   },
   title: {
+    marginTop: 20,
     fontSize: 30,
     fontWeight: "bold",
     color: "#2d4a5e",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: "#2d4a5e",
