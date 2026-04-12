@@ -3,6 +3,7 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
+import { report } from 'node:process';
 import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
@@ -51,3 +52,13 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const MapColors = {
+
+primary: '#214556',
+pageBackground:   '#D7D6D6',
+sheetBackground:  '#FFFFFF',
+submitButton:     '#9EA2AE' ,
+supportText: '#845460',
+
+};
