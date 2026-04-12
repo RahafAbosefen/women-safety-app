@@ -1,10 +1,11 @@
 import axios from 'axios';
+import StorageService from "@/services/StorageService";
 
-export const API_URL = "https://69c994cc68edf52c954e9bf5.mockapi.io";
+export const API_URL = "https://69a3f823611ecf5bfc23e67f.mockapi.io";
 
-const handleErrors = async (err: any) => {
+const handleErrors = async (err) => {
     if (err?.response?.status === 401) {
-        console.log("Unauthorized");
+        console.log("Unauthorize");
     } else if (err?.response?.status === 403) {
         console.log("You don't have permission to access this resource");
     } else if (err?.response?.status === 500) {
@@ -15,14 +16,14 @@ const handleErrors = async (err: any) => {
     return Promise.reject(err);
 };
 
-const ApiBase = axios.create({
+const axiosInstance = axios.create({
     baseURL: `${API_URL}`,
     timeout: 30000,
 });
 
-ApiBase.interceptors.request.use(
-    (config) => {
-        const token = "token";
+axiosInstance.interceptors.request.use(
+    async (config) => {
+        const token = await StorageService.getToken();
         const tokenType = "Bearer";
         if (token) {
             config.headers.Authorization = `${tokenType} ${token}`;
@@ -33,12 +34,12 @@ ApiBase.interceptors.request.use(
     (err) => Promise.reject(err)
 );
 
-ApiBase.interceptors.response.use(
+axiosInstance.interceptors.response.use(
     (response) => {
-        console.log(response);
-        return response;
+      console.log(response);
+      return response
     },
     handleErrors
 );
 
-export default ApiBase;
+export default axiosInstance;

@@ -1,15 +1,11 @@
 import React from "react";
-import {
-    Text,
-    StyleSheet,
-    Pressable,
-    View,
-    TextInput,
-} from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { login } from "@/api/UsersService";
+import { login } from "@/services/AuthService";
+import { AppButton } from "@/components/ui/AppButton";
+import { AppInput } from "@/components/ui/AppInput";
 
 type FormData = {
     email: string;
@@ -19,22 +15,15 @@ type FormData = {
 export default function LoginScreen() {
     const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
 
-
-const onSubmit = async (data: FormData) => {
-    try {
-        const response = await login(data);
-        const users = response.data;
-        const user = users.find((u: any) => u.password === data.password);
-        if (user) {
+    const onSubmit = async (data: FormData) => {
+        try {
+            const user = await login(data);
+            console.log(user);
             router.push('/(tabs)');
-        } else {
-            alert('Invalid email or password');
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        alert('Something went wrong');
-    }
-};
-
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -49,14 +38,14 @@ const onSubmit = async (data: FormData) => {
                     rules={{ required: "Email is required" }}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <View>
-                            <TextInput
-                                style={[styles.input, error && styles.errorInput]}
+                            <AppInput
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
                                 placeholder="Email"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
+                                error={!!error}
                             />
                             {error && <Text style={styles.errorText}>{error.message}</Text>}
                         </View>
@@ -69,13 +58,13 @@ const onSubmit = async (data: FormData) => {
                     rules={{ required: "Password is required" }}
                     render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                         <View>
-                            <TextInput
-                                style={[styles.input, error && styles.errorInput]}
+                            <AppInput
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
                                 placeholder="Password"
                                 secureTextEntry={true}
+                                error={!!error}
                             />
                             {error && <Text style={styles.errorText}>{error.message}</Text>}
                         </View>
@@ -84,15 +73,7 @@ const onSubmit = async (data: FormData) => {
 
                 <Text style={styles.forgotPassword}>Forgot your password?</Text>
 
-                <Pressable
-                    onPress={handleSubmit(onSubmit)}
-                    style={({ pressed }) => [
-                        styles.button,
-                        pressed && { opacity: 0.7 },
-                    ]}
-                >
-                    <Text style={styles.buttonText}>Login</Text>
-                </Pressable>
+                <AppButton title="Login" onPress={handleSubmit(onSubmit)} />
             </View>
         </SafeAreaView>
     );
@@ -124,18 +105,6 @@ const styles = StyleSheet.create({
         color: '#2d4a5e',
         marginBottom: 20,
     },
-    input: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 12,
-        width: 250,
-        marginBottom: 15,
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    errorInput: {
-        borderColor: 'red',
-    },
     errorText: {
         color: 'red',
         fontSize: 12,
@@ -147,17 +116,5 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginBottom: 20,
         fontStyle: 'italic',
-    },
-    button: {
-        backgroundColor: '#2d4a5e',
-        borderRadius: 10,
-        padding: 15,
-        width: 250,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
