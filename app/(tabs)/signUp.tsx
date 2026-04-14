@@ -23,19 +23,18 @@ type FormData = {
 
 export default function SignUp() {
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
-  
-  const onSubmit = async (data: FormData) => {
-  try {
-    const user = await signUp(data.email, data.password);
-    console.log(user);
-  } catch (error: any) {
-    if (error.code === "auth/email-already-in-use") {
-      alert("هذا الإيميل مسجل مسبقاً!");
-    } else {
-      alert("حدث خطأ، حاولي مرة ثانية");
-    }
-  }
 
+  const onSubmit = async (data: FormData) => {
+    try {
+      const user = await signUp(data.email, data.password);
+      console.log(user);
+    } catch (error: any) {
+      if (error.code === "auth/email-already-in-use") {
+        alert("هذا الإيميل مسجل مسبقاً!");
+      } else {
+        alert("حدث خطأ، حاولي مرة ثانية");
+      }
+    }
   };
 
   return (

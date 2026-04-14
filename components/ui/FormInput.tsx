@@ -1,59 +1,59 @@
 import React from "react";
 import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    TextInputProps,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TextInputProps,
 } from "react-native";
 import { Controller, Control, FieldValues } from "react-hook-form";
 
 type FormInputProps<T extends FieldValues> = {
-    name: string;
-    control: Control<T>;
-    rules?: any;
-    label?: string;
+  name: string;
+  control: Control<T>;
+  rules?: any;
+  label?: string;
 } & TextInputProps;
 
 export function FormInput<T extends FieldValues>({
-     name,
-     control,
-     rules,
-     label,
-     ...inputProps
- }: FormInputProps<T>) {
-    return (
-        <Controller
-            control={control}
-            name={name as any}
-            rules={rules}
-            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-                <View style={styles.container}>
-                    {label && <Text style={styles.label}>{label}</Text>}
-                    <TextInput
-                        style={[styles.input, error && styles.errorInput]}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        {...inputProps}
-                                            placeholderTextColor="#999"
-
-                    />
-                    {error && (
-                        <Text style={styles.errorText}>{error.message}</Text>
-                    )}
-                </View>
-            )}
-        />
-    );
+  name,
+  control,
+  rules,
+  label,
+  ...inputProps
+}: FormInputProps<T>) {
+  return (
+    <Controller
+      control={control}
+      name={name as any}
+      rules={rules}
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
+        <View style={styles.container}>
+          {label && <Text style={styles.label}>{label}</Text>}
+          <TextInput
+            style={[styles.input, error && styles.errorInput]}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            {...inputProps}
+            placeholderTextColor="#999"
+          />
+          {error && <Text style={styles.errorText}>{error.message}</Text>}
+        </View>
+      )}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,
     justifyContent: "center",
   },
-    label: {
+  label: {
     fontSize: 16,
     fontWeight: "600",
     marginVertical: 8,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#fff",
   },
-   errorInput: {
+  errorInput: {
     borderColor: "red",
   },
   errorText: {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-   
+
   title: {
     fontSize: 30,
     fontWeight: "bold",
@@ -84,4 +84,3 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-

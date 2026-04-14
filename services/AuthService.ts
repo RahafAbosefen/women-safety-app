@@ -1,5 +1,4 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-// eslint-disable-next-line import/no-unresolved
 import app from "./firebaseConfig";
 
 const auth = getAuth(app);
