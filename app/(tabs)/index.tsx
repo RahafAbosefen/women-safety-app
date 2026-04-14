@@ -391,7 +391,7 @@ export default function HomeScreen() {
     setRunning(false);
 
     requestAnimationFrame(() => {
-      Alert.alert("SOS has been cancelled");
+      alert("SOS has been cancelled");
     });
   };
 
