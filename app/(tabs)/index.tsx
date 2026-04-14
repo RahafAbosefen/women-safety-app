@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { Text, Portal } from "react-native-paper";
@@ -8,6 +7,8 @@ import { Text, Portal } from "react-native-paper";
 import SOSButton from "@/components/SOSButton";
 import SendingSOSModal from "@/components/SendingSOSModal";
 import ResultSOSModal from "@/components/ResultSOSModal";
+import { auth } from "@/services/firebaseConfig";
+import { addSOSAlert } from "@/services/SOSService";
 
 export default function HomeScreen() {
   const [visible, setVisible] = useState(false);
@@ -15,37 +16,54 @@ export default function HomeScreen() {
   const [count, setCount] = useState(5);
   const [running, setRunning] = useState(false);
 
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
 
-  useEffect(() => {
-    let subscription: Location.LocationSubscription | null = null;
+      if (status !== "granted") {
+        Alert.alert("Location permission denied");
+        return null;
+      }
 
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") return;
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
 
-      subscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 1000,
-          distanceInterval: 1,
-        },
-        (loc) => {
-          setLocation({
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          });
-        }
-      );
-    })();
+      return {
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      };
+    } catch (error) {
+      console.log("Location error:", error);
+      return null;
+    }
+  };
 
-    return () => {
-      subscription?.remove();
-    };
-  }, []);
+  const sendSOSAlert = async () => {
+    try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        return;
+      }
+
+      const currentLocation = await getCurrentLocation();
+
+      if (!currentLocation) {
+        return;
+      }
+
+      await addSOSAlert({
+        userId: user.uid,
+        userEmail: user.email || "",
+        location: currentLocation,
+        createdAt: new Date(),
+        status: "sent",
+      });
+    } catch (error: any) {
+      console.log("SOS Firestore error:", error);
+    }
+  };
 
   useEffect(() => {
     if (!running) return;
@@ -53,15 +71,8 @@ export default function HomeScreen() {
     if (count <= 0) {
       setVisible(false);
       setRunning(false);
-
-      if (location) {
-        setTimeout(() => {
-          setResultVisible(true);
-        }, 200);
-      } else {
-        Alert.alert("Couldn't get location!");
-      }
-
+      setResultVisible(true);
+      sendSOSAlert();
       return;
     }
 
@@ -70,7 +81,7 @@ export default function HomeScreen() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [running, count, location]);
+  }, [running, count]);
 
   const startSOS = () => {
     setCount(5);

@@ -21,6 +21,8 @@ import EvidenceSection from "@/components/EvidenceSection";
 import ResultSOSModal from "@/components/ResultSOSModal";
 import { router } from "expo-router";
 import { addReport } from "@/services/ReportService";
+import { getAuth } from "firebase/auth";
+import app, { auth } from "@/services/firebaseConfig";
 type ReportFormData = {
   details: string;
 };
@@ -42,9 +44,9 @@ export default function AddReportScreen() {
   const [images, setImages] = useState<string[]>([]);
 
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [audioUri, setAudioUri] = useState<string | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+ // const [audioUri, setAudioUri] = useState<string | null>(null);
+  //const [sound, setSound] = useState<Audio.Sound | null>(null);
+  //const [isPlaying, setIsPlaying] = useState(false);
 
  
 
@@ -106,125 +108,132 @@ export default function AddReportScreen() {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const startRecording = async () => {
-    try {
-      const permission = await Audio.requestPermissionsAsync();
+  // const startRecording = async () => {
+  //   try {
+  //     const permission = await Audio.requestPermissionsAsync();
 
-      if (!permission.granted) {
-        Alert.alert("Permission needed", "Allow microphone access");
-        return;
-      }
+  //     if (!permission.granted) {
+  //       Alert.alert("Permission needed", "Allow microphone access");
+  //       return;
+  //     }
 
-      if (sound) {
-        await sound.unloadAsync();
-        setSound(null);
-      }
+  //     if (sound) {
+  //       await sound.unloadAsync();
+  //       setSound(null);
+  //     }
 
-      setAudioUri(null);
-      setIsPlaying(false);
+  //     setAudioUri(null);
+  //     setIsPlaying(false);
 
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
+  //     await Audio.setAudioModeAsync({
+  //       allowsRecordingIOS: true,
+  //       playsInSilentModeIOS: true,
+  //     });
 
-      const { recording: newRecording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
+  //     const { recording: newRecording } = await Audio.Recording.createAsync(
+  //       Audio.RecordingOptionsPresets.HIGH_QUALITY
+  //     );
 
-      setRecording(newRecording);
-      Alert.alert("Recording started");
-    } catch (err) {
-      console.log("Start recording error:", err);
-      Alert.alert("Error", "Could not start recording.");
-    }
-  };
+  //     setRecording(newRecording);
+  //     Alert.alert("Recording started");
+  //   } catch (err) {
+  //     console.log("Start recording error:", err);
+  //     Alert.alert("Error", "Could not start recording.");
+  //   }
+  // };
 
-  const stopRecording = async () => {
-    try {
-      if (!recording) return;
+  // const stopRecording = async () => {
+  //   try {
+  //     if (!recording) return;
 
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
+  //     await recording.stopAndUnloadAsync();
+  //     const uri = recording.getURI();
 
-      setAudioUri(uri || null);
-      setRecording(null);
+  //     setAudioUri(uri || null);
+  //     setRecording(null);
 
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-      });
+  //     await Audio.setAudioModeAsync({
+  //       allowsRecordingIOS: false,
+  //       playsInSilentModeIOS: true,
+  //     });
 
-      Alert.alert("Recording saved");
-    } catch (err) {
-      console.log("Stop recording error:", err);
-      Alert.alert("Error", "Could not save recording.");
-    }
-  };
+  //     Alert.alert("Recording saved");
+  //   } catch (err) {
+  //     console.log("Stop recording error:", err);
+  //     Alert.alert("Error", "Could not save recording.");
+  //   }
+  // };
 
-  const playSound = async () => {
-    try {
-      if (!audioUri) return;
+  // const playSound = async () => {
+  //   try {
+  //     if (!audioUri) return;
 
-      if (sound) {
-        await sound.unloadAsync();
-        setSound(null);
-      }
+  //     if (sound) {
+  //       await sound.unloadAsync();
+  //       setSound(null);
+  //     }
 
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUri },
-        { shouldPlay: true }
-      );
+  //     const { sound: newSound } = await Audio.Sound.createAsync(
+  //       { uri: audioUri },
+  //       { shouldPlay: true }
+  //     );
 
-      setSound(newSound);
-      setIsPlaying(true);
+  //     setSound(newSound);
+  //     setIsPlaying(true);
 
-      newSound.setOnPlaybackStatusUpdate((status: any) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-        }
-      });
-    } catch (error) {
-      console.log("Error playing sound:", error);
-      Alert.alert("Error", "Could not play audio.");
-    }
-  };
+  //     newSound.setOnPlaybackStatusUpdate((status: any) => {
+  //       if (status.didJustFinish) {
+  //         setIsPlaying(false);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log("Error playing sound:", error);
+  //     Alert.alert("Error", "Could not play audio.");
+  //   }
+  // };
 
-  const deleteAudio = async () => {
-    try {
-      if (sound) {
-        await sound.unloadAsync();
-        setSound(null);
-      }
+  // const deleteAudio = async () => {
+  //   try {
+  //     if (sound) {
+  //       await sound.unloadAsync();
+  //       setSound(null);
+  //     }
 
-      setAudioUri(null);
-      setRecording(null);
-      setIsPlaying(false);
-    } catch (error) {
-      console.log("Error deleting audio:", error);
-    }
-  };
+  //     setAudioUri(null);
+  //     setRecording(null);
+  //     setIsPlaying(false);
+  //   } catch (error) {
+  //     console.log("Error deleting audio:", error);
+  //   }
+  // };
 
 
 const onSubmit = async (data: any) => {
   try {
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("User not logged in");
+      return;
+    }
+
     await addReport({
+      userId: user.uid,
+      userEmail: user.email || "",
       reportType: reportType,
       details: data.details,
       location: location,
       imageUrls: images,
-      
       createdAt: new Date(),
     });
 
-
+    
 
     setReportType("Harassment");
     reset({ details: "" });
     setLocation(null);
     setLocationText("Current location (auto-detected)");
     setImages([]);
-  
     setOpen(false);
 
     setResultVisible(true);
@@ -282,7 +291,7 @@ const onSubmit = async (data: any) => {
       />
 
       {error && (
-        <Text style={{ color: "red", marginTop: 5,marginBottom:5 }}>
+        <Text style={{ color: "red",marginBottom:10 }}>
           {error.message}
         </Text>
       )}
@@ -295,15 +304,15 @@ const onSubmit = async (data: any) => {
       </Pressable>
 
       <EvidenceSection
-        recording={!!recording}
+        // recording={!!recording}
         images={images}
-        audioUri={audioUri}
-        isPlaying={isPlaying}
+        // audioUri={audioUri}
+        // isPlaying={isPlaying}
         onPickImage={pickImage}
-        onAudioPress={recording ? stopRecording : startRecording}
+        // onAudioPress={recording ? stopRecording : startRecording}
         onRemoveImage={removeImage}
-        onPlaySound={playSound}
-        onDeleteAudio={deleteAudio}
+        // onPlaySound={playSound}
+        // onDeleteAudio={deleteAudio}
       />
 
      
