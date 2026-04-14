@@ -1,13 +1,5 @@
 
 
-// import { addDoc, collection } from "firebase/firestore";
-// import { db } from "./firebaseConfig";
-
-// export const addReport = async (report: any) => {
-//   const docRef = await addDoc(collection(db, "reports"), report);
-//   return docRef;
-// };
-
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 

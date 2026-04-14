@@ -205,48 +205,7 @@ export default function AddReportScreen() {
     }
   };
 
-// const onSubmit = async (data: ReportFormData) => {
-//   console.log("Submitted");
-//   console.log("Type:", reportType);
-//   console.log("Details:", data.details);
-//   console.log("Location:", location);
-//   console.log("Images:", images);
-//   console.log("Audio:", audioUri);
 
-//   if (sound) {
-//     await sound.unloadAsync();
-//     setSound(null);
-//   }
-
-//   setReportType("Harassment");
-//   reset({ details: "" });
-//   setLocation(null);
-//   setLocationText("Current location (auto-detected)");
-//   setImages([]);
-//   setAudioUri(null);
-//   setRecording(null);
-//   setIsPlaying(false);
-//   setOpen(false);
-
-//   setResultVisible(true);
-// };
-// const onSubmit = async (data: any) => {
-//   try {
-//     await addReport({
-//       reportType: reportType,
-//       details: data.details,
-//       location: location,
-//       images: images || [],
-//       audioUri: audioUri || null,
-//       createdAt: new Date(),
-//     });
-
-//     alert("Report added successfully");
-//   } catch (error: any) {
-//     console.log("Firestore error:", error);
-//     alert(error.message);
-//   }
-// };
 const onSubmit = async (data: any) => {
   try {
     await addReport({
@@ -323,7 +282,7 @@ const onSubmit = async (data: any) => {
       />
 
       {error && (
-        <Text style={{ color: "red", marginTop: 5 }}>
+        <Text style={{ color: "red", marginTop: 5,marginBottom:5 }}>
           {error.message}
         </Text>
       )}
