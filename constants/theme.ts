@@ -2,7 +2,6 @@
  * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
-
 import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
@@ -29,13 +28,9 @@ export const Colors = {
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -51,3 +46,22 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const MapColors = {
+
+primary: '#214556',
+pageBackground:   '#D7D6D6',
+sheetBackground:  '#FFFFFF',
+submitButton:     '#9EA2AE' ,
+supportText: '#845460',
+
+};
+export const AppColors = {
+    primary: '#2d4a5e',
+    secondary: '#8b3a3a',
+    background: '#f5f5f5',
+    card: '#dde8e8',
+    white: '#ffffff',
+    error: 'red',
+    text: '#2d4a5e',
+}
