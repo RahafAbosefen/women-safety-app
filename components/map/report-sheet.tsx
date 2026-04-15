@@ -2,6 +2,9 @@ import { View, StyleSheet , Text, Pressable, TextInput, Modal } from 'react-nati
 import { MapColors } from '@/constants/theme';
 import { Overlay } from 'react-native-maps';
 import { title } from 'node:process';
+import ReportTypeDropdown from '../ReportTypeDropdown';
+import MapDropdown from "@/components/map/map-dropdown";
+
 
 
 type ReportSheetProps={
@@ -24,7 +27,7 @@ const ReportSheet =({isVisible, onSubmit, onClose }: ReportSheetProps)=>{
 
                <TextInput style={styles.input} placeholder= "Share details if you feel comfortable"multiline/>
 
-               
+               <ReportTypeDropdown> </ReportTypeDropdown>
                <Text style={styles.evidence}>Add evidence (optional)</Text>
                <View style={styles.evidenceRow}>
                  <Pressable style={styles.evidenceBtn}>
