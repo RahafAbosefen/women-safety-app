@@ -1,22 +1,20 @@
-import ApiBase from "@/services/ApiBase";
-import {USERS_API} from "@/constants/api";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import app from "./firebaseConfig";
 
-export const getCurrentUser = async (filters: any): Promise<Response> => {
-    const token = "token";
-    const response = await fetch(USERS_API, {
-        method: "GET",
-        body: filters,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        }
-    });
-    return response;
-}
 
-export const getCurrentUser2 = async (filters: any) => {
-    return await ApiBase.post(USERS_API, filters);
-}
-export const sendContactMessage = async (payload: any) => {
-    return await ApiBase.post('/contacts', payload);
-}
+const db = getFirestore(app);
+
+
+export const UsersService = {
+  createUserProfile: async (uid: string, data: any) => {
+    try {
+      await setDoc(doc(db, "users", uid), {
+        ...data,
+        createdAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Firestore Error:", error);
+      throw error;
+    }
+  },
+};
