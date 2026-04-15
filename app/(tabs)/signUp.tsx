@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 
 type FormData = {
   firstName: string;
@@ -22,18 +23,30 @@ type FormData = {
 };
 
 export default function SignUp() {
+  const router = useRouter();
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
 
-  const onSubmit = async (data: FormData) => {
+ const onSubmit = async (data: FormData) => {
     try {
-      const user = await signUp(data.email, data.password);
-      console.log(user);
+      const user = await signUp(data);
+      console.log("Success:", user);
+      alert("تم التسجيل بنجاح!");
+      router.replace("/(tabs)");
     } catch (error: any) {
+      console.error("Sign Up Error:", error);
+
+      let errorMessage = "حدث خطأ غير متوقع، حاولي مرة أخرى.";
+
       if (error.code === "auth/email-already-in-use") {
-        alert("هذا الإيميل مسجل مسبقاً!");
-      } else {
-        alert("حدث خطأ، حاولي مرة ثانية");
+        errorMessage = "هذا البريد الإلكتروني مستخدم بالفعل.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "البريد الإلكتروني غير صحيح.";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "كلمة المرور ضعيفة جداً، يجب أن تكون 6 رموز على الأقل.";
+      } else if (error.code === "auth/network-request-failed") {
+        errorMessage = "تأكدي من اتصالك بالإنترنت وحاولي مجدداً.";
       }
+      alert(errorMessage);
     }
   };
 
