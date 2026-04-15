@@ -1,21 +1,18 @@
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
-export type ReportType = {
+export type SOSAlertType = {
   userId: string;
   userEmail: string;
-  reportType: string;
-  details: string;
   location: {
     latitude: number;
     longitude: number;
   } | null;
-  imageUrls: string[];
-  // audioUrl: string | null;
   createdAt: Date;
+  status: string;
 };
 
-export const addReport = async (report: ReportType) => {
-  const docRef = await addDoc(collection(db, "reports"), report);
+export const addSOSAlert = async (alertData: SOSAlertType) => {
+  const docRef = await addDoc(collection(db, "sosAlerts"), alertData);
   return docRef;
 };
