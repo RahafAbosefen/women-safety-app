@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 
+
 type FormData = {
   firstName: string;
   lastName: string;
