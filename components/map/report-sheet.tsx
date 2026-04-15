@@ -1,7 +1,15 @@
-import { View, StyleSheet , Text, Pressable, TextInput, Modal } from 'react-native';
+import React, { useState } from 'react';
 import { MapColors } from '@/constants/theme';
-import { Overlay } from 'react-native-maps';
-import { title } from 'node:process';
+import { View,
+     StyleSheet,
+      Text,
+       Pressable,
+        TextInput,
+        KeyboardAvoidingView,
+        Platform,
+   Modal,  
+} from 'react-native';
+
 
 
 type ReportSheetProps={
@@ -11,10 +19,16 @@ type ReportSheetProps={
     };
 
 const ReportSheet =({isVisible, onSubmit, onClose }: ReportSheetProps)=>{
+    //const [SelectIncident , setSelectIncident]=useState('');
     return(
-        <Modal visible={isVisible} animationType='slide' transparent>
-        <View style={styles.overlay}>
-            <View style={styles.sheet}>
+        <Modal visible={isVisible} animationType='slide' transparent onRequestClose={onClose}>
+            <KeyboardAvoidingView
+              style={{flex:1}}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              >
+               <Pressable style={styles.overlay}onPress={onClose}>
+                 <Pressable style={styles.sheet}onPress={()=>{}}>
+           
                 <Text style={styles.title}> Report from this location</Text>
 
                 <View style={styles.dropdown}>
@@ -37,11 +51,13 @@ const ReportSheet =({isVisible, onSubmit, onClose }: ReportSheetProps)=>{
 
 
 
-               <Pressable style={styles.submitBtn} onPress={onSubmit}>
+               <Pressable onPress={onSubmit} style={({pressed})=>[styles.submitBtn,pressed && styles.submitBtnPressed]} >
                     <Text style={styles.submitText}>Submit Report  </Text>
                  </Pressable>
-            </View>
-        </View>
+           
+            </Pressable>
+            </Pressable>
+        </KeyboardAvoidingView>
         </Modal>
        
     );
@@ -53,13 +69,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end' ,
         backgroundColor: 'rgba(0,0,0,0.3)',
-        right: 20,
+        
     },
     sheet:  {
         backgroundColor: MapColors.sheetBackground,
         padding:24,
         borderTopLeftRadius: 20,
         borderTopRightRadius:20,
+        alignItems: 'center',
+        width:'100%',
 
     },
     title:  {
@@ -76,6 +94,10 @@ const styles = StyleSheet.create({
         borderColor:'#E0E0E0',
         borderRadius: 8,
         marginBottom: 8,
+        width:'100%',
+        flexDirection:'row',
+        alignItems: 'center',
+        justifyContent:'space-between',
 
     },
     placeholder:  {
@@ -85,6 +107,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#9E9E9E',
         marginBottom:12 ,
+        width:'100%',
        
     },
     input:  {
@@ -95,6 +118,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         height:100,
         textAlignVertical:'top',
+        width:'100%',
     },
     evidence: { 
         textAlign: 'center',
@@ -116,16 +140,24 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 16,
         paddingHorizontal:20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
     },
     submitBtn:  {
        backgroundColor:MapColors.submitButton,
         padding:16,
         borderRadius: 12,
         alignItems:'center',
+        width:'100%',
     },
     submitText:  {
         color: '#FFFFFF',
         fontWeight:'600',
+    },
+    submitBtnPressed:{
+     backgroundColor:MapColors.primary,
+     opacity:0.9,   
     },
 });
 

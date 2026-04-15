@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import {SafeAreaView } from 'react-native-safe-area-context';
-import MapView  from 'react-native-maps';
+import MapView , { Marker } from 'react-native-maps';
 import { useState } from 'react';
 import { MapColors } from '@/constants/theme';
 import ReportButton from '@/components/map/report-button';
