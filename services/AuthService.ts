@@ -1,6 +1,9 @@
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import app from "./firebaseConfig";
 import StorageService from "@/services/StorageService";
+
+
+
 
 const auth = getAuth(app);
 
@@ -24,5 +27,8 @@ export const signup = async (payload: any) => {
 
 export const logout = async () => {
     const auth = getAuth(app);
-    await auth.signOut();
+    await signOut(auth);
+
+    await StorageService.removeUser();
+    await StorageService.removeToken();
 }
