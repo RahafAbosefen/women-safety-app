@@ -54,6 +54,8 @@ pageBackground:   '#D7D6D6',
 sheetBackground:  '#FFFFFF',
 submitButton:     '#9EA2AE' ,
 supportText: '#845460',
+dangerMarker: "#C94444",
+neutralMarker: '#D7DDE0',
 
 };
 export const AppColors = {

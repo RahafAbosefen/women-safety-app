@@ -11,11 +11,10 @@ export type MapReportType = {
     longitude: number;
   } | null;
   imageUrls: string[];
-  // audioUrl: string | null;
   createdAt: Date;
 };
 
 export const addReportMap = async (report: MapReportType) => {
-  const docRef = await addDoc(collection(db, "mapReport"), report);
+  const docRef = await addDoc(collection(db, "mapReports"), report);
   return docRef;
 };
