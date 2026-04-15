@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { MapColors } from '@/constants/theme';
+import MapDropdown from "@/components/map/map-dropdown";
 import { View,
-     StyleSheet,
-      Text,
-       Pressable,
-        TextInput,
-        KeyboardAvoidingView,
-        Platform,
-   Modal,  
+    StyleSheet,
+    Text,
+    Pressable,
+    TextInput,
+    KeyboardAvoidingView,
+    Platform,
+    Modal,  
 } from 'react-native';
-
 
 
 type ReportSheetProps={
@@ -38,7 +38,7 @@ const ReportSheet =({isVisible, onSubmit, onClose }: ReportSheetProps)=>{
 
                <TextInput style={styles.input} placeholder= "Share details if you feel comfortable"multiline/>
 
-               
+               <ReportTypeDropdown> </ReportTypeDropdown>
                <Text style={styles.evidence}>Add evidence (optional)</Text>
                <View style={styles.evidenceRow}>
                  <Pressable style={styles.evidenceBtn}>
