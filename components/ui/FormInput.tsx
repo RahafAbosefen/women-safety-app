@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Controller, Control, FieldValues } from "react-hook-form";
 
+
 type FormInputProps<T extends FieldValues> = {
   name: string;
   control: Control<T>;
