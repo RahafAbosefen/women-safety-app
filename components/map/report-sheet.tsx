@@ -33,11 +33,7 @@ type ReportFormData = {
 
 const ReportSheet = ({ isVisible, onSubmit, onClose }: ReportSheetProps) => {
   const [images, setImages] = useState<string[]>([]);
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-
+ 
   const {
     control,
     handleSubmit,
@@ -92,13 +88,32 @@ const ReportSheet = ({ isVisible, onSubmit, onClose }: ReportSheetProps) => {
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      };
+      const latitude = currentLocation.coords.latitude;
+      const longitude = currentLocation.coords.longitude;
 
-      setLocation(coords);
-      return coords;
+      const reverseData = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+
+      const place = reverseData[0];
+
+      const locationName = [
+        place?.city,
+        place?.region,
+        place?.country,
+      ]
+        .filter(Boolean)
+        .join(', ');
+
+      const coords = { latitude, longitude };
+
+      
+
+      return {
+        coords,
+        locationName: locationName || 'Unknown location',
+      };
     } catch (error) {
       console.log(error);
       Alert.alert('Location error', 'Could not get current location.');
@@ -118,35 +133,35 @@ const ReportSheet = ({ isVisible, onSubmit, onClose }: ReportSheetProps) => {
     }
 
     try {
-      const user = auth.currentUser;
+    const user = auth.currentUser;
 
-      if (!user) {
-        Alert.alert('User not logged in');
+    if (!user) {
+      Alert.alert('User not logged in');
+      return;
+    }
+      const currentLocationData = await getCurrentLocation();
+
+      if (!currentLocationData) {
         return;
       }
 
-      let currentCoords = location;
-
-      if (!currentCoords) {
-        currentCoords = await getCurrentLocation();
-      }
-
       await addReportMap({
-        userId: user.uid,
-        userEmail: user.email || '',
-        reportType: data.reportType,
-        details: data.details,
-        location: currentCoords,
-        imageUrls: images,
-        createdAt: new Date(),
-      });
+  userId: user.uid,
+  userEmail: user.email || '',
+  reportType: data.reportType,
+  details: data.details,
+  location: currentLocationData.coords,
+  locationName: currentLocationData.locationName,
+  imageUrls: images,
+  createdAt: new Date(),
+});
 
       reset({
         reportType: '',
         details: '',
       });
       setImages([]);
-      setLocation(null);
+      
 
       onSubmit();
     } catch (error: any) {

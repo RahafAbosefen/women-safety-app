@@ -10,6 +10,7 @@ export type MapReportType = {
     latitude: number;
     longitude: number;
   } | null;
+  locationName: string;
   imageUrls: string[];
   createdAt: Date;
 };
