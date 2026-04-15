@@ -12,6 +12,7 @@ export const UsersService = {
         ...data,
         createdAt: new Date().toISOString(),
       });
+      
     } catch (error) {
       console.error("Firestore Error:", error);
       throw error;
