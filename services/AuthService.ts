@@ -9,13 +9,17 @@ import { UsersService } from "./UsersService";
 const auth = getAuth(app);
 
 export const login = async (payload: any) => {
-    const response = await signInWithEmailAndPassword(auth, payload.email, payload.password);
-    const user = response.user;
-    const token = await user.getIdToken();
-    await StorageService.saveUser(user);
-    await StorageService.saveToken(token);
-    return user;
-}
+  const response = await signInWithEmailAndPassword(
+    auth,
+    payload.email,
+    payload.password,
+  );
+  const user = response.user;
+  const token = await user.getIdToken();
+  await StorageService.saveUser(user);
+  await StorageService.saveToken(token);
+  return user;
+};
 
 export const signUp = async (payload: any) => {
   const response = await createUserWithEmailAndPassword(

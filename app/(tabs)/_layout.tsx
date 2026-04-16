@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { View } from "react-native";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Pressable } from "react-native";
 import { logout } from "@/services/AuthService";
@@ -78,6 +77,15 @@ export default function TabLayout() {
           title: "Add Report",
           tabBarIcon: ({ color, focused }) => (
 
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={28}
+              color={color}
+            />
+          ),
+        }}
+      />
+
             <Ionicons name={focused ? "add-circle" : "add-circle-outline"} size={28} color={color} />
 
           ),
@@ -90,13 +98,29 @@ export default function TabLayout() {
       <Tabs.Screen
         name="map"
         options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="map.fill" color={color} />,
+          title: "Map",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="map.fill" color={color} />
+          ),
         }}
       />
 
 
-
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+    
 
     </Tabs>
   );
