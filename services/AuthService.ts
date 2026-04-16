@@ -1,12 +1,10 @@
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import app from "./firebaseConfig";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "./UsersService";
+
+
+
 
 const auth = getAuth(app);
 
@@ -43,7 +41,9 @@ export const signUp = async (payload: any) => {
 };
 
 export const logout = async () => {
-  await signOut(auth);
-  await StorageService.removeUser();
-  await StorageService.removeToken();
-};
+    const auth = getAuth(app);
+    await signOut(auth);
+
+    await StorageService.removeUser();
+    await StorageService.removeToken();
+}

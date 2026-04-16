@@ -9,8 +9,11 @@ import SendingSOSModal from "@/components/SendingSOSModal";
 import ResultSOSModal from "@/components/ResultSOSModal";
 import { auth } from "@/services/firebaseConfig";
 import { addSOSAlert } from "@/services/SOSService";
+import { logout } from "@/services/AuthService";
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [resultVisible, setResultVisible] = useState(false);
   const [count, setCount] = useState(5);
@@ -122,6 +125,8 @@ export default function HomeScreen() {
           onDismiss={() => setResultVisible(false)}
         />
       </Portal>
+
+ 
     </SafeAreaView>
   );
 }
@@ -153,6 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 25,
   },
+  
   safeText: {
     fontSize: 14,
     color: "#9A6A70",

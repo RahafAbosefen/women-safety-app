@@ -2,17 +2,39 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Pressable } from "react-native";
+import { logout } from "@/services/AuthService";
+import { useRouter } from "expo-router";
 
 export default function TabLayout() {
+  const router = useRouter();
   return (
     <Tabs
       screenOptions={{
         headerRight: () => (
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            style={{ marginRight: 15 }}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              style={{ marginRight: 15 }}
+            />
+
+            <Pressable
+              onPress={async () => {
+                await logout();
+                router.replace("/(auth)");
+              }}
+            >
+              <Ionicons
+                name="log-out-outline"
+                size={24}
+                color="red"
+                style={{ marginRight: 15 }}
+              />
+            </Pressable>
+
+          </View>
         ),
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#204E64",
@@ -54,6 +76,7 @@ export default function TabLayout() {
         options={{
           title: "Add Report",
           tabBarIcon: ({ color, focused }) => (
+
             <Ionicons
               name={focused ? "add-circle" : "add-circle-outline"}
               size={28}
@@ -62,6 +85,15 @@ export default function TabLayout() {
           ),
         }}
       />
+
+            <Ionicons name={focused ? "add-circle" : "add-circle-outline"} size={28} color={color} />
+
+          ),
+        }}
+      />
+
+
+
 
       <Tabs.Screen
         name="map"
@@ -72,6 +104,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
 
       <Tabs.Screen
         name="profile"
@@ -87,19 +120,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="login"
-        options={{
-          title: "Login",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
+    
+
     </Tabs>
   );
 }
