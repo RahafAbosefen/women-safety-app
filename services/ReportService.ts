@@ -7,7 +7,7 @@ export type ReportType = {
   reportType: string;
   details: string;
   location: {
-    latitude: number;
+    latitude: number; 
     longitude: number;
   } | null;
   imageUrls: string[];
