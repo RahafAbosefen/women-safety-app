@@ -49,11 +49,15 @@ export const Fonts = Platform.select({
 });
 
 export const MapColors = {
-  primary: "#214556",
-  pageBackground: "#D7D6D6",
-  sheetBackground: "#FFFFFF",
-  submitButton: "#9EA2AE",
-  supportText: "#845460",
+
+primary: '#214556',
+pageBackground:   '#D7D6D6',
+sheetBackground:  '#FFFFFF',
+submitButton:     '#9EA2AE' ,
+supportText: '#845460',
+dangerMarker: "#C94444",
+neutralMarker: '#D7DDE0',
+
 };
 export const AppColors = {
   primary: "#2d4a5e",
