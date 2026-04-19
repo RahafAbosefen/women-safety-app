@@ -1,3 +1,151 @@
+// import { StyleSheet } from "react-native";
+// import { AppColors, Colors, MapColors } from "@/constants/theme";
+
+// export const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: AppColors.background,
+//   },
+//   loadingContainer: {
+//     flex: 1,
+//     backgroundColor: AppColors.background,
+//     justifyContent: "center",
+//     alignItems: "center",
+//   },
+//   topHeader: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     paddingHorizontal: 25,
+//     height: 70,
+//   },
+//   topHeaderTitle: {
+//     fontSize: 22,
+//     fontWeight: "bold",
+//     color: AppColors.primary,
+//   },
+//   saveBadge: {
+//     backgroundColor: MapColors.primary,
+//     paddingHorizontal: 20,
+//     paddingVertical: 8,
+//     borderRadius: 20,
+//   },
+//   saveBadgeText: {
+//     color: AppColors.white,
+//     fontSize: 14,
+//     fontWeight: "bold",
+//   },
+//   saveButtonOpacity: { opacity: 1 },
+//   pressed: { opacity: 0.7 },
+//   scrollContent: { paddingHorizontal: 25, paddingBottom: 100 },
+//   headerSection: { alignItems: "center", marginVertical: 30 },
+//   imageContainer: { position: "relative" },
+//   profileImage: {
+//     width: 120,
+//     height: 120,
+//     borderRadius: 60,
+//     borderWidth: 4,
+//     borderColor: AppColors.card,
+//   },
+//   cameraBtn: {
+//     position: "absolute",
+//     bottom: 5,
+//     right: 5,
+//     backgroundColor: AppColors.primary,
+//     padding: 8,
+//     borderRadius: 20,
+//     borderWidth: 3,
+//     borderColor: AppColors.white,
+//   },
+//   userNameText: {
+//     fontSize: 22,
+//     fontWeight: "bold",
+//     color: AppColors.text,
+//     marginTop: 15,
+//   },
+//   userEmailText: {
+//     fontSize: 14,
+//     color: MapColors.submitButton,
+//     marginTop: 4,
+//   },
+//   sectionCard: { width: "100%", marginBottom: 10 },
+//   sectionTitle: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     color: AppColors.primary,
+//     marginBottom: 20,
+//   },
+//   inputWrapper: { marginBottom: 20, position: "relative" },
+//   label: {
+//     position: "absolute",
+//     top: -10,
+//     left: 15,
+//     backgroundColor: AppColors.background,
+//     paddingHorizontal: 5,
+//     fontSize: 12,
+//     color: AppColors.gray,
+//     zIndex: 1,
+//   },
+//   input: {
+//     width: "100%",
+//     height: 55,
+//     borderWidth: 1,
+//     borderColor: AppColors.border,
+//     borderRadius: 15,
+//     paddingHorizontal: 15,
+//     fontSize: 16,
+//     color: Colors.light.text,
+//   },
+//   inputLocked: { backgroundColor: AppColors.gray, color: "#999" },
+//   inputError: { borderColor: AppColors.error },
+//   errorTextLabel: { color: AppColors.error },
+//   errorTextFeedback: {
+//     color: AppColors.error,
+//     fontSize: 11,
+//     marginTop: 5,
+//     marginLeft: 10,
+//   },
+//   settingRow: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     padding: 15,
+//     borderWidth: 1,
+//     borderColor: AppColors.card,
+//     borderRadius: 15,
+//     marginBottom: 10,
+//     backgroundColor: AppColors.white,
+//   },
+//   rowLeft: { flexDirection: "row", alignItems: "center" },
+//   rowText: {
+//     marginLeft: 12,
+//     fontSize: 16,
+//     color: AppColors.primary,
+//     fontWeight: "500",
+//   },
+//   checkboxRow: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     marginBottom: 20,
+//     paddingLeft: 5,
+//   },
+//   checkboxText: { marginLeft: 10, fontSize: 14, color: AppColors.text },
+//   myReportsBtn: {
+//     backgroundColor: AppColors.primary,
+//     width: "100%",
+//     height: 55,
+//     justifyContent: "center",
+//     alignItems: "center",
+//     borderRadius: 15,
+//   },
+//   myReportsBtnText: {
+//     color: AppColors.white,
+//     fontSize: 16,
+//     fontWeight: "bold",
+//   },
+// });
+
+
 import { StyleSheet } from "react-native";
 import { AppColors, Colors, MapColors } from "@/constants/theme";
 
@@ -23,6 +171,23 @@ export const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: AppColors.primary,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // عشان كلمة Profile ع الشمال والكبسة ع اليمين
+    paddingHorizontal: 20,
+    paddingTop: 50, // حسب المسافة اللي بدك اياها من فوق
+    paddingBottom: 20,
+    backgroundColor: "#fff", // أو نفس لون الهيدر عندك
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#204E64",
+  },
+  logoutIcon: {
+    padding: 5,
   },
   saveBadge: {
     backgroundColor: MapColors.primary,
@@ -73,7 +238,7 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: AppColors.primary,
-    marginBottom: 20,
+    marginBottom: 0,
   },
   inputWrapper: { marginBottom: 20, position: "relative" },
   label: {
@@ -141,6 +306,23 @@ export const styles = StyleSheet.create({
   myReportsBtnText: {
     color: AppColors.white,
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  inlineSaveButton: {
+    backgroundColor: MapColors.primary,
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  inlineSaveText: {
+    color: AppColors.white,
+    fontSize: 13,
     fontWeight: "bold",
   },
 });

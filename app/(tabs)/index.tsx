@@ -9,7 +9,6 @@ import SendingSOSModal from "@/components/SendingSOSModal";
 import ResultSOSModal from "@/components/ResultSOSModal";
 import { auth } from "@/services/firebaseConfig";
 import { addSOSAlert } from "@/services/SOSService";
-import { logout } from "@/services/AuthService";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {

@@ -1,3 +1,4 @@
+
 import { Image } from "expo-image";
 import React from "react";
 import {
@@ -11,13 +12,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Controller } from "react-hook-form";
-
+import { logout } from "@/services/AuthService";
+import { useRouter } from "expo-router";
 import { AppColors } from "@/constants/theme";
 import { styles } from "@/styles/Profile.styles";
 import { FormInput } from "@/components/ui/FormInput";
 import { useProfile } from "@/hooks/useProfile";
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const {
     control,
     isDirty,
@@ -46,25 +49,27 @@ export default function ProfileScreen() {
       >
         <View style={styles.topHeader}>
           <Text style={styles.topHeaderTitle}>Profile</Text>
-          {isDirty && (
-            <Pressable
-              onPress={handleSubmit(onSubmit)}
-              style={({ pressed }) => [
-                styles.saveButtonOpacity,
-                pressed && styles.pressed,
-              ]}
-            >
-              <View style={styles.saveBadge}>
-                <Text style={styles.saveBadgeText}>Save</Text>
-              </View>
-            </Pressable>
-          )}
+          <Pressable
+            onPress={async () => {
+              try {
+                await logout();
+                router.replace("/(auth)/login");
+              } catch (error) {
+                console.error(error);
+              }
+            }}
+            style={styles.logoutIcon}
+          >
+            <Ionicons name="log-out-outline" size={24} color="#D32F2F" />
+          </Pressable>
         </View>
 
         <View style={styles.headerSection}>
           <View style={styles.imageContainer}>
-            <Image
-              source={require("../../assets/images/react-logo.png")}
+       <Image
+              source={{
+                uri: `https://ui-avatars.com/api/?name=${control._formValues.name || "User"}&background=204E64&color=fff&size=128`,
+              }}
               style={styles.profileImage}
             />
             <Pressable style={styles.cameraBtn}>
@@ -90,8 +95,22 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
-
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Personal Information</Text>
+            {isDirty && (
+              <Pressable
+                onPress={handleSubmit(onSubmit)}
+                style={({ pressed }) => [
+                  styles.saveButtonOpacity,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <View style={styles.saveBadge}>
+                  <Text style={styles.saveBadgeText}>Save</Text>
+                </View>
+              </Pressable>
+            )}
+          </View>
           <View style={styles.inputWrapper}>
             <Text style={styles.label}>Full Name</Text>
             <FormInput

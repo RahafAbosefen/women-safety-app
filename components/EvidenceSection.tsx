@@ -4,20 +4,17 @@ import { Feather } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { MapColors, AppColors } from "@/constants/theme";
 
-type Props = {
-  images: string[];
-  onPickImage: () => void;
-  onRemoveImage: (index: number) => void;
+type props={
+  images:string[];
+  onPickImage:()=>void;
+  onRemoveImage:(index:number)=>void
 };
 
 export default function EvidenceSection({
-  images,
-  onPickImage,
-  onRemoveImage,
-}: Props) {
-  return (
-    <>
-      <Text style={styles.evidenceTitle}>Add evidence (optional)</Text>
+  images,onPickImage,onRemoveImage}:props){
+      return (
+    <View>
+      <Text style={styles.evidenceTitle}> Add evidence (optional)</Text>
 
       <Pressable style={styles.smallButton} onPress={onPickImage}>
         <Feather name="image" size={18} color={MapColors.primary} />
@@ -26,7 +23,7 @@ export default function EvidenceSection({
 
       <View style={styles.imagesContainer}>
         {images.map((uri, index) => (
-          <View key={`${uri}-${index}`} style={styles.imageWrapper}>
+          <View key={index} style={styles.imageWrapper}>
             <Image source={{ uri }} style={styles.image} contentFit="cover" />
             <Pressable
               style={styles.deleteButton}
@@ -37,7 +34,7 @@ export default function EvidenceSection({
           </View>
         ))}
       </View>
-    </>
+    </View>
   );
 }
 
