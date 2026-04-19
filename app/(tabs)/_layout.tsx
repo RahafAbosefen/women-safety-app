@@ -1,19 +1,32 @@
+
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+
 import { View } from "react-native";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerStyle: {
+          backgroundColor: "#FFFFFF",
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        headerTitleStyle: {
+          fontWeight: "bold",
+          fontSize: 18,
+          color: "#204E64",
+        },
         headerRight: () => (
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            style={{ marginRight: 15 }}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              style={{ marginRight: 15 }}
+            />
+          </View>
         ),
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#204E64",
@@ -55,29 +68,34 @@ export default function TabLayout() {
         options={{
           title: "Add Report",
           tabBarIcon: ({ color, focused }) => (
-         
-              <Ionicons name={focused ? "add-circle" : "add-circle-outline"} size={28} color={color} />
-           
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={28}
+              color={color}
+            />
           ),
         }}
       />
 
-    
-
-
       <Tabs.Screen
         name="map"
         options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="map.fill" color={color} />,
+          title: "Map",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "map" : "map-outline"}
+              size={28}
+              color={color}
+            />
+          ),
         }}
-     />
-
+      />
 
       <Tabs.Screen
-        name="login"
+        name="profile"
         options={{
-          title: "Login",
+          title: "Profile",
+          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}
@@ -87,7 +105,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
     </Tabs>
   );
 }

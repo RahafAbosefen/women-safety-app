@@ -1,6 +1,6 @@
 import { View, StyleSheet , Text , Pressable } from 'react-native';
 import { MapColors } from '@/constants/theme';
-import { text } from 'node:stream/consumers';
+
 
 type ReportButtonProps={
     onPress:()=> void ;
@@ -21,7 +21,7 @@ const ReportButton =({onPress}:ReportButtonProps)=>{
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 30 ,
+        bottom: 90 ,
         left: 20,
         right: 20,
     },

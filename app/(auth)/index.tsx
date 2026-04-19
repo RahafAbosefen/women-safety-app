@@ -9,20 +9,16 @@ export default function WelcomeScreen() {
             <View style={styles.card}>
                 <Text style={styles.title}>Let's Get Started...</Text>
 
-                <Pressable style={styles.googleButton}>
-                    <Text style={styles.googleText}>Continue with Google</Text>
-                </Pressable>
-
                 <Pressable
                     style={styles.signUpButton}
-                    onPress={() => router.push('/signup')}
+      onPress={() => router.push('/(auth)/signUp')}
                 >
                     <Text style={styles.signUpText}>Sign Up</Text>
                 </Pressable>
 
                 <Pressable
                     style={styles.loginButton}
-                    onPress={() => router.push('/login')}
+                  onPress={() => router.push('/(auth)/login')}
                 >
                     <Text style={styles.loginText}>Login</Text>
                 </Pressable>
@@ -50,19 +46,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#2d4a5e',
         marginBottom: 10,
-    },
-    googleButton: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 12,
-        width: '100%',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    googleText: {
-        color: '#2d4a5e',
-        fontSize: 14,
     },
     signUpButton: {
         backgroundColor: '#2d4a5e',
