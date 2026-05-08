@@ -38,7 +38,7 @@ export const MediaPickerModal = ({
             <Text style={styles.text}>Choose from Gallery</Text>
           </Pressable>
 
-          {hasImage && !!onRemove && (
+          {hasImage && onRemove && (
             <Pressable style={styles.item} onPress={onRemove}>
               <Ionicons name="trash" size={20} color="red" />
               <Text style={[styles.text, { color: "red" }]}>Remove Image</Text>
