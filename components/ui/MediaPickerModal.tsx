@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   visible: boolean;
+  title?: string;
   hasImage: boolean;
   onCamera: () => void;
   onGallery: () => void;
@@ -12,8 +13,9 @@ interface Props {
   onClose: () => void;
 }
 
-export const ImageActionModal = ({
+export const MediaPickerModal = ({
   visible,
+  title,
   hasImage,
   onCamera,
   onGallery,
@@ -24,7 +26,7 @@ export const ImageActionModal = ({
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.card}>
-          <Text style={styles.title}>Profile Image</Text>
+          <Text style={styles.title}>{title}</Text>
 
           <Pressable style={styles.item} onPress={onCamera}>
             <Ionicons name="camera" size={20} color={AppColors.primary} />
@@ -36,7 +38,7 @@ export const ImageActionModal = ({
             <Text style={styles.text}>Choose from Gallery</Text>
           </Pressable>
 
-          {hasImage && (
+          {hasImage && !!onRemove && (
             <Pressable style={styles.item} onPress={onRemove}>
               <Ionicons name="trash" size={20} color="red" />
               <Text style={[styles.text, { color: "red" }]}>Remove Image</Text>
