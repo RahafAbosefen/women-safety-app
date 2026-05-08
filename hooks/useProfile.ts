@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "@/services/UsersService";
-
+import { Keyboard } from "react-native";
+import { logout } from "@/services/AuthService";
+import { useRouter } from "expo-router";
+import { useMediaManager } from "./useMediaManager";
+import { useAlertManager } from "./useAlertManager";
 interface ProfileFormData {
   name: string;
   email: string;
@@ -11,6 +15,7 @@ interface ProfileFormData {
 }
 
 export const useProfile = () => {
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -20,11 +25,13 @@ export const useProfile = () => {
     formState: { errors, isDirty },
   } = useForm<ProfileFormData>({
     defaultValues: { name: "", email: "", phone: "", isAnonymous: false },
+    mode: "onChange",
   });
 
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [originalData, setOriginalData] = useState<ProfileFormData>({
     name: "",
     email: "",
@@ -49,6 +56,8 @@ export const useProfile = () => {
             setIsAnonymous(firebaseData.isAnonymous || false);
             reset(formattedData);
             setOriginalData(formattedData);
+            const img = await StorageService.getProfileImage();
+            setProfileImage(img);
           }
         }
       } catch (error) {
@@ -59,6 +68,43 @@ export const useProfile = () => {
     };
     loadUserFromFirebase();
   }, [reset]);
+
+  const { alert, openAlert, closeAlert } = useAlertManager();
+
+  const confirmLogout = useCallback(async () => {
+    closeAlert();
+    await logout();
+    router.replace("/login");
+  }, [router, closeAlert]);
+
+  const triggerLogoutAlert = () => {
+    openAlert({
+      type: "confirm",
+      title: "Logout",
+      message: "Are you sure you want to exit?",
+      confirmText: "Logout",
+      cancelText: "Cancel",
+      onConfirm: confirmLogout,
+      onCancel: closeAlert,
+    });
+  };
+
+  const saveImage = useCallback(async (uri: string) => {
+    await StorageService.saveProfileImage(uri);
+    setProfileImage(uri);
+  }, []);
+
+  const media = useMediaManager(saveImage);
+
+  const showSaveSuccessAlert = () => {
+    openAlert({
+      type: "success",
+      title: "Success",
+      message: "Saved successfully",
+      confirmText: "OK",
+      onConfirm: closeAlert,
+    });
+  };
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
@@ -85,15 +131,21 @@ export const useProfile = () => {
           phone: data.phone,
           isAnonymous: isAnonymous,
         });
+        Keyboard.dismiss();
         reset(data);
-        alert("تم حفظ التعديلات بنجاح!");
+        showSaveSuccessAlert();
       }
     } catch (error) {
-      console.error("Save Error:", error);
-      alert("حدث خطأ أثناء الحفظ.");
+      openAlert({
+        type: "error",
+        title: "Error",
+        message: "Something went wrong",
+        confirmText: "OK",
+        onConfirm: closeAlert,
+      });
+      console.error("Error saving profile:", error);
     }
   };
-
   const handleAnonymousChange = () => {
     const newStatus = !isAnonymous;
     setIsAnonymous(newStatus);
@@ -122,5 +174,11 @@ export const useProfile = () => {
     handleSubmit,
     onSubmit,
     handleAnonymousChange,
+    triggerLogoutAlert,
+    confirmLogout,
+    profileImage,
+    media,
+    alert,
+    closeAlert,
   };
 };
