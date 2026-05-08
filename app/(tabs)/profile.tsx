@@ -18,7 +18,7 @@ import { styles } from "@/styles/Profile.styles";
 import { FormInput } from "@/components/ui/FormInput";
 import { useProfile } from "@/hooks/useProfile";
 import { AppAlert } from "@/components/ui/CustomAlert";
-import { ImageActionModal } from "@/components/ui/ImageActionModal";
+import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
 export default function ProfileScreen() {
   const {
     control,
@@ -233,8 +233,9 @@ export default function ProfileScreen() {
           onConfirm={alert.onConfirm}
           onCancel={closeAlert}
         />
-        <ImageActionModal
+        <MediaPickerModal
           visible={media.visible}
+          title="Profile Image"
           hasImage={Boolean(profileImage)}
           onCamera={media.openCamera}
           onGallery={media.openGallery}
