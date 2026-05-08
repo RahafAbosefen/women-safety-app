@@ -1,4 +1,3 @@
-
 import { Image } from "expo-image";
 import React from "react";
 import {
@@ -8,19 +7,19 @@ import {
   ScrollView,
   Switch,
   ActivityIndicator,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Controller } from "react-hook-form";
-import { logout } from "@/services/AuthService";
-import { useRouter } from "expo-router";
 import { AppColors } from "@/constants/theme";
 import { styles } from "@/styles/Profile.styles";
 import { FormInput } from "@/components/ui/FormInput";
 import { useProfile } from "@/hooks/useProfile";
-
+import { AppAlert } from "@/components/ui/CustomAlert";
+import { ImageActionModal } from "@/components/ui/ImageActionModal";
 export default function ProfileScreen() {
-  const router = useRouter();
   const {
     control,
     isDirty,
@@ -31,6 +30,11 @@ export default function ProfileScreen() {
     handleSubmit,
     onSubmit,
     handleAnonymousChange,
+    triggerLogoutAlert,
+    profileImage,
+    media,
+    alert,
+    closeAlert,
   } = useProfile();
 
   if (isLoading) {
@@ -42,143 +46,202 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.topHeader}>
-          <Text style={styles.topHeaderTitle}>Profile</Text>
-          <Pressable
-            onPress={async () => {
-              try {
-                await logout();
-                router.replace("/(auth)/login");
-              } catch (error) {
-                console.error(error);
-              }
-            }}
-            style={styles.logoutIcon}
-          >
-            <Ionicons name="log-out-outline" size={24} color="#D32F2F" />
-          </Pressable>
-        </View>
-
-        <View style={styles.headerSection}>
-          <View style={styles.imageContainer}>
-       <Image
-              source={{
-                uri: `https://ui-avatars.com/api/?name=${control._formValues.name || "User"}&background=204E64&color=fff&size=128`,
-              }}
-              style={styles.profileImage}
-            />
-            <Pressable style={styles.cameraBtn}>
-              <Ionicons name="camera" size={18} color={AppColors.background} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.topHeader}>
+            <Text style={styles.topHeaderTitle}>Profile</Text>
+            <Pressable onPress={triggerLogoutAlert}>
+              <Ionicons
+                name="log-out-outline"
+                size={24}
+                color={AppColors.primary}
+              />
             </Pressable>
           </View>
 
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { value } }) => (
-              <Text style={styles.userNameText}>{value}</Text>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { value } }) => (
-              <Text style={styles.userEmailText}>{value}</Text>
-            )}
-          />
-        </View>
-
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
-            {isDirty && (
-              <Pressable
-                onPress={handleSubmit(onSubmit)}
-                style={({ pressed }) => [
-                  styles.saveButtonOpacity,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <View style={styles.saveBadge}>
-                  <Text style={styles.saveBadgeText}>Save</Text>
-                </View>
+          <View style={styles.headerSection}>
+            <View style={styles.imageContainer}>
+              <Pressable onPress={media.openModal}>
+                <Image
+                  source={{
+                    uri:
+                      profileImage ||
+                      `https://ui-avatars.com/api/?name=${control._formValues.name || "User"}&background=204E64&color=fff&size=128`,
+                  }}
+                  style={styles.profileImage}
+                />
               </Pressable>
-            )}
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>Full Name</Text>
-            <FormInput
+
+              <Pressable style={styles.cameraBtn} onPress={media.openCamera}>
+                <Ionicons name="camera" size={18} color="white" />
+              </Pressable>
+            </View>
+
+            <Controller
+              control={control}
               name="name"
-              control={control}
-              label=""
-              placeholder="Your Name"
-              style={[styles.input, isAnonymous && styles.inputLocked]}
-              editable={!isAnonymous}
+              render={({ field: { value } }) => (
+                <Text style={styles.userNameText}>{value}</Text>
+              )}
             />
-          </View>
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>Email Address</Text>
-            <FormInput
+            <Controller
+              control={control}
               name="email"
-              control={control}
-              label=""
-              placeholder="Your Email"
-              keyboardType="email-address"
-              style={[styles.input, isAnonymous && styles.inputLocked]}
-              editable={!isAnonymous}
+              render={({ field: { value } }) => (
+                <Text style={styles.userEmailText}>{value}</Text>
+              )}
             />
           </View>
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>Phone Number</Text>
-            <FormInput
-              name="phone"
-              control={control}
-              label=""
-              placeholder="Your Phone"
-              keyboardType="phone-pad"
-              style={styles.input}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Personal Information</Text>
+              {isDirty && (
+                <Pressable
+                  onPress={handleSubmit(onSubmit)}
+                  style={({ pressed }) => [
+                    styles.saveButtonOpacity,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <View style={styles.saveBadge}>
+                    <Text style={styles.saveBadgeText}>Save</Text>
+                  </View>
+                </Pressable>
+              )}
+            </View>
+            <View style={styles.inputWrapper}>
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color={AppColors.gray}
+                style={styles.inputIcon}
+              />
+              <FormInput
+                control={control}
+                name="name"
+                rules={{
+                  required: "Name is required",
+                  minLength: {
+                    value: 3,
+                    message: "Name must be at least 3 characters",
+                  },
+                }}
+                label=""
+                placeholder="Your Name"
+                style={[styles.input, isAnonymous && styles.inputLocked]}
+                editable={!isAnonymous}
+              />
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Ionicons
+                name="mail-outline"
+                size={20}
+                color={AppColors.gray}
+                style={styles.inputIcon}
+              />
+              <FormInput
+                control={control}
+                name="email"
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
+                label=""
+                placeholder="Your Email"
+                keyboardType="email-address"
+                style={[styles.input, isAnonymous && styles.inputLocked]}
+                editable={!isAnonymous}
+              />
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Ionicons
+                name="call-outline"
+                size={20}
+                color={AppColors.gray}
+                style={styles.inputIcon}
+              />
+              <FormInput
+                control={control}
+                name="phone"
+                rules={{
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Phone number must be exactly 10 digits",
+                  },
+                }}
+                label=""
+                placeholder="Your Phone"
+                keyboardType="phone-pad"
+                style={styles.input}
+              />
+            </View>
+          </View>
+
+          <View style={styles.settingRow}>
+            <View style={styles.rowLeft}>
+              <Ionicons
+                name="notifications-outline"
+                size={20}
+                color={AppColors.primary}
+              />
+              <Text style={styles.rowText}>Notifications</Text>
+            </View>
+            <Switch
+              trackColor={{ false: "#767577", true: AppColors.primary }}
+              thumbColor={isNotificationsEnabled ? AppColors.white : "#f4f3f4"}
+              value={isNotificationsEnabled}
+              onValueChange={setIsNotificationsEnabled}
             />
           </View>
-        </View>
 
-        <View style={styles.settingRow}>
-          <View style={styles.rowLeft}>
+          <Pressable style={styles.checkboxRow} onPress={handleAnonymousChange}>
             <Ionicons
-              name="notifications-outline"
-              size={20}
+              name={isAnonymous ? "checkbox" : "square-outline"}
+              size={22}
               color={AppColors.primary}
             />
-            <Text style={styles.rowText}>Notifications</Text>
-          </View>
-          <Switch
-            trackColor={{ false: "#767577", true: AppColors.primary }}
-            thumbColor={isNotificationsEnabled ? AppColors.white : "#f4f3f4"}
-            value={isNotificationsEnabled}
-            onValueChange={setIsNotificationsEnabled}
-          />
-        </View>
+            <Text style={styles.checkboxText}>Anonymous User</Text>
+          </Pressable>
 
-        <Pressable style={styles.checkboxRow} onPress={handleAnonymousChange}>
-          <Ionicons
-            name={isAnonymous ? "checkbox" : "square-outline"}
-            size={22}
-            color={AppColors.primary}
-          />
-          <Text style={styles.checkboxText}>Anonymous User</Text>
-        </Pressable>
-
-        <Pressable style={styles.myReportsBtn}>
-          <Text style={styles.myReportsBtnText}>My Reports</Text>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView>
+          <Pressable style={styles.myReportsBtn}>
+            <Ionicons
+              name="document-text-outline"
+              size={20}
+              color={AppColors.white}
+              style={{ marginRight: 10 }}
+            />
+            <Text style={styles.myReportsBtnText}>My Reports</Text>
+          </Pressable>
+        </ScrollView>
+        <AppAlert
+          visible={alert.visible}
+          title={alert.title}
+          message={alert.message}
+          confirmText={alert.confirmText}
+          onConfirm={alert.onConfirm}
+          onCancel={closeAlert}
+        />
+        <ImageActionModal
+          visible={media.visible}
+          hasImage={Boolean(profileImage)}
+          onCamera={media.openCamera}
+          onGallery={media.openGallery}
+          onRemove={media.removeImage}
+          onClose={media.closeModal}
+        />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
