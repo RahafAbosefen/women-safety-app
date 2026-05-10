@@ -64,4 +64,6 @@ export const AppColors = {
     white: '#ffffff',
     error: 'red',
     text: '#2d4a5e',
+    gray: '#9EA2AE',
+    border: '#dde8e8',
 }

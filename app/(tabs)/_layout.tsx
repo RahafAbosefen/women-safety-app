@@ -94,8 +94,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="map.fill" color={color} />,
         }}
       />
-
-
+<Tabs.Screen
+  name="contact-us"
+  options={{
+    title: "Contact Us",
+    tabBarButton: () => null,
+  }}
+/>
+<Tabs.Screen
+  name="case-status"
+  options={{
+    title: "Case Status",
+    tabBarButton: () => null,
+  }}
+/>
 
 
     </Tabs>
