@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import { Text, Portal } from "react-native-paper";
@@ -10,6 +10,7 @@ import ResultSOSModal from "@/components/ResultSOSModal";
 import { auth } from "@/services/firebaseConfig";
 import { addSOSAlert } from "@/services/SOSService";
 import { useRouter } from "expo-router";
+
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -112,6 +113,23 @@ export default function HomeScreen() {
       </Text>
       <Text style={styles.safeText}>You are currently safe</Text>
 
+
+      //for test
+      <Pressable
+        onPress={() => router.push("/contact-us")}
+        style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}
+      >
+        <Text style={styles.testButtonText}>Contact Us (Test)</Text>
+      </Pressable>
+
+ //for test
+      <Pressable
+        onPress={() => router.push("/case-status")}
+        style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}
+      >
+        <Text style={styles.testButtonText}>Case Status (Test)</Text>
+      </Pressable>
+
       <Portal>
         <SendingSOSModal
           visible={visible}
@@ -125,7 +143,7 @@ export default function HomeScreen() {
         />
       </Portal>
 
- 
+
     </SafeAreaView>
   );
 }
@@ -157,10 +175,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 25,
   },
-  
+
   safeText: {
     fontSize: 14,
     color: "#9A6A70",
     textAlign: "center",
   },
+
+
+  testButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#2d4a5e",
+    borderRadius: 10,
+  },
+  testButtonText: {
+    color: "white",
+    fontSize: 14,
+  },
+
 });
