@@ -1,21 +1,21 @@
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
-export type ReportType = {
+export type MapReportType = {
   userId: string;
   userEmail: string;
   reportType: string;
   details: string;
   location: {
-    latitude: number; 
+    latitude: number;
     longitude: number;
   } | null;
+  locationName: string;
   imageUrls: string[];
-  // audioUrl: string | null;
   createdAt: Date;
 };
 
-export const addReport = async (report: ReportType) => {
-  const docRef = await addDoc(collection(db, "reports"), report);
+export const addReportMap = async (report: MapReportType) => {
+  const docRef = await addDoc(collection(db, "mapReports"), report);
   return docRef;
 };

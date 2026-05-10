@@ -1,132 +1,748 @@
-import { View, StyleSheet , Text, Pressable, TextInput, Modal } from 'react-native';
-import { MapColors } from '@/constants/theme';
-import { Overlay } from 'react-native-maps';
-import { title } from 'node:process';
+// import React, { useState } from 'react';
+// import { MapColors, AppColors } from '@/constants/theme';
+// import MapDropdown from "@/components/map/map-dropdown";
+// import EvidenceSection from "@/components/EvidenceSection";
+// import {
+//   StyleSheet,
+//   Text,
+//   Pressable,
+//   TextInput,
+//   KeyboardAvoidingView,
+//   Platform,
+//   Modal,
+//   Alert,
+//   ScrollView,
+//   Keyboard,
+// } from 'react-native';
+// import * as ImagePicker from 'expo-image-picker';
+// import * as Location from 'expo-location';
+// import { auth } from '@/services/firebaseConfig';
+// import { addReportMap } from '@/services/ReportMapService';
+// import { Controller, useForm } from 'react-hook-form';
 
+// type ReportSheetProps = {
+//   isVisible: boolean;
+//   onClose: () => void;
+//   onSubmit: () => void;
+// };
 
-type ReportSheetProps={
-    isVisible: boolean;
-    onClose:()=> void ;
-    onSubmit:()=> void ;
-    };
+// type ReportFormData = {
+//   reportType: string;
+//   details: string;
+// };
 
-const ReportSheet =({isVisible, onSubmit, onClose }: ReportSheetProps)=>{
-    return(
-        <Modal visible={isVisible} animationType='slide' transparent>
-        <View style={styles.overlay}>
-            <View style={styles.sheet}>
-                <Text style={styles.title}> Report from this location</Text>
+// const ReportSheet = ({ isVisible, onSubmit, onClose }: ReportSheetProps) => {
+//   const [images, setImages] = useState<string[]>([]);
+ 
+//   const {
+//     control,
+//     handleSubmit,
+//     setValue,
+//     watch,
+//     setError,
+//     clearErrors,
+//     reset,
+//     formState: { errors },
+//   } = useForm<ReportFormData>({
+//     defaultValues: {
+//       reportType: '',
+//       details: '',
+//     },
+//     mode: 'onSubmit',
+//   });
 
-                <View style={styles.dropdown}>
-                   <Text style={styles.placeholder}> Incident Type *</Text>
-                </View> 
-                <Text style={styles.hint}> Select the type that best describes the incident</Text> 
+//   const selectedIncident = watch('reportType');
 
-               <TextInput style={styles.input} placeholder= "Share details if you feel comfortable"multiline/>
+//   const handlePickImage = async () => {
+//     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-               
-               <Text style={styles.evidence}>Add evidence (optional)</Text>
-               <View style={styles.evidenceRow}>
-                 <Pressable style={styles.evidenceBtn}>
-                    <Text> photo </Text>
-                 </Pressable>
-                 <Pressable style={styles.evidenceBtn}>
-                    <Text> Audio </Text>
-                 </Pressable>
-               </View>
+//     if (!permission.granted) {
+//       Alert.alert('Permission required', 'Please allow access to your photos.');
+//       return;
+//     }
 
+//     const result = await ImagePicker.launchImageLibraryAsync({
+//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//       allowsEditing: false,
+//       quality: 0.7,
+//       allowsMultipleSelection: false,
+//     });
 
+//     if (!result.canceled) {
+//       const selectedUri = result.assets[0].uri;
+//       setImages((prev) => [...prev, selectedUri]);
+//     }
+//   };
 
-               <Pressable style={styles.submitBtn} onPress={onSubmit}>
-                    <Text style={styles.submitText}>Submit Report  </Text>
-                 </Pressable>
-            </View>
-        </View>
-        </Modal>
-       
-    );
+//   const handleRemoveImage = (index: number) => {
+//     setImages((prev) => prev.filter((_, i) => i !== index));
+//   };
+
+//   const getCurrentLocation = async () => {
+//     try {
+//       const { status } = await Location.requestForegroundPermissionsAsync();
+
+//       if (status !== 'granted') {
+//         Alert.alert('Permission denied', 'Location permission is required.');
+//         return null;
+//       }
+
+//       const currentLocation = await Location.getCurrentPositionAsync({});
+//       const latitude = currentLocation.coords.latitude;
+//       const longitude = currentLocation.coords.longitude;
+
+//       const reverseData = await Location.reverseGeocodeAsync({
+//         latitude,
+//         longitude,
+//       });
+
+//       const place = reverseData[0];
+
+//       const locationName = [
+//         place?.city,
+//         place?.region,
+//         place?.country,
+//       ]
+//         .filter(Boolean)
+//         .join(', ');
+
+//       const coords = { latitude, longitude };
+
+      
+
+//       return {
+//         coords,
+//         locationName: locationName || 'Unknown location',
+//       };
+//     } catch (error) {
+//       console.log(error);
+//       Alert.alert('Location error', 'Could not get current location.');
+//       return null;
+//     }
+//   };
+
+//   const onFormSubmit = async (data: ReportFormData) => {
+//     Keyboard.dismiss();
+
+//     if (!data.reportType) {
+//       setError('reportType', {
+//         type: 'manual',
+//         message: 'Select the type that best describes the incident',
+//       });
+//       return;
+//     }
+
+//     try {
+//     const user = auth.currentUser;
+
+//     if (!user) {
+//       Alert.alert('User not logged in');
+//       return;
+//     }
+//       const currentLocationData = await getCurrentLocation();
+
+//       if (!currentLocationData) {
+//         return;
+//       }
+
+//       await addReportMap({
+//   userId: user.uid,
+//   userEmail: user.email || '',
+//   reportType: data.reportType,
+//   details: data.details,
+//   location: currentLocationData.coords,
+//   locationName: currentLocationData.locationName,
+//   imageUrls: images,
+//   createdAt: new Date(),
+// });
+
+//       reset({
+//         reportType: '',
+//         details: '',
+//       });
+//       setImages([]);
+      
+
+//       onSubmit();
+//     } catch (error: any) {
+//       console.log('Firestore error:', error);
+//       Alert.alert('Error', error.message || 'Could not save report.');
+//     }
+//   };
+
+//   return (
+//     <Modal visible={isVisible} animationType='slide' transparent onRequestClose={onClose}>
+//       <KeyboardAvoidingView
+//         style={{ flex: 1 }}
+//         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+//       >
+//         <Pressable style={styles.overlay} onPress={onClose}>
+//           <Pressable style={styles.sheet} onPress={() => Keyboard.dismiss()}>
+//             <ScrollView
+//               showsVerticalScrollIndicator={false}
+//               keyboardShouldPersistTaps="handled"
+//               keyboardDismissMode="on-drag"
+//               contentContainerStyle={styles.sheetContent}
+//             >
+//               <Text style={styles.title}>Report from this location</Text>
+
+//               <Controller
+//                 control={control}
+//                 name="reportType"
+//                 rules={{
+//                   required: 'Select the type that best describes the incident',
+//                 }}
+//                 render={() => (
+//                   <>
+//                     <MapDropdown
+//                       value={selectedIncident}
+//                       onSelect={(value) => {
+//                         setValue('reportType', value, { shouldValidate: true });
+//                         clearErrors('reportType');
+//                       }}
+//                       error={!!errors.reportType}
+//                     />
+
+//                     <Text style={[styles.hint, errors.reportType && styles.errorHint]}>
+//                       Select the type that best describes the incident
+//                     </Text>
+//                   </>
+//                 )}
+//               />
+
+//               <Controller
+//                 control={control}
+//                 name="details"
+//                 rules={{
+//                   required: 'Please describe the incident in more detail',
+//                 }}
+//                 render={({ field: { onChange, value } }) => (
+//                   <TextInput
+//                     style={[styles.input, errors.details && styles.inputError]}
+//                     placeholder="Share details if you feel comfortable"
+//                     placeholderTextColor={MapColors.submitButton}
+//                     multiline
+//                     value={value}
+//                     onChangeText={onChange}
+//                   />
+//                 )}
+//               />
+
+//               {errors.details && (
+//                 <Text style={styles.errorText}>
+//                   {errors.details.message}
+//                 </Text>
+//               )}
+
+//               <EvidenceSection
+//                 images={images}
+//                 onPickImage={handlePickImage}
+//                 onRemoveImage={handleRemoveImage}
+//               />
+
+//               <Pressable
+//                 onPress={handleSubmit(onFormSubmit)}
+//                 style={({ pressed }) => [
+//                   styles.submitBtn,
+//                   pressed && styles.submitBtnPressed
+//                 ]}
+//               >
+//                 <Text style={styles.submitText}>Submit Report</Text>
+//               </Pressable>
+//             </ScrollView>
+//           </Pressable>
+//         </Pressable>
+//       </KeyboardAvoidingView>
+//     </Modal>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   overlay: {
+//     flex: 1,
+//     justifyContent: 'flex-end',
+//     backgroundColor: 'rgba(0,0,0,0.3)',
+//   },
+//   sheet: {
+//     backgroundColor: MapColors.sheetBackground,
+//     paddingHorizontal: 24,
+//     paddingTop: 24,
+//     paddingBottom: 18,
+//     borderTopLeftRadius: 20,
+//     borderTopRightRadius: 20,
+//     width: '100%',
+//     maxHeight: '88%',
+//   },
+//   sheetContent: {
+//     paddingBottom: 28,
+//   },
+//   title: {
+//     color: MapColors.primary,
+//     fontSize: 18,
+//     fontWeight: '600',
+//     textAlign: 'center',
+//     marginBottom: 16,
+//   },
+//   hint: {
+//     fontSize: 12,
+//     color: MapColors.submitButton,
+//     marginBottom: 12,
+//     width: '100%',
+//   },
+//   errorHint: {
+//     color: AppColors.error,
+//   },
+//   input: {
+//     borderWidth: 1,
+//     padding: 14,
+//     borderColor: MapColors.pageBackground,
+//     borderRadius: 8,
+//     marginBottom: 8,
+//     minHeight: 100,
+//     textAlignVertical: 'top',
+//     width: '100%',
+//     backgroundColor: MapColors.sheetBackground,
+//   },
+//   inputError: {
+//     borderColor: AppColors.error,
+//   },
+//   errorText: {
+//     width: '100%',
+//     fontSize: 12,
+//     color: AppColors.error,
+//     marginBottom: 16,
+//   },
+//   submitBtn: {
+//     backgroundColor: MapColors.submitButton,
+//     padding: 16,
+//     borderRadius: 12,
+//     alignItems: 'center',
+//     width: '100%',
+//     marginTop: 8,
+//   },
+//   submitText: {
+//     color: MapColors.sheetBackground,
+//     fontWeight: '600',
+//     fontSize: 16,
+//   },
+//   submitBtnPressed: {
+//     backgroundColor: MapColors.primary,
+//     opacity: 0.9,
+//   },
+// });
+
+// export default ReportSheet;
+
+import React, { useState, useEffect } from 'react';
+import { MapColors, AppColors } from '@/constants/theme';
+import MapDropdown from "@/components/map/map-dropdown";
+import EvidenceSection from "@/components/EvidenceSection";
+import {
+  StyleSheet,
+  Text,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  Modal,
+  Alert,
+  ScrollView,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import { auth } from '@/services/firebaseConfig';
+import { addReportMap } from '@/services/ReportMapService';
+import { Controller, useForm } from 'react-hook-form';
+
+type ReportSheetProps = {
+  isVisible: boolean;
+  onClose: () => void;
+  onSubmit: () => void;
 };
 
+type ReportFormData = {
+  reportType: string;
+  details: string;
+};
+
+type CachedLocationType = {
+  coords: {
+    latitude: number;
+    longitude: number;
+  };
+  locationName: string;
+};
+
+const ReportSheet = ({ isVisible, onSubmit, onClose }: ReportSheetProps) => {
+  const [images, setImages] = useState<string[]>([]);
+  const [cachedLocation, setCachedLocation] = useState<CachedLocationType | null>(null);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    clearErrors,
+    reset,
+    formState: { errors },
+  } = useForm<ReportFormData>({
+    defaultValues: {
+      reportType: '',
+      details: '',
+    },
+    mode: 'onSubmit',
+  });
+
+  const selectedIncident = watch('reportType');
+
+  const handlePickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert('Permission required', 'Please allow access to your photos.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 0.7,
+      allowsMultipleSelection: false,
+    });
+
+    if (!result.canceled) {
+      const selectedUri = result.assets[0].uri;
+      setImages((prev) => [...prev, selectedUri]);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const getCurrentLocation = async () => {
+    try {
+      setIsGettingLocation(true);
+
+      const servicesEnabled = await Location.hasServicesEnabledAsync();
+
+      if (!servicesEnabled) {
+        Alert.alert('Location is off', 'Please turn on location services.');
+        return null;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert('Permission denied', 'Location permission is required.');
+        return null;
+      }
+
+      let latitude: number;
+      let longitude: number;
+
+      const lastKnown = await Location.getLastKnownPositionAsync();
+
+      if (lastKnown) {
+        latitude = lastKnown.coords.latitude;
+        longitude = lastKnown.coords.longitude;
+      } else {
+        const currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+
+        latitude = currentLocation.coords.latitude;
+        longitude = currentLocation.coords.longitude;
+      }
+
+      let locationName = 'Unknown location';
+
+      try {
+        const reverseData = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+
+        const place = reverseData[0];
+
+        locationName =
+          [
+            place?.city,
+            place?.region,
+            place?.country,
+          ]
+            .filter(Boolean)
+            .join(', ') || 'Unknown location';
+      } catch (geoError) {
+        console.log('Reverse geocode error:', geoError);
+      }
+
+      const result = {
+        coords: { latitude, longitude },
+        locationName,
+      };
+
+      setCachedLocation(result);
+      return result;
+    } catch (error) {
+      console.log('Location error:', error);
+      Alert.alert('Location error', 'Could not get current location.');
+      return null;
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isVisible) {
+      getCurrentLocation();
+    }
+  }, [isVisible]);
+
+  const onFormSubmit = async (data: ReportFormData) => {
+    Keyboard.dismiss();
+
+    if (!data.reportType) {
+      setError('reportType', {
+        type: 'manual',
+        message: 'Select the type that best describes the incident',
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        Alert.alert('User not logged in');
+        return;
+      }
+
+      const currentLocationData = cachedLocation || await getCurrentLocation();
+
+      if (!currentLocationData) {
+        return;
+      }
+
+      await addReportMap({
+        userId: user.uid,
+        userEmail: user.email || '',
+        reportType: data.reportType,
+        details: data.details,
+        location: currentLocationData.coords,
+        locationName: currentLocationData.locationName,
+        imageUrls: images,
+        createdAt: new Date(),
+      });
+
+      reset({
+        reportType: '',
+        details: '',
+      });
+
+      setImages([]);
+      setCachedLocation(null);
+
+      onSubmit();
+    } catch (error: any) {
+      console.log('Firestore error:', error);
+      Alert.alert('Error', error.message || 'Could not save report.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal visible={isVisible} animationType='slide' transparent onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Pressable style={styles.overlay} onPress={onClose}>
+          <Pressable style={styles.sheet} onPress={() => Keyboard.dismiss()}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+              contentContainerStyle={styles.sheetContent}
+            >
+              <Text style={styles.title}>Report from this location</Text>
+
+              {isGettingLocation && (
+                <Text style={styles.locationText}>Getting your location...</Text>
+              )}
+
+              {!isGettingLocation && cachedLocation && (
+                <Text style={styles.locationText}>
+                  Location: {cachedLocation.locationName}
+                </Text>
+              )}
+
+              <Controller
+                control={control}
+                name="reportType"
+                rules={{
+                  required: 'Select the type that best describes the incident',
+                }}
+                render={() => (
+                  <>
+                    <MapDropdown
+                      value={selectedIncident}
+                      onSelect={(value) => {
+                        setValue('reportType', value, { shouldValidate: true });
+                        clearErrors('reportType');
+                      }}
+                      error={!!errors.reportType}
+                    />
+
+                    <Text style={[styles.hint, errors.reportType && styles.errorHint]}>
+                      Select the type that best describes the incident
+                    </Text>
+                  </>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="details"
+                rules={{
+                  required: 'Please describe the incident in more detail',
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={[styles.input, errors.details && styles.inputError]}
+                    placeholder="Share details if you feel comfortable"
+                    placeholderTextColor={MapColors.submitButton}
+                    multiline
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+
+              {errors.details && (
+                <Text style={styles.errorText}>
+                  {errors.details.message}
+                </Text>
+              )}
+
+              <EvidenceSection
+                images={images}
+                onPickImage={handlePickImage}
+                onRemoveImage={handleRemoveImage}
+              />
+
+              <Pressable
+                onPress={handleSubmit(onFormSubmit)}
+                disabled={isSubmitting}
+                style={({ pressed }) => [
+                  styles.submitBtn,
+                  pressed && styles.submitBtnPressed,
+                  isSubmitting && styles.submitBtnDisabled,
+                ]}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={MapColors.sheetBackground} />
+                ) : (
+                  <Text style={styles.submitText}>Submit Report</Text>
+                )}
+              </Pressable>
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        justifyContent: 'flex-end' ,
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        right: 20,
-    },
-    sheet:  {
-        backgroundColor: MapColors.sheetBackground,
-        padding:24,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius:20,
-
-    },
-    title:  {
-        color: MapColors.primary,
-        fontSize: 18,
-        fontWeight: '600',
-        textAlign:'center',
-        marginBottom:16 ,
-       
-    },
-    dropdown:  {
-        borderWidth:1,
-        padding:14,
-        borderColor:'#E0E0E0',
-        borderRadius: 8,
-        marginBottom: 8,
-
-    },
-    placeholder:  {
-        color: '#9E9E9E',
-    },
-    hint: { 
-        fontSize: 12,
-        color: '#9E9E9E',
-        marginBottom:12 ,
-       
-    },
-    input:  {
-        borderWidth:1,
-        padding:14,
-        borderColor:'#E0E0E0',
-        borderRadius: 8,
-        marginBottom: 16,
-        height:100,
-        textAlignVertical:'top',
-    },
-    evidence: { 
-        textAlign: 'center',
-        color: '#9E9E9E',
-        marginBottom:12 ,
-       
-    },
-    evidenceRow: { 
-        justifyContent: 'center',
-        flexDirection: 'row',
-        marginBottom:16 ,
-        gap: 12,
-       
-    },
-    evidenceBtn:  {
-        borderWidth:1,
-        padding:10,
-        borderColor:MapColors.primary,
-        borderRadius: 8,
-        marginBottom: 16,
-        paddingHorizontal:20,
-    },
-    submitBtn:  {
-       backgroundColor:MapColors.submitButton,
-        padding:16,
-        borderRadius: 12,
-        alignItems:'center',
-    },
-    submitText:  {
-        color: '#FFFFFF',
-        fontWeight:'600',
-    },
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  sheet: {
+    backgroundColor: MapColors.sheetBackground,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 18,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    width: '100%',
+    maxHeight: '88%',
+  },
+  sheetContent: {
+    paddingBottom: 28,
+  },
+  title: {
+    color: MapColors.primary,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  locationText: {
+    fontSize: 13,
+    color: MapColors.primary,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  hint: {
+    fontSize: 12,
+    color: MapColors.submitButton,
+    marginBottom: 12,
+    width: '100%',
+  },
+  errorHint: {
+    color: AppColors.error,
+  },
+  input: {
+    borderWidth: 1,
+    padding: 14,
+    borderColor: MapColors.pageBackground,
+    borderRadius: 8,
+    marginBottom: 8,
+    minHeight: 100,
+    textAlignVertical: 'top',
+    width: '100%',
+    backgroundColor: MapColors.sheetBackground,
+  },
+  inputError: {
+    borderColor: AppColors.error,
+  },
+  errorText: {
+    width: '100%',
+    fontSize: 12,
+    color: AppColors.error,
+    marginBottom: 16,
+  },
+  submitBtn: {
+    backgroundColor: MapColors.submitButton,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 8,
+  },
+  submitBtnPressed: {
+    backgroundColor: MapColors.primary,
+    opacity: 0.9,
+  },
+  submitBtnDisabled: {
+    opacity: 0.7,
+  },
+  submitText: {
+    color: MapColors.sheetBackground,
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });
 
-export default  ReportSheet;
+export default ReportSheet;
