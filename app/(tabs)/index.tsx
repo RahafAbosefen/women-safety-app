@@ -114,15 +114,7 @@ export default function HomeScreen() {
       <Text style={styles.safeText}>You are currently safe</Text>
 
 
-      //for test
-      <Pressable
-        onPress={() => router.push("/contact-us")}
-        style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}
-      >
-        <Text style={styles.testButtonText}>Contact Us (Test)</Text>
-      </Pressable>
-
- //for test
+{/* for test */}
       <Pressable
         onPress={() => router.push("/case-status")}
         style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}
