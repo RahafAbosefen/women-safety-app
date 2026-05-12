@@ -28,15 +28,22 @@ export const signUp = async (payload: any) => {
     payload.password,
   );
   const user = response.user;
-  await UsersService.createUserProfile(user.uid, {
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-    email: payload.email,
-    phone: payload.phone,
-  });
-  const token = await user.getIdToken();
-  await StorageService.saveUser(user);
-  await StorageService.saveToken(token);
+  
+  if (payload.role === "company") {
+    await UsersService.createUserProfile(user.uid, {
+      email: payload.email,
+      role: "company",
+    });
+  } else {
+    await UsersService.createUserProfile(user.uid, {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phone: payload.phone,
+      role: "user",
+    });
+  }
+  
   return user;
 };
 
