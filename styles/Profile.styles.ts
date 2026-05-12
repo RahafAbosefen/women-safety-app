@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { AppColors, Colors, MapColors } from "@/constants/theme";
+import { AppColors, MapColors } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -23,6 +23,23 @@ export const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: AppColors.primary,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 20,
+    backgroundColor: "#fff",
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: AppColors.primary,
+  },
+  logoutIcon: {
+    padding: 8,
   },
   saveBadge: {
     backgroundColor: MapColors.primary,
@@ -73,30 +90,37 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: AppColors.primary,
-    marginBottom: 20,
+    marginBottom: 0,
   },
-  inputWrapper: { marginBottom: 20, position: "relative" },
-  label: {
-    position: "absolute",
-    top: -10,
-    left: 15,
-    backgroundColor: AppColors.background,
-    paddingHorizontal: 5,
-    fontSize: 12,
-    color: AppColors.gray,
-    zIndex: 1,
+  inputWrapper: {
+    marginBottom: 15,
+    position: "relative",
   },
   input: {
     width: "100%",
-    height: 55,
+    height: 50,
+    backgroundColor: AppColors.white,
     borderWidth: 1,
     borderColor: AppColors.border,
-    borderRadius: 15,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: Colors.light.text,
+    borderRadius: 12,
+    paddingLeft: 45,
+    paddingRight: 15,
+    fontSize: 15,
+    color: AppColors.primary,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 2,
+
+    elevation: 1,
   },
-  inputLocked: { backgroundColor: AppColors.gray, color: "#999" },
+  inputIcon: {
+    position: "absolute",
+    left: 15,
+    top: 15,
+    zIndex: 2,
+  },
+  inputLocked: { backgroundColor: AppColors.gray, color: AppColors.white },
   inputError: { borderColor: AppColors.error },
   errorTextLabel: { color: AppColors.error },
   errorTextFeedback: {
@@ -134,13 +158,32 @@ export const styles = StyleSheet.create({
     backgroundColor: AppColors.primary,
     width: "100%",
     height: 55,
+    borderRadius: 15,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 15,
+    marginTop: 20,
   },
   myReportsBtnText: {
     color: AppColors.white,
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  inlineSaveButton: {
+    backgroundColor: MapColors.primary,
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  inlineSaveText: {
+    color: AppColors.white,
+    fontSize: 13,
     fontWeight: "bold",
   },
 });

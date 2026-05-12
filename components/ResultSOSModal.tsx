@@ -4,44 +4,37 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Modal, Text, Button } from "react-native-paper";
 
-type ResultSOSModalProps = {
-  visible: boolean;
-  onDismiss: () => void;
+type props={
+  visible:boolean;
+   onDismiss: () => void;
   title?: string;
-  subtitle?: string;
-  buttonText?: string;
-};
+  subtitle?:string;
+  buttonText?:string;
 
-export default function ResultSOSModal({
-  visible,
-  onDismiss,
-  title = "Emergency alert sent",
-  subtitle = "Help is on the way",
-  buttonText = "Back to home",
-}: ResultSOSModalProps) {
-  return (
+}
+export default function ResultSOSModal({ visible,onDismiss,title="Emergency alert sent",subtitle="Help is in the way",buttonText="Back to home" }:props){
+  return(
     <Modal
-      visible={visible}
-      onDismiss={onDismiss}
-      contentContainerStyle={styles.resultModal}
+    visible={visible}
+    onDismiss={onDismiss}
+    contentContainerStyle={styles.resultModal}
     >
       <Text style={styles.resultTitle}>{title}</Text>
-
-      <View style={styles.resultCircle}>
+      <view style={styles.resultCircle}>
         <Text style={styles.checkIcon}>✓</Text>
-      </View>
-
+      </view>
       <Text style={styles.resultSubtitle}>{subtitle}</Text>
-
       <Button
-        mode="contained"
-        onPress={onDismiss}
-        style={styles.backButton}
-        contentStyle={styles.backButtonContent}
-        labelStyle={styles.backButtonLabel}
-      >
-        {buttonText}
-      </Button>
+      mode="contained"
+      onPress={onDismiss}
+      style={styles.backButton}
+      contentStyle={styles.backButton}
+      labelStyle={styles.backButtonLabel}
+
+     >
+      {buttonText} 
+     </Button>
+
     </Modal>
   );
 }
