@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -15,9 +15,9 @@ export default function CaseStatusScreen() {
     const [selectedPriority, setSelectedPriority] = useState("Low");
     const [submitted, setSubmitted] = useState(false);
 
-    const handleConfirm = useCallback(() => {
+    const handleConfirm = () => {
         setSubmitted(true);
-    }, []);
+    };
 
     if (submitted) {
         return (

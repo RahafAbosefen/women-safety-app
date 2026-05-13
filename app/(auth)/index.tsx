@@ -2,18 +2,23 @@ import React, { useEffect } from "react";
 import { Text, StyleSheet, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { auth } from "@/services/firebaseConfig";
+import StorageService from "@/services/StorageService";
 
 export default function WelcomeScreen() {
 
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    if (user) {
-      router.replace("/(tabs)");
-    }
-  });
-  return () => unsubscribe();
-}, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await StorageService.getToken();
+        if (token) {
+          router.replace("/(tabs)");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    checkToken();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -14,6 +14,8 @@ export const OrganizationsService = {
       phone: doc.data().phone as string,
       email: doc.data().email as string,
     }));
+
+    
     return organizations;
   } catch (error) {
     console.error("Firestore Error:", error);
