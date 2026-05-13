@@ -1,20 +1,51 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, Pressable, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { OrganizationsService } from "@/services/OrganizationsService";
+import { useOrganizations } from "@/hooks/useOrganizations";
 import { styles } from "@/styles/ContactUs.styles";
 import { AppColors } from "@/constants/theme";
+import * as SQLite from "expo-sqlite";
 
 export default function ContactUsScreen() {
   const router = useRouter();
+const { organizations = [], isLoading, isError } = useOrganizations();
+  const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
-  const { data: organizations, isLoading, isError } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: OrganizationsService.getOrganizations,
-  });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const database = await SQLite.openDatabaseAsync("organizations.db");
+      await database.execAsync(
+        `CREATE TABLE IF NOT EXISTS organizations (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          type TEXT,
+          phone TEXT,
+          email TEXT
+        );`
+      );
+      if (!cancelled) setDb(database);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!db || !organizations) return;
+    (async () => {
+      await db.execAsync(`DELETE FROM organizations;`);
+      for (const org of organizations) {
+        await db.runAsync(
+  `INSERT OR REPLACE INTO organizations (id, name, type, phone, email) VALUES (?, ?, ?, ?, ?);`,
+  String(org.id), String(org.name), String(org.type), String(org.phone || ""), String(org.email || "")
+
+        );
+      }
+    })();
+  }, [db, organizations]);
 
   const renderOrganization = useCallback(({ item }: { item: any }) => (
     <Pressable
@@ -22,8 +53,7 @@ export default function ContactUsScreen() {
         styles.card,
         pressed && styles.cardPressed,
       ]}
-     // onPress={() => router.push("/chat")}
-     onPress={() => alert(`Opening chat with ${item.name}`)}
+      onPress={() => alert(`Opening chat with ${item.name}`)}
     >
       <View style={styles.iconContainer}>
         <Ionicons name="business-outline" size={24} color={AppColors.primary} />
