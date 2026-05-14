@@ -90,6 +90,22 @@ export default function TabLayout() {
           ),
         }}
       />
+<Tabs.Screen
+  name="contact-us"
+  options={{
+    title: "Contact Us",
+    tabBarButton: () => null,
+  }}
+/>
+<Tabs.Screen
+  name="case-status"
+  options={{
+    title: "Case Status",
+    tabBarButton: () => null,
+  }}
+/>
+
+
 
       <Tabs.Screen
         name="profile"

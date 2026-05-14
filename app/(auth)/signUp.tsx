@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FormInput } from "@/components/ui/FormInput";
 import { signUp } from "@/services/AuthService";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,8 +13,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
-
 
 type FormData = {
   firstName: string;
@@ -26,28 +25,27 @@ type FormData = {
 export default function SignUp() {
   const router = useRouter();
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
+  const params = useLocalSearchParams();
+  const role = typeof params.role === "string" ? params.role : "user";
 
- const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     try {
-      const user = await signUp(data);
+      const user = await signUp({
+        ...data,
+        role,
+      });
+
       console.log("Success:", user);
-      alert("تم التسجيل بنجاح!");
-      router.replace("/(tabs)");
+      alert("Registration successful!");
+
+      if (role === "company") {
+        router.replace("/CompanyProfile");
+      } else {
+        router.replace("/(tabs)");
+      }
     } catch (error: any) {
       console.error("Sign Up Error:", error);
-
-      let errorMessage = "حدث خطأ غير متوقع، حاولي مرة أخرى.";
-
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = "هذا البريد الإلكتروني مستخدم بالفعل.";
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = "البريد الإلكتروني غير صحيح.";
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = "كلمة المرور ضعيفة جداً، يجب أن تكون 6 رموز على الأقل.";
-      } else if (error.code === "auth/network-request-failed") {
-        errorMessage = "تأكدي من اتصالك بالإنترنت وحاولي مجدداً.";
-      }
-      alert(errorMessage);
+      alert("Something went wrong, please try again.");
     }
   };
 
@@ -61,7 +59,7 @@ export default function SignUp() {
           <View style={styles.card}>
             <FormInput
               label="First Name"
-              control={control}
+icon="person-outline"              control={control}
               name="firstName"
               rules={{ required: "First Name is required" }}
               placeholder="Enter your firstName"
@@ -69,6 +67,7 @@ export default function SignUp() {
 
             <FormInput
               label="Last Name:"
+              icon="people-outline"
               control={control}
               name="lastName"
               rules={{ required: "Last Name is required" }}
@@ -88,6 +87,7 @@ export default function SignUp() {
               }}
               placeholder="Enter your email"
               keyboardType="email-address"
+              icon="mail-outline"
             />
 
             <FormInput
@@ -101,7 +101,7 @@ export default function SignUp() {
                   message: "Password must be at least 6 characters",
                 },
               }}
-              placeholder="Enter your password"
+icon="lock-closed-outline"              placeholder="Enter your password"
               secureTextEntry
             />
 
@@ -111,7 +111,7 @@ export default function SignUp() {
               name="phone"
               rules={{ required: "Phone is required" }}
               placeholder="Enter your Phone"
-            />
+icon="business-outline"            />
 
             <Pressable
               onPress={handleSubmit(onSubmit)}

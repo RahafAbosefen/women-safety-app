@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
+import * as ImagePicker from "expo-image-picker";
 import { Text, Portal } from "react-native-paper";
 
 import SOSButton from "@/components/SOSButton";
@@ -10,6 +11,7 @@ import ResultSOSModal from "@/components/ResultSOSModal";
 import { auth } from "@/services/firebaseConfig";
 import { addSOSAlert } from "@/services/SOSService";
 import { useRouter } from "expo-router";
+import { CloudinaryService } from "@/services/CloudinaryService";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -17,6 +19,8 @@ export default function HomeScreen() {
   const [resultVisible, setResultVisible] = useState(false);
   const [count, setCount] = useState(5);
   const [running, setRunning] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const getCurrentLocation = async () => {
     try {
@@ -99,6 +103,33 @@ export default function HomeScreen() {
       alert("SOS has been cancelled");
     });
   };
+{/* for test */}
+  const pickAndUploadImage = async () => {
+  try {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Permission denied", "Camera roll permission is required");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled) {
+      setUploading(true);
+      const imageUri = result.assets[0].uri;
+      const url = await CloudinaryService.uploadImage(imageUri);
+      setUploadedImageUrl(url);
+      Alert.alert("Success", "Image uploaded successfully!");
+    }
+  } catch (error) {
+    console.log("Upload error:", error);
+    Alert.alert("Error", "Failed to upload image");
+  } finally {
+    setUploading(false);
+  }
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -111,6 +142,30 @@ export default function HomeScreen() {
         Your location will be shared automatically
       </Text>
       <Text style={styles.safeText}>You are currently safe</Text>
+{/* for test */}
+<Pressable
+  onPress={pickAndUploadImage}
+  style={({ pressed }) => [styles.uploadButton, pressed && { opacity: 0.7 }]}
+  disabled={uploading}
+>
+  <Text style={styles.uploadButtonText}>
+    {uploading ? "Uploading..." : "Upload Image"}
+  </Text>
+</Pressable>
+
+{uploadedImageUrl && (
+  <Image
+    source={{ uri: uploadedImageUrl }}
+    style={styles.uploadedImage}
+  />
+)}
+{/* for test */}
+      <Pressable
+        onPress={() => router.push("/case-status")}
+        style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}
+      >
+        <Text style={styles.testButtonText}>Case Status (Test)</Text>
+      </Pressable>
 
       <Portal>
         <SendingSOSModal
@@ -125,7 +180,7 @@ export default function HomeScreen() {
         />
       </Portal>
 
- 
+
     </SafeAreaView>
   );
 }
@@ -157,10 +212,44 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 25,
   },
-  
+
   safeText: {
     fontSize: 14,
     color: "#9A6A70",
     textAlign: "center",
   },
+
+
+  testButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#2d4a5e",
+    borderRadius: 10,
+  },
+  testButtonText: {
+    color: "white",
+    fontSize: 14,
+  },
+
+
+  uploadButton: {
+  marginTop: 20,
+  padding: 12,
+  backgroundColor: "#2d4a5e",
+  borderRadius: 10,
+  width: "80%",
+  alignItems: "center",
+},
+uploadButtonText: {
+  color: "white",
+  fontSize: 14,
+  fontWeight: "600",
+},
+uploadedImage: {
+  width: 100,
+  height: 100,
+  borderRadius: 10,
+  marginTop: 15,
+},
+
 });
