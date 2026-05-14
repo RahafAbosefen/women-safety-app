@@ -103,7 +103,7 @@ export default function HomeScreen() {
       alert("SOS has been cancelled");
     });
   };
-//for test
+{/* for test */}
   const pickAndUploadImage = async () => {
   try {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -142,7 +142,7 @@ export default function HomeScreen() {
         Your location will be shared automatically
       </Text>
       <Text style={styles.safeText}>You are currently safe</Text>
-//for test
+{/* for test */}
 <Pressable
   onPress={pickAndUploadImage}
   style={({ pressed }) => [styles.uploadButton, pressed && { opacity: 0.7 }]}
@@ -159,7 +159,7 @@ export default function HomeScreen() {
     style={styles.uploadedImage}
   />
 )}
-// for test
+{/* for test */}
       <Pressable
         onPress={() => router.push("/case-status")}
         style={({ pressed }) => [styles.testButton, pressed && { opacity: 0.7 }]}

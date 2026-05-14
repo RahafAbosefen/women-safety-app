@@ -33,6 +33,7 @@ export const signUp = async (payload: any) => {
     await UsersService.createUserProfile(user.uid, {
       email: payload.email,
       role: "company",
+      name: payload.firstName + " " + payload.lastName,
     });
   } else {
     await UsersService.createUserProfile(user.uid, {
