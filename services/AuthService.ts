@@ -3,9 +3,6 @@ import app from "./firebaseConfig";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "./UsersService";
 
-
-
-
 const auth = getAuth(app);
 
 export const login = async (payload: any) => {
@@ -20,6 +17,9 @@ export const login = async (payload: any) => {
   await StorageService.saveToken(token);
   return user;
 };
+
+
+
 
 export const signUp = async (payload: any) => {
   const response = await createUserWithEmailAndPassword(
