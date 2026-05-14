@@ -44,6 +44,12 @@
           "cameraPermission": "Allow access to your camera"
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow access to your location"
+        }
+      ],
       "expo-secure-store",
       "expo-web-browser"
     ],

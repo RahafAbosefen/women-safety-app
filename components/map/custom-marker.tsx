@@ -1,50 +1,60 @@
-import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { MapColors } from "@/constants/theme";
+import type { MapMarkerVariant } from "@/constants/mockMapMarkers";
 
 type CustomMarkerProps = {
-  variant?: "danger" | "neutral" | "active";
+  variant?: MapMarkerVariant;
 };
 
 const CustomMarker = ({ variant = "danger" }: CustomMarkerProps) => {
-  const isActive = variant === "active";
+  if (variant === "active") {
+    return (
+      <View style={styles.currentLocationOuter}>
+        <View style={styles.currentLocationInner} />
+      </View>
+    );
+  }
+  const getIconName = () => {
+    if (variant === "danger") return "warning-outline";
+    return "shield-checkmark-outline";
+  };
 
   return (
-    <View style={styles.wrapper}>
-      {isActive && <View style={styles.activeRing} />}
-
-      <View
-        style={[
-          styles.markerBody,
-          variant === "danger" && styles.dangerMarker,
-          variant === "neutral" && styles.neutralMarker,
-          variant === "active" && styles.activeMarker,
-        ]}
-      >
-        <Ionicons
-          name="location-sharp"
-          size={18}
-          color={variant === "neutral" ? MapColors.primary : MapColors.sheetBackground}
-        />
-      </View>
+    <View
+      style={[
+        styles.markerBody,
+        variant === "danger" && styles.dangerMarker,
+        variant === "neutral" && styles.neutralMarker,
+      ]}
+    >
+      <Ionicons
+        name={getIconName()}
+        size={20}
+        color={
+          variant === "neutral" ? MapColors.primary : MapColors.sheetBackground
+        }
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
+  currentLocationOuter: {
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    borderWidth: 3,
+    borderColor: MapColors.primary,
+    backgroundColor: MapColors.activeMarkerRingBackground,
     alignItems: "center",
     justifyContent: "center",
   },
-  activeRing: {
-    position: "absolute",
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-    borderWidth: 2,
-    borderColor: MapColors.primary,
-    backgroundColor: "rgba(33,69,86,0.08)",
+  currentLocationInner: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: MapColors.primary,
   },
   markerBody: {
     width: 34,
