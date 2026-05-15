@@ -56,7 +56,7 @@ export default function ContactUsScreen() {
         return;
       }
       const companyId = company.id;
-      const companyName = company.name || "Company";
+      const companyName = company.name ?? "Company";
       const chatId = await ChatService.getOrCreateChat({
         victimId: user.uid,
         organizationId: companyId,
@@ -67,21 +67,22 @@ export default function ContactUsScreen() {
         params: { chatId, title: companyName },
       });
     } catch (error: any) {
-      console.log("Open chat error:", error);
-      Alert.alert("Error", error.message || "Could not open chat");
+      console.error("Open chat error:", error);
+      Alert.alert("Error", error.message ?? "Could not open chat");
     }
   };
+
   const renderCompany = useCallback(({ item }: { item: any }) => (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-      onPress={() => openChatWithCompany(item)} 
+      onPress={() => openChatWithCompany(item)}
     >
       <View style={styles.iconContainer}>
         <Ionicons name="business-outline" size={24} color={AppColors.primary} />
       </View>
       <View style={styles.cardInfo}>
         <Text style={styles.cardName}>{item.name}</Text>
-       
+        <Text style={styles.cardType}>{item.type}</Text>
       </View>
       <Ionicons name="chatbubble-ellipses-outline" size={22} color={AppColors.primary} />
     </Pressable>
@@ -94,6 +95,7 @@ export default function ContactUsScreen() {
       </View>
     );
   }
+
   if (isError) {
     return (
       <View style={styles.loadingContainer}>
