@@ -11,7 +11,7 @@ export type ReportType = {
     longitude: number;
   } | null;
   imageUrls: string[];
-  // audioUrl: string | null;
+  audioUrl: string | null;
   createdAt: Date;
 };
 

@@ -5,6 +5,10 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LogBox } from "react-native";
+LogBox.ignoreLogs([
+  "expo-notifications: Android Push notifications",
+]);
 
 const queryClient = new QueryClient();
 
