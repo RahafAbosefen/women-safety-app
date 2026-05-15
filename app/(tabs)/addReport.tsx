@@ -106,18 +106,21 @@ export default function AddReport() {
 
       if (images.length > 0) {
         uploadedImageUrls = await Promise.all(
-          images.map((imageUri) => CloudinaryService.uploadImage(imageUri))
+          images.map((imageUri) => CloudinaryService.uploadImage(imageUri)),
         );
       }
 
       await addReport({
         userId: user.uid,
         userEmail: user.email || "",
+        userName: user.displayName || user.email || "Unknown user",
+        userImage: user.photoURL || "",
         reportType: finalReportType,
         details: data.details,
         location: location,
         imageUrls: uploadedImageUrls,
         audioUrl: uploadedAudioUrl,
+        status: "pending",
         createdAt: new Date(),
       });
 

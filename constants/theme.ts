@@ -60,6 +60,22 @@ export const MapColors = {
   overlayBackground: "rgba(0,0,0,0.3)",
   mutedText: "#9E9E9E",
 };
+export const UserManagementColors = {
+  pageBackground: "#FAF5F3",
+  cardBackground: "#EAD3CB",
+
+  primary: "#214556",
+  danger: "#845460",
+
+  textDark: "#1F2933",
+  textMuted: "#6B7280",
+  white: "#FFFFFF",
+
+  avatarBackground: "#D8AAA1",
+  fieldBackground: "rgba(255,255,255,0.55)",
+  fieldBorder: "rgba(132,84,96,0.18)",
+  overlayBackground: "rgba(0,0,0,0.55)",
+};
 export const AppColors = {
   primary: "#2d4a5e",
   secondary: "#8b3a3a",
