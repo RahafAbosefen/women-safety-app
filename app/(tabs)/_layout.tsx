@@ -1,4 +1,3 @@
-
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -93,22 +92,20 @@ export default function TabLayout() {
           ),
         }}
       />
-<Tabs.Screen
-  name="contact-us"
-  options={{
-    title: "Contact Us",
-    tabBarButton: () => null,
-  }}
-/>
-<Tabs.Screen
-  name="case-status"
-  options={{
-    title: "Case Status",
-    tabBarButton: () => null,
-  }}
-/>
-
-
+      <Tabs.Screen
+        name="contact-us"
+        options={{
+          title: "Contact Us",
+          tabBarButton: () => null,
+        }}
+      />
+      <Tabs.Screen
+        name="case-status"
+        options={{
+          title: "Case Status",
+          tabBarButton: () => null,
+        }}
+      />
 
       <Tabs.Screen
         name="profile"
@@ -121,8 +118,6 @@ export default function TabLayout() {
               size={24}
               color={color}
             />
-
-            
           ),
         }}
       />
@@ -131,11 +126,20 @@ export default function TabLayout() {
         name="messages"
         options={{
           headerShown: false,
-          
-        title: "Messages",
-         tabBarIcon: ({ color, size }) => (
-        <Ionicons name="chatbubbles-outline" size={size} color={color} />
-        ),
+
+          title: "Messages",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="users-management"
+        options={{
+          title: "Users",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="people-outline" size={24} color={color} />
+          ),
         }}
       />
     </Tabs>

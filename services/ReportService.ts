@@ -4,14 +4,17 @@ import { db } from "./firebaseConfig";
 export type ReportType = {
   userId: string;
   userEmail: string;
+  userName?: string;
+  userImage?: string;
   reportType: string;
   details: string;
   location: {
-    latitude: number; 
+    latitude: number;
     longitude: number;
   } | null;
   imageUrls: string[];
   audioUrl: string | null;
+  status: "pending" | "approved" | "rejected";
   createdAt: Date;
 };
 
