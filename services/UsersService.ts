@@ -15,6 +15,7 @@ export const UsersService = {
       throw error;
     }
   },
+  
   getUserProfile: async (uid: string) => {
     try {
       const userDoc = await getDoc(doc(db, "users", uid));
@@ -29,6 +30,7 @@ export const UsersService = {
       throw error;
     }
   },
+
   updateUserProfile: async (uid: string, data: any) => {
     try {
       const { updateDoc } = await import("firebase/firestore");

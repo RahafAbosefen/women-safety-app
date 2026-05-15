@@ -1,59 +1,35 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-
+import { View, Text, FlatList, Pressable, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as SQLite from "expo-sqlite";
-
 import { useCompanies } from "@/hooks/useCompanies";
 import { ChatService } from "@/services/ChatService";
 import { auth } from "@/services/firebaseConfig";
-
 import { styles } from "@/styles/ContactUs.styles";
 import { AppColors } from "@/constants/theme";
+import * as SQLite from "expo-sqlite";
 
 export default function ContactUsScreen() {
   const router = useRouter();
-
-  const { companies = [], isLoading, isError } = useCompanies();
-
+  const { companies, isLoading, isError } = useCompanies();
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-
-    const setupLocalDatabase = async () => {
-      try {
-        const database = await SQLite.openDatabaseAsync("companies.db");
-
-        await database.execAsync(`
-          CREATE TABLE IF NOT EXISTS companies (
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            type TEXT,
-            phone TEXT,
-            email TEXT
-          );
-        `);
-
-        if (!cancelled) {
-          setDb(database);
-        }
-      } catch (error) {
-        console.log("SQLite setup error:", error);
-      }
-    };
-
-    setupLocalDatabase();
-
+    (async () => {
+      const database = await SQLite.openDatabaseAsync("companies.db");
+      await database.execAsync(
+        `CREATE TABLE IF NOT EXISTS companies (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          type TEXT,
+          phone TEXT,
+          email TEXT
+        );`
+      );
+      if (!cancelled) setDb(database);
+    })();
     return () => {
       cancelled = true;
     };
@@ -61,116 +37,55 @@ export default function ContactUsScreen() {
 
   useEffect(() => {
     if (!db || !companies) return;
-
-    const saveCompaniesOffline = async () => {
-      try {
-        await db.execAsync("DELETE FROM companies;");
-
-        for (const company of companies) {
-          await db.runAsync(
-            `INSERT OR REPLACE INTO companies 
-            (id, name, type, phone, email) 
-            VALUES (?, ?, ?, ?, ?);`,
-            String(company.id || ""),
-            String(company.name || company.organizationName || "Company"),
-            String(company.type || "Support company"),
-            String(company.phone || ""),
-            String(company.email || "")
-          );
-        }
-      } catch (error) {
-        console.log("SQLite save companies error:", error);
+    (async () => {
+      await db.execAsync(`DELETE FROM companies;`);
+      for (const company of companies) {
+        await db.runAsync(
+          `INSERT OR REPLACE INTO companies (id, name, type, phone, email) VALUES (?, ?, ?, ?, ?);`,
+          String(company.id), String(company.name || ""), String(company.type || ""), String(company.phone || ""), String(company.email || "")
+        );
       }
-    };
-
-    saveCompaniesOffline();
+    })();
   }, [db, companies]);
 
   const openChatWithCompany = async (company: any) => {
     try {
       const user = auth.currentUser;
-
       if (!user) {
         Alert.alert("Error", "User not logged in");
         return;
       }
-
-      const companyId = company.userId || company.uid || company.id;
-
-      if (!companyId) {
-        Alert.alert("Error", "Company ID is missing");
-        return;
-      }
-
-      const companyName =
-        company.name ||
-        company.organizationName ||
-        company.fullName ||
-        "Company";
-
+      const companyId = company.id;
+      const companyName = company.name || "Company";
       const chatId = await ChatService.getOrCreateChat({
         victimId: user.uid,
         organizationId: companyId,
         organizationName: companyName,
       });
-
       router.push({
         pathname: "/chat/[chatId]",
-        params: {
-          chatId,
-          title: companyName,
-        },
+        params: { chatId, title: companyName },
       });
     } catch (error: any) {
       console.log("Open chat error:", error);
       Alert.alert("Error", error.message || "Could not open chat");
     }
   };
-
-  const renderCompany = useCallback(
-    ({ item }: { item: any }) => {
-      const companyName =
-        item.name ||
-        item.organizationName ||
-        item.fullName ||
-        "Company";
-
-      const companyType =
-        item.type ||
-        item.category ||
-        "Support company";
-
-      return (
-        <Pressable
-          style={({ pressed }) => [
-            styles.card,
-            pressed && styles.cardPressed,
-          ]}
-          onPress={() => openChatWithCompany(item)}
-        >
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="business-outline"
-              size={24}
-              color={AppColors.primary}
-            />
-          </View>
-
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardName}>{companyName}</Text>
-            <Text style={styles.cardType}>{companyType}</Text>
-          </View>
-
-          <Ionicons
-            name="chatbubble-ellipses-outline"
-            size={22}
-            color={AppColors.primary}
-          />
-        </Pressable>
-      );
-    },
-    []
-  );
+  const renderCompany = useCallback(({ item }: { item: any }) => (
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => openChatWithCompany(item)} 
+    >
+      <View style={styles.iconContainer}>
+        <Ionicons name="business-outline" size={24} color={AppColors.primary} />
+      </View>
+      <View style={styles.cardInfo}>
+        <Text style={styles.cardName}>{item.name}</Text>
+       
+      </View>
+      <Ionicons name="chatbubble-ellipses-outline" size={22} color={AppColors.primary} />
+    </Pressable>
+  ), []);
 
   if (isLoading) {
     return (
@@ -179,7 +94,6 @@ export default function ContactUsScreen() {
       </View>
     );
   }
-
   if (isError) {
     return (
       <View style={styles.loadingContainer}>
@@ -197,7 +111,7 @@ export default function ContactUsScreen() {
 
       <FlatList
         data={companies}
-        keyExtractor={(item: any) => String(item.id)}
+        keyExtractor={(item: any) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={renderCompany}
         ListEmptyComponent={
