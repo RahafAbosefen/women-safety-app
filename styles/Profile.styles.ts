@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { AppColors, MapColors } from "@/constants/theme";
+import { AppColors, Colors, MapColors } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -23,23 +23,6 @@ export const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: AppColors.primary,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
-    backgroundColor: "#fff",
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: AppColors.primary,
-  },
-  logoutIcon: {
-    padding: 8,
   },
   saveBadge: {
     backgroundColor: MapColors.primary,
@@ -92,43 +75,11 @@ export const styles = StyleSheet.create({
     color: AppColors.primary,
     marginBottom: 0,
   },
-  inputWrapper: {
-    marginBottom: 15,
-    position: "relative",
-  },
   input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: AppColors.white,
-    borderWidth: 1,
-    borderColor: AppColors.border,
-    borderRadius: 12,
-    paddingLeft: 45,
-    paddingRight: 15,
-    fontSize: 15,
-    color: AppColors.primary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.02,
-    shadowRadius: 2,
-
-    elevation: 1,
-  },
-  inputIcon: {
-    position: "absolute",
-    left: 15,
-    top: 15,
-    zIndex: 2,
+    fontSize: 16,
+    color: Colors.light.text,
   },
   inputLocked: { backgroundColor: AppColors.gray, color: AppColors.white },
-  inputError: { borderColor: AppColors.error },
-  errorTextLabel: { color: AppColors.error },
-  errorTextFeedback: {
-    color: AppColors.error,
-    fontSize: 11,
-    marginTop: 5,
-    marginLeft: 10,
-  },
   settingRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -174,16 +125,5 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
-  },
-  inlineSaveButton: {
-    backgroundColor: MapColors.primary,
-    paddingHorizontal: 15,
-    paddingVertical: 6,
-    borderRadius: 15,
-  },
-  inlineSaveText: {
-    color: AppColors.white,
-    fontSize: 13,
-    fontWeight: "bold",
   },
 });

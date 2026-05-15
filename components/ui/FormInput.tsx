@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { Controller, Control, FieldValues } from "react-hook-form";
 
-
 type FormInputProps<T extends FieldValues> = {
   name: string;
   control: Control<T>;
@@ -51,6 +50,24 @@ export function FormInput<T extends FieldValues>({
 
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 14,
+  },
+  inputBox: {
+    borderColor: "#E1DDE8",
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "#FAFAFA",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginRight: 14,
+  },
+  inputContent: {
     flex: 1,
     justifyContent: "center",
   },
@@ -75,13 +92,5 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 4,
-  },
-
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#2d4a5e",
-    textAlign: "center",
-    marginBottom: 30,
   },
 });

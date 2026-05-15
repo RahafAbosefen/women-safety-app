@@ -5,7 +5,7 @@ export class MediaService {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
 
     if (!permission.granted) {
-      throw new Error("Camera permission denied");
+      return null;
     }
 
     const result = await ImagePicker.launchCameraAsync({
@@ -16,7 +16,7 @@ export class MediaService {
     });
 
     if (!result.canceled) {
-      return result.assets[0];
+      return result.assets[0].uri;
     }
 
     return null;

@@ -26,7 +26,6 @@ export default function ProfileScreen() {
     isLoading,
     isAnonymous,
     isNotificationsEnabled,
-    setIsNotificationsEnabled,
     handleSubmit,
     onSubmit,
     handleAnonymousChange,
@@ -35,6 +34,8 @@ export default function ProfileScreen() {
     media,
     alert,
     closeAlert,
+    removeProfileImage,
+    handleNotificationsChange,
   } = useProfile();
 
   if (isLoading) {
@@ -85,7 +86,9 @@ export default function ProfileScreen() {
               control={control}
               name="name"
               render={({ field: { value } }) => (
-                <Text style={styles.userNameText}>{value}</Text>
+                <Text style={styles.userNameText}>
+                  {isAnonymous ? "Anonymous" : value}
+                </Text>
               )}
             />
 
@@ -93,7 +96,9 @@ export default function ProfileScreen() {
               control={control}
               name="email"
               render={({ field: { value } }) => (
-                <Text style={styles.userEmailText}>{value}</Text>
+                <Text style={styles.userEmailText}>
+                  {isAnonymous ? "************" : value}
+                </Text>
               )}
             />
           </View>
@@ -115,78 +120,58 @@ export default function ProfileScreen() {
                 </Pressable>
               )}
             </View>
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="person-outline"
-                size={20}
-                color={AppColors.gray}
-                style={styles.inputIcon}
-              />
-              <FormInput
-                control={control}
-                name="name"
-                rules={{
-                  required: "Name is required",
-                  minLength: {
-                    value: 3,
-                    message: "Name must be at least 3 characters",
-                  },
-                }}
-                label=""
-                placeholder="Your Name"
-                style={[styles.input, isAnonymous && styles.inputLocked]}
-                editable={!isAnonymous}
-              />
-            </View>
 
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={AppColors.gray}
-                style={styles.inputIcon}
-              />
-              <FormInput
-                control={control}
-                name="email"
-                rules={{
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Please enter a valid email address",
-                  },
-                }}
-                label=""
-                placeholder="Your Email"
-                keyboardType="email-address"
-                style={[styles.input, isAnonymous && styles.inputLocked]}
-                editable={!isAnonymous}
-              />
-            </View>
+            <FormInput
+              control={control}
+              name="name"
+              icon="person-outline"
+              rules={{
+                required: "Name is required",
+                minLength: {
+                  value: 3,
+                  message: "Name must be at least 3 characters",
+                },
+              }}
+              label=""
+              placeholder="Your Name"
+              style={[styles.input, isAnonymous && styles.inputLocked]}
+              editable={!isAnonymous}
+            />
 
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="call-outline"
-                size={20}
-                color={AppColors.gray}
-                style={styles.inputIcon}
-              />
-              <FormInput
-                control={control}
-                name="phone"
-                rules={{
-                  required: "Phone number is required",
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Phone number must be exactly 10 digits",
-                  },
-                }}
-                label=""
-                placeholder="Your Phone"
-                keyboardType="phone-pad"
-                style={styles.input}
-              />
-            </View>
+            <FormInput
+              control={control}
+              name="email"
+              icon="mail-outline"
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email address",
+                },
+              }}
+              label=""
+              placeholder="Your Email"
+              keyboardType="email-address"
+              style={[styles.input, isAnonymous && styles.inputLocked]}
+              editable={!isAnonymous}
+            />
+
+            <FormInput
+              control={control}
+              name="phone"
+              icon="call-outline"
+              rules={{
+                required: "Phone number is required",
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: "Phone number must be exactly 10 digits",
+                },
+              }}
+              label=""
+              placeholder="Your Phone"
+              keyboardType="phone-pad"
+              style={styles.input}
+            />
           </View>
 
           <View style={styles.settingRow}>
@@ -202,7 +187,7 @@ export default function ProfileScreen() {
               trackColor={{ false: "#767577", true: AppColors.primary }}
               thumbColor={isNotificationsEnabled ? AppColors.white : "#f4f3f4"}
               value={isNotificationsEnabled}
-              onValueChange={setIsNotificationsEnabled}
+              onValueChange={handleNotificationsChange}
             />
           </View>
 
@@ -239,7 +224,7 @@ export default function ProfileScreen() {
           hasImage={Boolean(profileImage)}
           onCamera={media.openCamera}
           onGallery={media.openGallery}
-          onRemove={media.removeImage}
+          onRemove={removeProfileImage}
           onClose={media.closeModal}
         />
       </SafeAreaView>

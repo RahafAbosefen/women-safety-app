@@ -10,7 +10,6 @@ export const UsersService = {
         ...data,
         createdAt: new Date().toISOString(),
       });
-      
     } catch (error) {
       console.error("Firestore Error:", error);
       throw error;
@@ -30,4 +29,19 @@ export const UsersService = {
       throw error;
     }
   },
+<<<<<<< Updated upstream
+=======
+  updateUserProfile: async (uid: string, data: any) => {
+    try {
+      const { updateDoc } = await import("firebase/firestore");
+      await updateDoc(doc(db, "users", uid), {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Firestore Error (Update):", error);
+      throw error;
+    }
+  },
+>>>>>>> Stashed changes
 };
