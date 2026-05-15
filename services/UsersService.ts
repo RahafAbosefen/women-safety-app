@@ -30,4 +30,16 @@ export const UsersService = {
       throw error;
     }
   },
+  updateUserProfile: async (uid: string, data: any) => {
+  try {
+    const { updateDoc } = await import("firebase/firestore");
+    await updateDoc(doc(db, "users", uid), {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Firestore Error (Update):", error);
+    throw error;
+  }
+},
 };

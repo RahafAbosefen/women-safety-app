@@ -83,7 +83,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-import { useOrganizations } from "@/hooks/useOrganizations";
+import { useCompanies } from "@/hooks/useCompanies";
 import { ChatService } from "@/services/ChatService";
 import { auth } from "@/services/firebaseConfig";
 
@@ -93,15 +93,15 @@ import * as SQLite from "expo-sqlite";
 
 export default function ContactUsScreen() {
   const router = useRouter();
-const { organizations = [], isLoading, isError } = useOrganizations();
+  const { companies, isLoading, isError } = useCompanies();
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const database = await SQLite.openDatabaseAsync("organizations.db");
+      const database = await SQLite.openDatabaseAsync("companies.db");
       await database.execAsync(
-        `CREATE TABLE IF NOT EXISTS organizations (
+        `CREATE TABLE IF NOT EXISTS companies (
           id TEXT PRIMARY KEY,
           name TEXT,
           type TEXT,
@@ -117,18 +117,17 @@ const { organizations = [], isLoading, isError } = useOrganizations();
   }, []);
 
   useEffect(() => {
-    if (!db || !organizations) return;
+    if (!db || !companies) return;
     (async () => {
-      await db.execAsync(`DELETE FROM organizations;`);
-      for (const org of organizations) {
+      await db.execAsync(`DELETE FROM companies;`);
+      for (const company of companies) {
         await db.runAsync(
-  `INSERT OR REPLACE INTO organizations (id, name, type, phone, email) VALUES (?, ?, ?, ?, ?);`,
-  String(org.id), String(org.name), String(org.type), String(org.phone || ""), String(org.email || "")
-
+          `INSERT OR REPLACE INTO companies (id, name, type, phone, email) VALUES (?, ?, ?, ?, ?);`,
+          String(company.id), String(company.name), String(company.type), String(company.phone || ""), String(company.email || "")
         );
       }
     })();
-  }, [db, organizations]);
+  }, [db, companies]);
 
   const openChatWithOrganization = async (organization: any) => {
     try {
@@ -215,14 +214,14 @@ const { organizations = [], isLoading, isError } = useOrganizations();
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Contact Us</Text>
-        <Text style={styles.subtitle}>Choose an organization to chat with</Text>
+        <Text style={styles.subtitle}>Choose a company to chat with</Text>
       </View>
 
       <FlatList
-        data={organizations}
+        data={companies}
         keyExtractor={(item: any) => item.id}
         contentContainerStyle={styles.listContent}
-        renderItem={renderOrganization}
+        renderItem={renderCompany}
       />
     </SafeAreaView>
   );

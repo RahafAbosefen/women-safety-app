@@ -1,37 +1,54 @@
 import React, { useEffect } from "react";
-import { Text, StyleSheet, Pressable, View } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { auth } from "@/services/firebaseConfig";
 
 export default function WelcomeScreen() {
+  const router = useRouter();
 
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    if (user) {
-      router.replace("/(tabs)");
-    }
-  });
-  return () => unsubscribe();
-}, []);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.replace("/(tabs)");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Let's Get Started...</Text>
+        <Text style={styles.title}>Who are you?</Text>
+
+        <Text style={styles.subtitle}>
+          Select your account type to continue
+        </Text>
 
         <Pressable
-          style={styles.signUpButton}
-          onPress={() => router.push("/(auth)/signUp")}
+          style={styles.userButton}
+          onPress={() => router.push("/(auth)/signUp?role=user")}
         >
-          <Text style={styles.signUpText}>Sign Up</Text>
+          <Text style={styles.buttonText}>👤 User</Text>
         </Pressable>
 
         <Pressable
-          style={styles.loginButton}
-          onPress={() => router.push("/(auth)/login")}
+          style={styles.companyButton}
+          onPress={() => router.push("/(auth)/signUp?role=company")}
         >
-          <Text style={styles.loginText}>Login</Text>
+          <Text style={styles.buttonText}>🏢 Company</Text>
+        </Pressable>
+
+        <Pressable onPress={() => router.push("/(auth)/login")}>
+          <Text style={styles.loginText}>
+            Already have an account? Login
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -41,43 +58,60 @@ useEffect(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#f5f5f5",
+    padding: 20,
   },
+
   card: {
-    backgroundColor: "#dde8e8",
-    borderRadius: 40,
-    padding: 40,
-    width: "85%",
-    alignItems: "center",
-    gap: 15,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 30,
+    padding: 30,
   },
+
   title: {
-    fontSize: 18,
+    fontSize: 32,
+    fontWeight: "bold",
     color: "#2d4a5e",
+    textAlign: "center",
     marginBottom: 10,
   },
-  signUpButton: {
+
+  subtitle: {
+    fontSize: 16,
+    color: "#888",
+    textAlign: "center",
+    marginBottom: 40,
+  },
+
+  userButton: {
     backgroundColor: "#2d4a5e",
-    borderRadius: 10,
-    padding: 12,
     width: "100%",
+    paddingVertical: 16,
+    borderRadius: 14,
     alignItems: "center",
+    marginBottom: 16,
   },
-  signUpText: {
-    color: "white",
-    fontSize: 14,
-  },
-  loginButton: {
-    backgroundColor: "#8b3a3a",
-    borderRadius: 10,
-    padding: 12,
+
+  companyButton: {
+    backgroundColor: "#7B4DDB",
     width: "100%",
+    paddingVertical: 16,
+    borderRadius: 14,
     alignItems: "center",
+    marginBottom: 30,
   },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
   loginText: {
-    color: "white",
-    fontSize: 14,
+    color: "#2d4a5e",
+    fontSize: 15,
+    textDecorationLine: "underline",
+    textAlign: "center",
   },
 });

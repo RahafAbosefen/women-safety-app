@@ -3,9 +3,6 @@ import app from "./firebaseConfig";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "./UsersService";
 
-
-
-
 const auth = getAuth(app);
 
 export const login = async (payload: any) => {
@@ -21,6 +18,9 @@ export const login = async (payload: any) => {
   return user;
 };
 
+
+
+
 export const signUp = async (payload: any) => {
   const response = await createUserWithEmailAndPassword(
     auth,
@@ -28,15 +28,23 @@ export const signUp = async (payload: any) => {
     payload.password,
   );
   const user = response.user;
-  await UsersService.createUserProfile(user.uid, {
-    firstName: payload.firstName,
-    lastName: payload.lastName,
-    email: payload.email,
-    phone: payload.phone,
-  });
-  const token = await user.getIdToken();
-  await StorageService.saveUser(user);
-  await StorageService.saveToken(token);
+  
+  if (payload.role === "company") {
+    await UsersService.createUserProfile(user.uid, {
+      email: payload.email,
+      role: "company",
+      name: payload.firstName + " " + payload.lastName,
+    });
+  } else {
+    await UsersService.createUserProfile(user.uid, {
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phone: payload.phone,
+      role: "user",
+    });
+  }
+  
   return user;
 };
 
