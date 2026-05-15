@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Marker } from "react-native-maps";
@@ -20,8 +20,24 @@ const DEFAULT_REGION = {
 const MapScreen = () => {
   const [isReportVisible, setIsReportVisible] = useState(false);
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-
+  const mapRef = useRef<MapView | null>(null);
   const { location: userLocation, isLocationLoading } = useCurrentLocation();
+
+  useEffect(() => {
+    if (!userLocation) {
+      return;
+    }
+
+    mapRef.current?.animateToRegion(
+      {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: DEFAULT_REGION.latitudeDelta,
+        longitudeDelta: DEFAULT_REGION.longitudeDelta,
+      },
+      1000,
+    );
+  }, [userLocation]);
 
   const handleOpenReport = () => {
     if (!userLocation) {
@@ -39,6 +55,7 @@ const MapScreen = () => {
   return (
     <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       <MapView
+        ref={mapRef}
         style={styles.map}
         initialRegion={{
           latitude: userLocation?.latitude ?? DEFAULT_REGION.latitude,
@@ -60,11 +77,7 @@ const MapScreen = () => {
         ))}
 
         {userLocation && (
-          <Marker
-            coordinate={userLocation}
-            title="Your current location"
-            description={`${userLocation.latitude.toFixed(5)}, ${userLocation.longitude.toFixed(5)}`}
-          >
+          <Marker coordinate={userLocation}>
             <CustomMarker variant="active" />
           </Marker>
         )}

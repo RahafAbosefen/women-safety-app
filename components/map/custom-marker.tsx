@@ -10,8 +10,10 @@ type CustomMarkerProps = {
 const CustomMarker = ({ variant = "danger" }: CustomMarkerProps) => {
   if (variant === "active") {
     return (
-      <View style={styles.currentLocationOuter}>
-        <View style={styles.currentLocationInner} />
+      <View style={styles.activeOuter}>
+        <View style={styles.activeInner} />
+
+       
       </View>
     );
   }
@@ -40,20 +42,22 @@ const CustomMarker = ({ variant = "danger" }: CustomMarkerProps) => {
 };
 
 const styles = StyleSheet.create({
-  currentLocationOuter: {
-    width: 74,
-    height: 74,
-    borderRadius: 37,
-    borderWidth: 3,
+  activeOuter: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    borderWidth: 2,
     borderColor: MapColors.primary,
     backgroundColor: MapColors.activeMarkerRingBackground,
     alignItems: "center",
     justifyContent: "center",
   },
-  currentLocationInner: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  activeInner: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 3,
+    borderColor: MapColors.sheetBackground,
     backgroundColor: MapColors.primary,
   },
   markerBody: {

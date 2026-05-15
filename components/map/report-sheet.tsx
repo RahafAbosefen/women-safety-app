@@ -22,6 +22,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Ionicons } from "@expo/vector-icons";
 import { MediaPickerModal } from "../ui/MediaPickerModal";
 import { useMediaManager } from "@/hooks/useMediaManager";
+import { CloudinaryService } from "@/services/CloudinaryService";
 
 type ReportLocation = {
   latitude: number;
@@ -103,7 +104,13 @@ const ReportSheet = ({
         return;
       }
 
-      const imageUrls: string[] = reportImage ? [reportImage] : [];
+      let imageUrls: string[] = [];
+
+      if (reportImage) {
+        const uploadedImageUrl =
+          await CloudinaryService.uploadImage(reportImage);
+        imageUrls = [uploadedImageUrl];
+      }
 
       await addReportMap({
         userId: user.uid,
