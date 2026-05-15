@@ -1,67 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import app from "@/services/firebaseConfig";
 
-import { db } from "@/services/firebaseConfig";
+const db = getFirestore(app);
 
 export type Company = {
   id: string;
-  uid: string;
-  userId: string;
-
   name: string;
   type: string;
   email: string;
   phone: string;
-  role: string;
-
-  organizationName?: string;
-  fullName?: string;
-  category?: string;
 };
 
 const getCompanies = async (): Promise<Company[]> => {
   try {
-    const usersRef = collection(db, "users");
-
-    const companiesQuery = query(
-      usersRef,
-      where("role", "==", "company")
-    );
-
-    const snapshot = await getDocs(companiesQuery);
-
-    const companies: Company[] = snapshot.docs.map((docItem) => {
-      const data: any = docItem.data();
-
-      const companyName =
-        data.name ||
-        data.organizationName ||
-        data.fullName ||
-        "Company";
-
-      const companyType =
-        data.type ||
-        data.category ||
-        "Support company";
-
+    const q = query(collection(db, "users"), where("role", "==", "company"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
       return {
-        id: docItem.id,
-        uid: docItem.id,
-        userId: docItem.id,
-
-        name: companyName,
-        type: companyType,
+        id: doc.id,
+        name: data.name || data.email,
+        type: data.type || "Company",
         email: data.email || "",
         phone: data.phone || "",
-        role: data.role || "",
-
-        organizationName: data.organizationName || "",
-        fullName: data.fullName || "",
-        category: data.category || "",
       };
     });
-
-    return companies;
   } catch (error) {
     console.log("Get companies error:", error);
     throw error;
@@ -69,16 +33,11 @@ const getCompanies = async (): Promise<Company[]> => {
 };
 
 export const useCompanies = () => {
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data: companies, isLoading, isError } = useQuery({
     queryKey: ["companies"],
     queryFn: getCompanies,
+    staleTime: 0,
   });
 
-  return {
-    companies: data || [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  };
+  return { companies, isLoading, isError };
 };
