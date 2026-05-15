@@ -20,9 +20,9 @@ export default function ResultSOSModal({ visible,onDismiss,title="Emergency aler
     contentContainerStyle={styles.resultModal}
     >
       <Text style={styles.resultTitle}>{title}</Text>
-      <view style={styles.resultCircle}>
+      <View style={styles.resultCircle}>
         <Text style={styles.checkIcon}>✓</Text>
-      </view>
+      </View>
       <Text style={styles.resultSubtitle}>{subtitle}</Text>
       <Button
       mode="contained"

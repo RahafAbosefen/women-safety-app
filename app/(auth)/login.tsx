@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Text,StyleSheet,View,KeyboardAvoidingView,ScrollView,Platform,Pressable,} from "react-native";
+import { Text, View, KeyboardAvoidingView, ScrollView, Platform, Pressable } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { login } from "@/services/AuthService";
 import { AppButton } from "@/components/ui/AppButton";
 import { AppInput } from "@/components/ui/AppInput";
+import { styles } from "@/styles/Login.styles";
 
 type FormData = {
   email: string;
@@ -18,14 +19,12 @@ export default function LoginScreen() {
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
   const [showPassword, setShowPassword] = useState(true);
   const [loginError, setLoginError] = useState("");
+
   const onSubmit = async (data: FormData) => {
     try {
       setLoginError("");
-
       await login(data);
-
-      router.replace('/(tabs)');
-
+      router.replace("/(tabs)");
     } catch (error) {
       console.log(error);
       setLoginError("Email or password is incorrect");
@@ -47,7 +46,6 @@ export default function LoginScreen() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Login</Text>
 
-      
             <Controller
               control={control}
               name="email"
@@ -68,7 +66,6 @@ export default function LoginScreen() {
               )}
             />
 
-        
             <Controller
               control={control}
               name="password"
@@ -83,19 +80,17 @@ export default function LoginScreen() {
                       placeholder="Password"
                       secureTextEntry={showPassword}
                     />
-
                     <Pressable
                       style={styles.eyeButton}
                       onPress={() => setShowPassword(prev => !prev)}
                     >
                       <Ionicons
-                          name={showPassword ? "eye-off" : "eye"}
+                        name={showPassword ? "eye-off" : "eye"}
                         size={22}
                         color="#2d4a5e"
                       />
                     </Pressable>
                   </View>
-
                   {error && <Text style={styles.errorText}>{error.message}</Text>}
                 </View>
               )}
@@ -109,7 +104,7 @@ export default function LoginScreen() {
 
             <Pressable
               style={styles.backButton}
-              onPress={() => router.replace('/(auth)')}
+              onPress={() => router.replace("/(auth)")}
             >
               <Text style={styles.backText}>Back to Welcome</Text>
             </Pressable>
@@ -119,73 +114,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 30,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2d4a5e',
-    marginBottom: 20,
-  },
-  card: {
-    backgroundColor: '#dde8e8',
-    borderRadius: 40,
-    padding: 30,
-    width: '85%',
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2d4a5e',
-    marginBottom: 20,
-  },
-  inputContainer: {
-    width: '100%',
-  },
-  passwordContainer: {
-    width: '100%',
-    position: 'relative',
-    justifyContent: 'center',
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: 14,
-    top: 0,
-    bottom: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  loginError: {
-    color: 'red',
-    fontSize: 13,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  backButton: {
-    marginTop: 15,
-  },
-  backText: {
-    color: '#2d4a5e',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
