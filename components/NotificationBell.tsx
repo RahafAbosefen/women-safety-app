@@ -201,24 +201,7 @@ export default function NotificationBell() {
               </Pressable>
             </View>
 
-            {notifications.length > 0 && (
-              <View style={styles.summaryCard}>
-                <View style={styles.summaryIcon}>
-                  <Ionicons
-                    name="shield-checkmark-outline"
-                    size={22}
-                    color="#204E64"
-                  />
-                </View>
-
-                <View style={styles.summaryTextWrapper}>
-                  <Text style={styles.summaryTitle}>You’re updated</Text>
-                  <Text style={styles.summaryText}>
-                    Important safety actions will appear here.
-                  </Text>
-                </View>
-              </View>
-            )}
+         
 
             {notifications.length === 0 ? (
               <View style={styles.emptyContainer}>
@@ -427,7 +410,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 20,
     marginBottom: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#dee5ed",
     borderWidth: 1,
     borderColor: "#EEF2F5",
   },

@@ -13,7 +13,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 
 import ReportTypeDropdown from "@/components/ReportTypeDropdown";
 import ResultSOSModal from "@/components/ResultSOSModal";
@@ -21,6 +20,8 @@ import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
 import AudioFeature from "@/components/AudioFeature";
 import LocationFeature from "@/components/LocationFeature";
 import NotificationBell from "@/components/NotificationBell";
+
+import { useMediaManager } from "@/hooks/useMediaManager";
 
 import { router } from "expo-router";
 import { addReport } from "@/services/ReportService";
@@ -39,7 +40,6 @@ export default function AddReport() {
   const [resultVisible, setResultVisible] = useState(false);
 
   const [images, setImages] = useState<string[]>([]);
-  const [mediaModalVisible, setMediaModalVisible] = useState(false);
 
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [audioResetKey, setAudioResetKey] = useState(0);
@@ -58,71 +58,15 @@ export default function AddReport() {
     },
   });
 
+  const media = useMediaManager((uri) => {
+    if (uri) {
+      setImages((prev) => [...prev, uri]);
+    }
+  });
+
   const closeDropdown = () => {
     setOpen(false);
     Keyboard.dismiss();
-  };
-
-  const openMediaModal = () => {
-    setMediaModalVisible(true);
-  };
-
-  const closeMediaModal = () => {
-    setMediaModalVisible(false);
-  };
-
-  const openCamera = async () => {
-    try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-
-      if (!permission.granted) {
-        Alert.alert("Permission needed", "Please allow camera access.");
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        quality: 0.8,
-      });
-
-      if (!result.canceled) {
-        setImages((prev) => [...prev, result.assets[0].uri]);
-      }
-
-      closeMediaModal();
-    } catch (error) {
-      console.log("Camera error:", error);
-      Alert.alert("Error", "Could not take photo.");
-    }
-  };
-
-  const openGallery = async () => {
-    try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (!permission.granted) {
-        Alert.alert("Permission needed", "Please allow photo access.");
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
-        quality: 0.8,
-        allowsMultipleSelection: true,
-      });
-
-      if (!result.canceled) {
-        const selectedImages = result.assets.map((asset) => asset.uri);
-        setImages((prev) => [...prev, ...selectedImages]);
-      }
-
-      closeMediaModal();
-    } catch (error) {
-      console.log("Gallery error:", error);
-      Alert.alert("Error", "Could not pick image.");
-    }
   };
 
   const removeImage = (indexToRemove: number) => {
@@ -131,7 +75,7 @@ export default function AddReport() {
 
   const removeAllImages = () => {
     setImages([]);
-    closeMediaModal();
+    media.closeModal();
   };
 
   const onSubmit = async (data: ReportFormData) => {
@@ -279,12 +223,13 @@ export default function AddReport() {
       </Text>
 
       <LocationFeature
-      key={`location-${locationResetKey}`}
-      onLocationChange={(newLocation) => {
-      setLocation(newLocation);
-      }}
+        key={`location-${locationResetKey}`}
+        onLocationChange={(newLocation) => {
+          setLocation(newLocation);
+        }}
       />
-      <Pressable style={styles.addImageButton} onPress={openMediaModal}>
+
+      <Pressable style={styles.addImageButton} onPress={media.openModal}>
         <Ionicons name="camera-outline" size={22} color="#fff" />
         <Text style={styles.addImageButtonText}>Add Image</Text>
       </Pressable>
@@ -306,13 +251,13 @@ export default function AddReport() {
         </View>
       )}
 
-     <AudioFeature
-      key={audioResetKey}
-     resetKey={audioResetKey}
-     onAudioRecorded={(uri) => {
-     setAudioUri(uri);
-     }}
-     />
+      <AudioFeature
+        key={`audio-${audioResetKey}`}
+        resetKey={audioResetKey}
+        onAudioRecorded={(uri) => {
+          setAudioUri(uri);
+        }}
+      />
 
       <ResultSOSModal
         visible={resultVisible}
@@ -339,13 +284,13 @@ export default function AddReport() {
       </Pressable>
 
       <MediaPickerModal
-        visible={mediaModalVisible}
+        visible={media.visible}
         title="Report Image"
         hasImage={images.length > 0}
-        onCamera={openCamera}
-        onGallery={openGallery}
+        onCamera={media.openCamera}
+        onGallery={media.openGallery}
         onRemove={removeAllImages}
-        onClose={closeMediaModal}
+        onClose={media.closeModal}
       />
     </ScrollView>
   );
