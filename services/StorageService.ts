@@ -24,18 +24,6 @@ const StorageService = {
   async clearAsyncStorage() {
     await AsyncStorage.clear();
   },
-
-  async saveProfileImage(uri: string) {
-    await AsyncStorage.setItem("profileImage", uri);
-  },
-
-  async getProfileImage() {
-    return await AsyncStorage.getItem("profileImage");
-  },
-
-  async removeProfileImage() {
-    await AsyncStorage.removeItem("profileImage");
-  },
 };
 
 export default StorageService;

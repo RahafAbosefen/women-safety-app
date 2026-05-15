@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "@/services/UsersService";
@@ -7,69 +7,163 @@ import { logout } from "@/services/AuthService";
 import { useRouter } from "expo-router";
 import { useMediaManager } from "./useMediaManager";
 import { useAlertManager } from "./useAlertManager";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CloudinaryService } from "@/services/CloudinaryService";
+
 interface ProfileFormData {
   name: string;
   email: string;
   phone: string;
-  isAnonymous: boolean;
 }
 
 export const useProfile = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
-    getValues,
     formState: { errors, isDirty },
   } = useForm<ProfileFormData>({
-    defaultValues: { name: "", email: "", phone: "", isAnonymous: false },
+    defaultValues: { name: "", email: "", phone: "" },
     mode: "onChange",
   });
 
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [originalData, setOriginalData] = useState<ProfileFormData>({
-    name: "",
-    email: "",
-    phone: "",
-    isAnonymous: false,
+  const { alert, openAlert, closeAlert } = useAlertManager();
+
+  const getUserId = async () => {
+    const user = await StorageService.getUser();
+    if (!user?.uid) throw new Error("No UID");
+    return user.uid;
+  };
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      const uid = await getUserId();
+      return UsersService.getUserProfile(uid);
+    },
   });
 
   useEffect(() => {
-    const loadUserFromFirebase = async () => {
-      try {
-        const user = await StorageService.getUser();
-        if (user && user.uid) {
-          const firebaseData = await UsersService.getUserProfile(user.uid);
-          if (firebaseData) {
-            const formattedData = {
-              name: `${firebaseData.firstName} ${firebaseData.lastName}`,
-              email: firebaseData.email,
-              phone: firebaseData.phone,
-              isAnonymous: firebaseData.isAnonymous || false,
-            };
+    if (!error) return;
 
-            setIsAnonymous(firebaseData.isAnonymous || false);
-            reset(formattedData);
-            setOriginalData(formattedData);
-            const img = await StorageService.getProfileImage();
-            setProfileImage(img);
-          }
-        }
-      } catch (error) {
-        console.error("Error loading user:", error);
-      } finally {
-        setIsLoading(false);
+    openAlert({
+      type: "error",
+      title: "Error",
+      message: "Failed to load profile",
+      confirmText: "OK",
+      onConfirm: closeAlert,
+    });
+  }, [error, openAlert, closeAlert]);
+
+  useEffect(() => {
+    if (!data || isLoading) return;
+
+    reset({
+      name: `${data.firstName} ${data.lastName}`,
+      email: data.email,
+      phone: data.phone,
+    });
+  }, [data, reset, isLoading]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (formData: ProfileFormData) => {
+      const uid = await getUserId();
+      const [firstName, ...last] = formData.name.split(" ");
+
+      return UsersService.updateUserProfile(uid, {
+        firstName,
+        lastName: last.join(" "),
+        email: formData.email,
+        phone: formData.phone,
+      });
+    },
+    onSuccess: async (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      reset(variables);
+      Keyboard.dismiss();
+
+      openAlert({
+        type: "success",
+        title: "Success",
+        message: "Saved successfully",
+        confirmText: "OK",
+        onConfirm: closeAlert,
+      });
+    },
+    onError: () => {
+      openAlert({
+        type: "error",
+        title: "Update Failed",
+        message: "Please check your internet connection and try again.",
+        confirmText: "OK",
+        onConfirm: closeAlert,
+      });
+    },
+  });
+
+  const onSubmit = (data: ProfileFormData) => {
+    updateProfileMutation.mutate(data);
+  };
+
+  const updateImage = useMutation({
+    mutationFn: async (uri: string | null) => {
+      const uid = await getUserId();
+      if (!uri) {
+        return UsersService.updateUserProfile(uid, {
+          profileImage: "",
+        });
       }
-    };
-    loadUserFromFirebase();
-  }, [reset]);
+      const url = await CloudinaryService.uploadImage(uri);
+      return UsersService.updateUserProfile(uid, {
+        profileImage: url,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    },
+    onError: () => {
+      openAlert({
+        type: "error",
+        title: "Image Upload Failed",
+        message: "Please check your internet connection and try again.",
+        confirmText: "OK",
+        onConfirm: closeAlert,
+      });
+    },
+  });
 
-  const { alert, openAlert, closeAlert } = useAlertManager();
+  const media = useMediaManager(async (uri) => {
+    updateImage.mutate(uri);
+  });
+
+  const removeProfileImage = () => {
+    updateImage.mutate(null);
+  };
+
+  const isAnonymous = data?.isAnonymous ?? false;
+  const isNotificationsEnabled = data?.isNotificationsEnabled ?? false;
+
+  const handleAnonymousChange = async () => {
+    const uid = await getUserId();
+    await UsersService.updateUserProfile(uid, {
+      isAnonymous: !(data?.isAnonymous ?? false),
+    });
+
+    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+  };
+
+  const handleNotificationsChange = async () => {
+    const uid = await getUserId();
+
+    await UsersService.updateUserProfile(uid, {
+      isNotificationsEnabled: !(data?.isNotificationsEnabled ?? false),
+    });
+
+    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+  };
 
   const confirmLogout = useCallback(async () => {
     closeAlert();
@@ -89,96 +183,24 @@ export const useProfile = () => {
     });
   };
 
-  const saveImage = useCallback(async (uri: string) => {
-    await StorageService.saveProfileImage(uri);
-    setProfileImage(uri);
-  }, []);
-
-  const media = useMediaManager(saveImage);
-
-  const showSaveSuccessAlert = () => {
-    openAlert({
-      type: "success",
-      title: "Success",
-      message: "Saved successfully",
-      confirmText: "OK",
-      onConfirm: closeAlert,
-    });
-  };
-
-  const onSubmit = async (data: ProfileFormData) => {
-    try {
-      const user = await StorageService.getUser();
-      if (user && user.uid) {
-        const finalName = isAnonymous ? originalData.name : data.name;
-        const finalEmail = isAnonymous ? originalData.email : data.email;
-
-        const [firstName, ...lastNameParts] = finalName.split(" ");
-
-        const updatedProfile = {
-          firstName: firstName,
-          lastName: lastNameParts.join(" "),
-          email: finalEmail,
-          phone: data.phone,
-          isAnonymous: isAnonymous,
-        };
-
-        await UsersService.createUserProfile(user.uid, updatedProfile);
-
-        setOriginalData({
-          name: finalName,
-          email: finalEmail,
-          phone: data.phone,
-          isAnonymous: isAnonymous,
-        });
-        Keyboard.dismiss();
-        reset(data);
-        showSaveSuccessAlert();
-      }
-    } catch (error) {
-      openAlert({
-        type: "error",
-        title: "Error",
-        message: "Something went wrong",
-        confirmText: "OK",
-        onConfirm: closeAlert,
-      });
-      console.error("Error saving profile:", error);
-    }
-  };
-  const handleAnonymousChange = () => {
-    const newStatus = !isAnonymous;
-    setIsAnonymous(newStatus);
-    setValue("isAnonymous", newStatus, { shouldDirty: true });
-
-    if (newStatus) {
-      setOriginalData({ ...getValues(), isAnonymous: false });
-      setValue("name", "Anonymous", { shouldDirty: true });
-      setValue("email", "************", { shouldDirty: true });
-    } else {
-      setValue("name", originalData.name, { shouldDirty: true });
-      setValue("email", originalData.email, { shouldDirty: true });
-    }
-  };
-
-  const hasChanges = isDirty || isAnonymous !== originalData.isAnonymous;
-
   return {
     control,
     errors,
-    isDirty: hasChanges,
+    isDirty,
     isLoading,
     isAnonymous,
     isNotificationsEnabled,
-    setIsNotificationsEnabled,
-    handleSubmit,
+    profileImage: data?.profileImage ?? null,
+    alert,
+    media,
+    error,
     onSubmit,
+    handleSubmit,
+    removeProfileImage,
     handleAnonymousChange,
+    handleNotificationsChange,
     triggerLogoutAlert,
     confirmLogout,
-    profileImage,
-    media,
-    alert,
     closeAlert,
   };
 };

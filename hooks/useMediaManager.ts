@@ -1,5 +1,4 @@
 import { useState } from "react";
-import StorageService from "@/services/StorageService";
 import { MediaService } from "@/services/MediaService";
 
 export const useMediaManager = (onImage: (uri: string) => void) => {
@@ -10,7 +9,7 @@ export const useMediaManager = (onImage: (uri: string) => void) => {
 
   const openCamera = async () => {
     const photo = await MediaService.takePhoto();
-    if (photo?.uri) onImage(photo.uri);
+    if (photo) onImage(photo);
     closeModal();
   };
 
@@ -20,18 +19,11 @@ export const useMediaManager = (onImage: (uri: string) => void) => {
     closeModal();
   };
 
-  const removeImage = async () => {
-    await StorageService.removeProfileImage();
-    onImage("");
-    closeModal();
-  };
-
   return {
     visible,
     openModal,
     closeModal,
     openCamera,
     openGallery,
-    removeImage,
   };
 };
