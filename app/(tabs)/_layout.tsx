@@ -52,7 +52,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Women safety",
+          headerShown: false,
+
+          title: "Aura",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
@@ -66,6 +68,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="addReport"
         options={{
+          headerShown: false,
           title: "Add Report",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
@@ -118,7 +121,21 @@ export default function TabLayout() {
               size={24}
               color={color}
             />
+
+            
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="messages"
+        options={{
+          headerShown: false,
+          
+        title: "Messages",
+         tabBarIcon: ({ color, size }) => (
+        <Ionicons name="chatbubbles-outline" size={size} color={color} />
+        ),
         }}
       />
     </Tabs>
