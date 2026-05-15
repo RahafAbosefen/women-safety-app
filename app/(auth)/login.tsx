@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { login } from "@/services/AuthService";
+import { getUserRole, login } from "@/services/AuthService";
 import { AppButton } from "@/components/ui/AppButton";
 import { AppInput } from "@/components/ui/AppInput";
 import { styles } from "@/styles/Login.styles";
@@ -23,8 +23,14 @@ export default function LoginScreen() {
   const onSubmit = async (data: FormData) => {
     try {
       setLoginError("");
-      await login(data);
-      router.replace("/(tabs)");
+      const user = await login(data);
+const role = await getUserRole(user.uid);
+
+if (role === "company") {
+  router.replace("/companyTabs" as any);
+} else {
+  router.replace("/userTabs" as any);
+}
     } catch (error) {
       console.log(error);
       setLoginError("Email or password is incorrect");

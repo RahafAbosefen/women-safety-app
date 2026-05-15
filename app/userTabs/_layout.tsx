@@ -1,0 +1,66 @@
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+
+export default function UserTabLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: "#204E64",
+        tabBarInactiveTintColor: "#A0A0A0",
+        tabBarStyle: {
+          position: "absolute",
+          bottom: 10,
+          left: 20,
+          right: 20,
+          height: 70,
+          borderRadius: 35,
+          backgroundColor: "#F5F5F5",
+          borderTopWidth: 0,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="addReport"
+        options={{
+          title: "Report",
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "add-circle" : "add-circle-outline"} size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{
+          title: "Map",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "map" : "map-outline"} size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen name="contact-us" options={{ href: null }} />
+    </Tabs>
+  );
+}

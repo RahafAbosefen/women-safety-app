@@ -13,34 +13,23 @@ const db = getFirestore(app);
 
 export const UsersService = {
   createUserProfile: async (uid: string, data: any) => {
-    try {
-      await setDoc(doc(db, "users", uid), {
-        ...data,
-        createdAt: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Firestore Error:", error);
-      throw error;
-    }
-  },
-  
-  getUserProfile: async (uid: string) => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists()) {
-        return userDoc.data();
-      } else {
-        console.log("No such user!");
-        return null;
-      }
-    } catch (error) {
-      console.error("Firestore Error (Get):", error);
-      throw error;
-    }
+    await setDoc(doc(db, "users", uid), {
+      ...data,
+      createdAt: new Date().toISOString(),
+    });
   },
 
-    updateUserProfile: async (uid: string, data: any) => {
-  try {
+  getUserProfile: async (uid: string) => {
+    const userDoc = await getDoc(doc(db, "users", uid));
+
+    if (userDoc.exists()) {
+      return userDoc.data();
+    }
+
+    return null;
+  },
+
+  updateUserProfile: async (uid: string, data: any) => {
     await setDoc(
       doc(db, "users", uid),
       {
@@ -49,14 +38,9 @@ export const UsersService = {
       },
       { merge: true }
     );
-  } catch (error) {
-    console.error("Firestore Error (Update):", error);
-    throw error;
-  }
-},
+  },
 
-getCompanies: async () => {
-  try {
+  getCompanies: async () => {
     const querySnapshot = await getDocs(collection(db, "users"));
 
     return querySnapshot.docs
@@ -65,10 +49,5 @@ getCompanies: async () => {
         ...doc.data(),
       }))
       .filter((user: any) => user.role === "company");
-  } catch (error) {
-    console.error("Firestore Error (Get Companies):", error);
-    throw error;
-  }
-},
-
+  },
 };
