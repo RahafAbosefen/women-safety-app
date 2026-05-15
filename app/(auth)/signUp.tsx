@@ -35,13 +35,13 @@ export default function SignUp() {
         role,
       });
 
-      console.log("Success:", user);
-      alert("Registration successful!");
+      // console.log("Success:", user);
+      // alert("Registration successful!");
 
       if (role === "company") {
-        router.replace("/CompanyProfile");
+        router.replace("/companyTabs" as any);
       } else {
-        router.replace("/(tabs)");
+        router.replace("/userTabs" as any);
       }
     } catch (error: any) {
       console.error("Sign Up Error:", error);
