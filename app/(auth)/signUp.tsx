@@ -59,7 +59,8 @@ export default function SignUp() {
           <View style={styles.card}>
             <FormInput
               label="First Name"
-icon="person-outline"              control={control}
+              icon="person-outline"
+              control={control}
               name="firstName"
               rules={{ required: "First Name is required" }}
               placeholder="Enter your firstName"
@@ -101,7 +102,8 @@ icon="person-outline"              control={control}
                   message: "Password must be at least 6 characters",
                 },
               }}
-icon="lock-closed-outline"              placeholder="Enter your password"
+              icon="lock-closed-outline"
+              placeholder="Enter your password"
               secureTextEntry
             />
 
@@ -111,7 +113,9 @@ icon="lock-closed-outline"              placeholder="Enter your password"
               name="phone"
               rules={{ required: "Phone is required" }}
               placeholder="Enter your Phone"
-icon="business-outline"            />
+              icon="business-outline"
+              keyboardType="phone-pad"
+            />
 
             <Pressable
               onPress={handleSubmit(onSubmit)}
