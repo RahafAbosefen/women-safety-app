@@ -12,6 +12,7 @@ export type MapReportType = {
   } | null;
   locationName: string;
   imageUrls: string[];
+  audioUri : string | null;
   createdAt: Date;
 };
 

@@ -15,20 +15,17 @@ export class MediaService {
       quality: 0.7,
     });
 
-    if (!result.canceled) {
-      return result.assets[0].uri;
-    }
+    if (result.canceled) return null;
 
-    return null;
+    return result.assets[0].uri;
   }
 
   static async pickFromGallery() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      throw new Error("Gallery permission denied");
+      return null;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
@@ -36,10 +33,8 @@ export class MediaService {
       quality: 0.7,
     });
 
-    if (!result.canceled) {
-      return result.assets[0].uri;
-    }
+    if (result.canceled) return null;
 
-    return null;
+    return result.assets[0].uri;
   }
 }
