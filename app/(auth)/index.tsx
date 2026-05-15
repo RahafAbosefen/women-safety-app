@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   Pressable,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -11,16 +12,27 @@ import { auth } from "@/services/firebaseConfig";
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         router.replace("/(tabs)");
+      } else {
+        setCheckingAuth(false);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  if (checkingAuth) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +66,6 @@ export default function WelcomeScreen() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
