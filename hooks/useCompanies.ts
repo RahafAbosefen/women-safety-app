@@ -1,28 +1,84 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
-import app from "@/services/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
-const db = getFirestore(app);
+import { db } from "@/services/firebaseConfig";
+
+export type Company = {
+  id: string;
+  uid: string;
+  userId: string;
+
+  name: string;
+  type: string;
+  email: string;
+  phone: string;
+  role: string;
+
+  organizationName?: string;
+  fullName?: string;
+  category?: string;
+};
+
+const getCompanies = async (): Promise<Company[]> => {
+  try {
+    const usersRef = collection(db, "users");
+
+    const companiesQuery = query(
+      usersRef,
+      where("role", "==", "company")
+    );
+
+    const snapshot = await getDocs(companiesQuery);
+
+    const companies: Company[] = snapshot.docs.map((docItem) => {
+      const data: any = docItem.data();
+
+      const companyName =
+        data.name ||
+        data.organizationName ||
+        data.fullName ||
+        "Company";
+
+      const companyType =
+        data.type ||
+        data.category ||
+        "Support company";
+
+      return {
+        id: docItem.id,
+        uid: docItem.id,
+        userId: docItem.id,
+
+        name: companyName,
+        type: companyType,
+        email: data.email || "",
+        phone: data.phone || "",
+        role: data.role || "",
+
+        organizationName: data.organizationName || "",
+        fullName: data.fullName || "",
+        category: data.category || "",
+      };
+    });
+
+    return companies;
+  } catch (error) {
+    console.log("Get companies error:", error);
+    throw error;
+  }
+};
 
 export const useCompanies = () => {
-  const { data: companies, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["companies"],
-    queryFn: async () => {
-      const q = query(collection(db, "users"), where("role", "==", "company"));
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name ,
-          type: data.type || "Company",
-          email: data.email,
-          phone: data.phone || "",
-        };
-      });
-    },
-    staleTime: 0,
+    queryFn: getCompanies,
   });
 
-  return { companies, isLoading, isError };
+  return {
+    companies: data || [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  };
 };
