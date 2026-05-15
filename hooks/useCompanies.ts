@@ -14,20 +14,23 @@ export type Company = {
 
 const getCompanies = async (): Promise<Company[]> => {
   try {
-    const q = query(collection(db, "users"), where("role", "==", "company"));
-    const snapshot = await getDocs(q);
+    const companiesQuery = query(
+      collection(db, "users"),
+      where("role", "==", "company")
+    );
+    const snapshot = await getDocs(companiesQuery);
     return snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
-        name: data.name || data.email,
-        type: data.type || "Company",
-        email: data.email || "",
-        phone: data.phone || "",
+        name: data.name ?? data.email,
+        type: data.type ?? "Company",
+        email: data.email ?? "",
+        phone: data.phone ?? "",
       };
     });
   } catch (error) {
-    console.log("Get companies error:", error);
+    console.error("Get companies error:", error);
     throw error;
   }
 };
