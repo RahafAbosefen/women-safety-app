@@ -1,4 +1,12 @@
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
+
 import app from "./firebaseConfig";
 
 const db = getFirestore(app);
@@ -31,28 +39,34 @@ export const UsersService = {
     }
   },
 
-  updateUserProfile: async (uid: string, data: any) => {
-    try {
-      const { updateDoc } = await import("firebase/firestore");
-      await updateDoc(doc(db, "users", uid), {
+    updateUserProfile: async (uid: string, data: any) => {
+  try {
+    await setDoc(
+      doc(db, "users", uid),
+      {
         ...data,
         updatedAt: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Firestore Error (Update):", error);
-      throw error;
-    }
-  },
-
-  updateUserProfile: async (uid: string, data: any) => {
-  try {
-    const { updateDoc } = await import("firebase/firestore");
-    await updateDoc(doc(db, "users", uid), {
-      ...data,
-      updatedAt: new Date().toISOString(),
-    });
+      },
+      { merge: true }
+    );
   } catch (error) {
     console.error("Firestore Error (Update):", error);
+    throw error;
+  }
+},
+
+getCompanies: async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "users"));
+
+    return querySnapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((user: any) => user.role === "company");
+  } catch (error) {
+    console.error("Firestore Error (Get Companies):", error);
     throw error;
   }
 },
