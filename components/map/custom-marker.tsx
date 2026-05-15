@@ -12,8 +12,6 @@ const CustomMarker = ({ variant = "danger" }: CustomMarkerProps) => {
     return (
       <View style={styles.activeOuter}>
         <View style={styles.activeInner} />
-
-       
       </View>
     );
   }

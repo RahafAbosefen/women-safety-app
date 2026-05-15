@@ -1,5 +1,5 @@
-import { View, StyleSheet, Text, Pressable } from 'react-native';
-import { MapColors } from '@/constants/theme';
+import { View, StyleSheet, Text, Pressable } from "react-native";
+import { MapColors } from "@/constants/theme";
 
 type ReportButtonProps = {
   onPress: () => void;
@@ -26,7 +26,7 @@ const ReportButton = ({ onPress, disabled = false }: ReportButtonProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 90,
     left: 20,
     right: 20,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     backgroundColor: MapColors.primary,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   disabledButton: {
     opacity: 0.5,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   text: {
     color: MapColors.sheetBackground,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 
