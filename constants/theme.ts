@@ -56,6 +56,9 @@ export const MapColors = {
   supportText: "#845460",
   dangerMarker: "#C94444",
   neutralMarker: "#D7DDE0",
+  activeMarkerRingBackground: "rgba(33,69,86,0.08)",
+  overlayBackground: 'rgba(0,0,0,0.3)',
+  mutedText: '#9E9E9E',
 };
 export const AppColors = {
   primary: "#2d4a5e",
@@ -63,9 +66,10 @@ export const AppColors = {
   background: "#f5f5f5",
   card: "#dde8e8",
   white: "#ffffff",
-  error: "red",
+  error: '#C0392B',
   text: "#2d4a5e",
   success: "#4CAF50",
   gray: "#9EA2AE",
   border: "#dde8e8",
+  
 };

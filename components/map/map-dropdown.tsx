@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
 import { MapColors, AppColors } from "@/constants/theme";
+import { incidentOptions } from "@/constants/reportTypes";
+import { Ionicons } from "@expo/vector-icons";
 
 type MapDropdownProps = {
   value: string;
@@ -9,30 +10,39 @@ type MapDropdownProps = {
   error?: boolean;
 };
 
-const incidentOptions = [
-  { label: "Harassment", icon: "alert-circle" },
-  { label: "Physical violence", icon: "shield" },
-  { label: "Verbal abuse", icon: "message-circle" },
-  { label: "Others", icon: "more-horizontal" },
-];
-
 const MapDropdown = ({ value, onSelect, error = false }: MapDropdownProps) => {
   const [open, setOpen] = useState(false);
 
-  const handleSelect = (item: string) => {
-    onSelect(item);
+  const selectedOption = incidentOptions.find((item) => item.value === value);
+
+  const handleSelect = (value: string) => {
+    onSelect(value);
     setOpen(false);
   };
 
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => setOpen(!open)}
-        style={[styles.dropdownButton, error && styles.dropdownButtonError]}
+        onPress={() => setOpen((current) => !current)}
+        style={({ pressed }) => [
+          styles.dropdownButton,
+          error && styles.dropdownButtonError,
+          pressed && styles.pressedButton,
+        ]}
       >
-        <Text style={[styles.dropdownText, !value && styles.placeholderText]}>
-          {value || "Incident Type *"}
-        </Text>
+        <View style={styles.selectedContent}>
+          {selectedOption && (
+            <Ionicons
+              name={selectedOption.icon}
+              size={18}
+              color={MapColors.primary}
+            />
+          )}
+
+          <Text style={[styles.dropdownText, !value && styles.placeholderText]}>
+            {selectedOption?.label || "Incident Type *"}
+          </Text>
+        </View>
 
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
@@ -45,19 +55,24 @@ const MapDropdown = ({ value, onSelect, error = false }: MapDropdownProps) => {
         <View style={styles.optionsContainer}>
           {incidentOptions.map((item, index) => (
             <Pressable
-              key={item.label}
-              onPress={() => handleSelect(item.label)}
-              style={[
+              key={item.value}
+              onPress={() => handleSelect(item.value)}
+              style={({ pressed }) => [
                 styles.optionButton,
                 index !== incidentOptions.length - 1 && styles.optionBorder,
+                value === item.value && styles.selectedOption,
+                pressed && styles.pressedOption,
               ]}
             >
-              <Feather
-                name={item.icon as any}
-                size={16}
-                color={MapColors.primary}
-              />
-              <Text style={styles.optionText}>{item.label}</Text>
+              <View style={styles.optionContent}>
+                <Ionicons
+                  name={item.icon}
+                  size={18}
+                  color={MapColors.primary}
+                />
+
+                <Text style={styles.optionText}>{item.label}</Text>
+              </View>
             </Pressable>
           ))}
         </View>
@@ -118,6 +133,25 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 14,
     color: MapColors.primary,
+  },
+  pressedButton: {
+    opacity: 0.8,
+  },
+  pressedOption: {
+    opacity: 0.75,
+  },
+  optionContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  selectedOption: {
+    backgroundColor: MapColors.pageBackground,
+  },
+  selectedContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
 });
 

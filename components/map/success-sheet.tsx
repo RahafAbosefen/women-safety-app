@@ -9,7 +9,7 @@ type SuccessSheetProps={
 
 const SuccessSheet =({isVisible, onBackToMap }: SuccessSheetProps)=> {
     return(
-        <Modal visible={isVisible} animationType='slide' transparent>
+        <Modal visible={isVisible} animationType='slide' transparent  onRequestClose = {onBackToMap}>
         <View style={styles.overlay}>
             <View style={styles.sheet}>
                 <View style={styles.iconCircle}>
@@ -20,8 +20,11 @@ const SuccessSheet =({isVisible, onBackToMap }: SuccessSheetProps)=> {
              <Text style={styles.subtitle}> Your report has been received and shared with the relevant authorities 
                 </Text>
              <Text style={styles.support}>We are here to support you  </Text>
-             <Pressable style={styles.button} onPress={onBackToMap}>
-                <Text style={styles.buttonText}>Back to map  </Text>
+             <Pressable style={({pressed})=>[
+                styles.button,
+                pressed && styles.buttonPressed,
+             ]} onPress={onBackToMap}>
+                <Text style={styles.buttonText}> Back to map  </Text>
              </Pressable>
             </View>
           </View>
@@ -36,7 +39,7 @@ const SuccessSheet =({isVisible, onBackToMap }: SuccessSheetProps)=> {
           overlay: {
               flex: 1,
               justifyContent: 'flex-end' ,
-              backgroundColor: 'rgba(0,0,0,0.3)',
+              backgroundColor: MapColors.overlayBackground,
               
           },
           sheet:  {
@@ -74,7 +77,7 @@ const SuccessSheet =({isVisible, onBackToMap }: SuccessSheetProps)=> {
           },
           subtitle: { 
               textAlign: 'center',
-              color: '#9E9E9E',
+              color: MapColors.mutedText,
               marginBottom:12 ,
              
           },
@@ -92,8 +95,11 @@ const SuccessSheet =({isVisible, onBackToMap }: SuccessSheetProps)=> {
          
           },
           buttonText:  {
-              color: '#FFFFFF',
+              color: MapColors.sheetBackground,
               fontWeight:'600',
+          },
+          buttonPressed:{
+            opacity:0.8,
           },
       });
       
