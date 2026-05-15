@@ -22,7 +22,6 @@ import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
-
   const {
     control,
     isDirty,
@@ -212,7 +211,10 @@ export default function ProfileScreen() {
             <Text style={styles.myReportsBtnText}>My Reports</Text>
           </Pressable>
           <Pressable
-            style={[styles.myReportsBtn, { marginTop: 15, backgroundColor: AppColors.card }]}
+            style={[
+              styles.myReportsBtn,
+              { marginTop: 15, backgroundColor: AppColors.card },
+            ]}
             onPress={() => router.push("/contact-us")}
           >
             <Ionicons
@@ -221,30 +223,31 @@ export default function ProfileScreen() {
               color={AppColors.primary}
               style={{ marginRight: 10 }}
             />
-            <Text style={[styles.myReportsBtnText, { color: AppColors.primary }]}>
+            <Text
+              style={[styles.myReportsBtnText, { color: AppColors.primary }]}
+            >
               Contact Us
             </Text>
           </Pressable>
-
-      </ScrollView>
-      <AppAlert
-        visible={alert.visible}
-        title={alert.title}
-        message={alert.message}
-        confirmText={alert.confirmText}
-        onConfirm={alert.onConfirm}
-        onCancel={closeAlert}
-      />
-      <MediaPickerModal
-        visible={media.visible}
-        title="Profile Image"
-        hasImage={Boolean(profileImage)}
-        onCamera={media.openCamera}
-        onGallery={media.openGallery}
-        onRemove={media.removeImage}
-        onClose={media.closeModal}
-      />
-    </SafeAreaView>
-    </TouchableWithoutFeedback >
+        </ScrollView>
+        <AppAlert
+          visible={alert.visible}
+          title={alert.title}
+          message={alert.message}
+          confirmText={alert.confirmText}
+          onConfirm={alert.onConfirm}
+          onCancel={closeAlert}
+        />
+        <MediaPickerModal
+          visible={media.visible}
+          title="Profile Image"
+          hasImage={Boolean(profileImage)}
+          onCamera={media.openCamera}
+          onGallery={media.openGallery}
+          onRemove={removeProfileImage}
+          onClose={media.closeModal}
+        />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
