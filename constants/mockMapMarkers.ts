@@ -8,6 +8,6 @@ export type MockMapMarker = {
 };
 
 export const mockMapMarkers: MockMapMarker[] = [
-  { id: 1, latitude: 32.2495, longitude: 32.266, variant: "danger" },
-  { id: 2, latitude: 35.126, longitude: 35.145, variant: "danger" },
+  { id: 1, latitude: 31.5075, longitude: 34.4715, variant: "danger" },
+  { id: 2, latitude: 31.5035, longitude: 34.4745, variant: "danger" },
 ];

@@ -42,7 +42,7 @@ export default function CompanyTabLayout() {
           title: "Users",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={focused ? "people" : "people-outline"}
+              name={focused ? "business" : "business-outline"}
               size={24}
               color={color}
             />
@@ -66,10 +66,14 @@ export default function CompanyTabLayout() {
       <Tabs.Screen
         name="messages"
         options={{
-          title: "Messages",
+          title: "Users",
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "people" : "people-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />

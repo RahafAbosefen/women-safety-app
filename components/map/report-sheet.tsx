@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
-import { MapColors, AppColors } from "@/constants/theme";
-import MapDropdown from "@/components/map/map-dropdown";
+import { MapColors } from "@/constants/theme";
+import ReportTypeDropdown from "@/components/ReportTypeDropdown";
+import { reportSheetStyles as styles } from "@/styles/Map.styles";
 import {
   View,
-  StyleSheet,
   Text,
   Pressable,
   TextInput,
@@ -17,13 +17,14 @@ import {
   Image,
 } from "react-native";
 import { auth } from "@/services/firebaseConfig";
-import { addReportMap } from "@/services/ReportMapService";
+import { addReportMap } from "@/services/ReportService";
 import { Controller, useForm } from "react-hook-form";
 import { Ionicons } from "@expo/vector-icons";
 import { MediaPickerModal } from "../ui/MediaPickerModal";
 import { useMediaManager } from "@/hooks/useMediaManager";
 import { CloudinaryService } from "@/services/CloudinaryService";
 import AudioFeature from "@/components/AudioFeature";
+import { NotificationService } from "@/services/NotificationService";
 
 type ReportLocation = {
   latitude: number;
@@ -38,7 +39,6 @@ type ReportSheetProps = {
 };
 
 type ReportFormData = {
-  reportType: string;
   details: string;
 };
 
@@ -49,25 +49,37 @@ const ReportSheet = ({
   location,
 }: ReportSheetProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [reportType, setReportType] = useState("Harassment");
+  const [otherReportType, setOtherReportType] = useState("");
+
+  const closeDropdown = () => {
+    setOpen(false);
+    Keyboard.dismiss();
+  };
 
   const {
     control,
     handleSubmit,
-    setValue,
-    watch,
-    setError,
-    clearErrors,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ReportFormData>({
     defaultValues: {
-      reportType: "",
       details: "",
     },
     mode: "onSubmit",
   });
 
-  const selectedIncident = watch("reportType");
+  const detailsValue = watch("details");
+
+  const finalSelectedReportType =
+    reportType === "Other" ? otherReportType.trim() : reportType;
+
+  const canSubmitReport =
+    Boolean(location) &&
+    Boolean(finalSelectedReportType) &&
+    Boolean(detailsValue?.trim());
 
   const [images, setImages] = useState<string[]>([]);
   const saveImage = useCallback((uri: string) => {
@@ -101,11 +113,11 @@ const ReportSheet = ({
       return;
     }
 
-    if (!data.reportType) {
-      setError("reportType", {
-        type: "manual",
-        message: "Select the type that best describes the incident",
-      });
+    const finalReportType =
+      reportType === "Other" ? otherReportType.trim() : reportType;
+
+    if (reportType === "Other" && !otherReportType.trim()) {
+      Alert.alert("Error", "Please write the report type.");
       return;
     }
 
@@ -137,7 +149,7 @@ const ReportSheet = ({
         userEmail: user.email || "",
         userName: user.displayName || user.email || "Unknown user",
         userImage: user.photoURL || "",
-        reportType: data.reportType,
+        reportType: finalReportType,
 
         details: data.details,
         location,
@@ -147,8 +159,16 @@ const ReportSheet = ({
         status: "pending",
         createdAt: new Date(),
       });
-
-      reset({ reportType: "", details: "" });
+      await NotificationService.notifyUser({
+        userId: user.uid,
+        title: "Report Submitted",
+        body: "Your report has been received and shared with the relevant authorities.",
+        type: "mapReport",
+      });
+      reset({ details: "" });
+      setReportType("Harassment");
+      setOtherReportType("");
+      setOpen(false);
       setImages([]);
       setAudioUri(null);
       setAudioResetKey((prev) => prev + 1);
@@ -183,36 +203,27 @@ const ReportSheet = ({
             >
               <Text style={styles.title}>Report from this location</Text>
 
-              <Controller
-                control={control}
-                name="reportType"
-                rules={{
-                  required: "Select the type that best describes the incident",
-                }}
-                render={() => (
-                  <>
-                    <MapDropdown
-                      value={selectedIncident}
-                      onSelect={(value) => {
-                        setValue("reportType", value, { shouldValidate: true });
-                        clearErrors("reportType");
-                      }}
-                      error={!!errors.reportType}
-                    />
+              <ReportTypeDropdown
+                open={open}
+                reportType={reportType}
+                otherReportType={otherReportType}
+                variant="map"
+                onToggle={() => setOpen(!open)}
+                onSelect={(value) => {
+                  setReportType(value);
 
-                    <Text
-                      style={[
-                        styles.hint,
-                        errors.reportType && styles.errorHint,
-                      ]}
-                    >
-                      {errors.reportType
-                        ? errors.reportType.message
-                        : "Select the type that best describes the incident"}
-                    </Text>
-                  </>
-                )}
+                  if (value !== "Other") {
+                    setOtherReportType("");
+                    setOpen(false);
+                  }
+                }}
+                onOtherChange={setOtherReportType}
+                onClose={closeDropdown}
               />
+
+              <Text style={styles.hint}>
+                Select the type that best describes the incident
+              </Text>
 
               <Controller
                 control={control}
@@ -237,7 +248,13 @@ const ReportSheet = ({
               )}
 
               <Text style={styles.evidenceLabel}>Add evidence (optional)</Text>
-              <View style={styles.evidenceRow}>
+
+              <View
+                style={[
+                  styles.evidenceRow,
+                  audioUri && styles.evidenceRowWithAudio,
+                ]}
+              >
                 <Pressable
                   onPress={media.openModal}
                   style={({ pressed }) => [
@@ -250,25 +267,18 @@ const ReportSheet = ({
                     size={20}
                     color={MapColors.primary}
                   />
-
                   <Text style={styles.evidenceBtnText}>Photo</Text>
                 </Pressable>
 
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.evidenceBtn,
-                    pressed && styles.evidenceBtnPressed,
-                  ]}
-                >
-                  <Ionicons
-                    name="mic-outline"
-                    size={20}
-                    color={MapColors.primary}
-                  />
-                  <Text style={styles.evidenceBtnText}>Audio</Text>
-                </Pressable>
+                <AudioFeature
+                  key={`audio-${audioResetKey}`}
+                  resetKey={audioResetKey}
+                  variant="map"
+                  onAudioRecorded={(uri) => {
+                    setAudioUri(uri);
+                  }}
+                />
               </View>
-
               {images.length > 0 && (
                 <View style={styles.imagesContainer}>
                   {images.map((imageUri, index) => (
@@ -293,21 +303,18 @@ const ReportSheet = ({
                 </View>
               )}
 
-              <AudioFeature
-                key={`audio-${audioResetKey}`}
-                resetKey={audioResetKey}
-                onAudioRecorded={(uri) => {
-                  setAudioUri(uri);
-                }}
-              />
-
               <Pressable
                 onPress={handleSubmit(onFormSubmit)}
-                disabled={isSubmitting || !location}
+                disabled={isSubmitting || !canSubmitReport}
                 style={({ pressed }) => [
                   styles.submitBtn,
-                  pressed && !isSubmitting && styles.submitBtnPressed,
-                  (isSubmitting || !location) && styles.submitBtnDisabled,
+                  canSubmitReport && styles.submitBtnReady,
+                  pressed &&
+                    canSubmitReport &&
+                    !isSubmitting &&
+                    styles.submitBtnPressed,
+                  (!canSubmitReport || isSubmitting) &&
+                    styles.submitBtnDisabled,
                 ]}
               >
                 {isSubmitting ? (
@@ -332,160 +339,5 @@ const ReportSheet = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: MapColors.overlayBackground,
-  },
-  sheet: {
-    backgroundColor: MapColors.sheetBackground,
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 18,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    width: "100%",
-    maxHeight: "88%",
-  },
-  sheetContent: {
-    paddingBottom: 28,
-  },
-  title: {
-    color: MapColors.primary,
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  locationText: {
-    fontSize: 13,
-    color: MapColors.primary,
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  hint: {
-    fontSize: 12,
-    color: MapColors.submitButton,
-    marginBottom: 12,
-    width: "100%",
-  },
-  errorHint: {
-    color: AppColors.error,
-  },
-  input: {
-    borderWidth: 1,
-    padding: 14,
-    borderColor: MapColors.pageBackground,
-    borderRadius: 8,
-    marginBottom: 8,
-    minHeight: 100,
-    textAlignVertical: "top",
-    width: "100%",
-    backgroundColor: MapColors.sheetBackground,
-  },
-  inputError: {
-    borderColor: AppColors.error,
-  },
-  errorText: {
-    width: "100%",
-    fontSize: 12,
-    color: AppColors.error,
-    marginBottom: 16,
-  },
-  submitBtn: {
-    backgroundColor: MapColors.submitButton,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    width: "100%",
-    marginTop: 8,
-  },
-  submitBtnPressed: {
-    backgroundColor: MapColors.primary,
-    opacity: 0.9,
-  },
-  submitBtnDisabled: {
-    opacity: 0.7,
-  },
-  submitText: {
-    color: MapColors.sheetBackground,
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  evidenceLabel: {
-    textAlign: "center",
-    color: MapColors.supportText,
-    marginBottom: 12,
-  },
-  evidenceRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 12,
-    marginBottom: 16,
-  },
-  evidenceBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    borderWidth: 1,
-    borderColor: MapColors.primary,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 22,
-    backgroundColor: MapColors.sheetBackground,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  evidenceBtnPressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.97 }],
-  },
-  evidenceBtnText: {
-    color: MapColors.primary,
-    fontSize: 14,
-  },
-  reportImage: {
-    width: "100%",
-    height: 160,
-    borderRadius: 12,
-    marginBottom: 16,
-    backgroundColor: MapColors.pageBackground,
-  },
-  imagesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 16,
-    justifyContent: "center",
-  },
-  imageBox: {
-    width: 95,
-    height: 95,
-    borderRadius: 12,
-    position: "relative",
-  },
-  previewImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 12,
-  },
-  removeImageButton: {
-    position: "absolute",
-    top: -7,
-    right: -7,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: AppColors.error,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export default ReportSheet;

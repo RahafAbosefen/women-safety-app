@@ -59,6 +59,7 @@ export const MapColors = {
   activeMarkerRingBackground: "rgba(33,69,86,0.08)",
   overlayBackground: "rgba(0,0,0,0.3)",
   mutedText: "#9E9E9E",
+  dropdownBorder: "#EAD3CB",
 };
 export const UserManagementColors = {
   pageBackground: "#FAF5F3",

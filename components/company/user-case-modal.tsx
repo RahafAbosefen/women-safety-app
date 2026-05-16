@@ -1,12 +1,14 @@
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Modal, Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { UserManagementColors } from "@/constants/theme";
 import type { UserReport } from "@/services/UserManagementService";
+import { userCaseModalStyles as styles } from "@/styles/UserManagement.styles";
 
 type UserCaseModalProps = {
   visible: boolean;
   report: UserReport | null;
-  isLoading?: boolean;
+  isApproveLoading?: boolean;
+  isRejectLoading?: boolean;
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
@@ -15,7 +17,8 @@ type UserCaseModalProps = {
 const UserCaseModal = ({
   visible,
   report,
-  isLoading = false,
+  isApproveLoading = false,
+  isRejectLoading = false,
   onClose,
   onApprove,
   onReject,
@@ -71,12 +74,15 @@ const UserCaseModal = ({
 
           <View style={styles.actions}>
             <Pressable
-              disabled={isLoading}
+              disabled={isRejectLoading || isApproveLoading}
               onPress={onReject}
               style={({ pressed }) => [
                 styles.rejectButton,
-                pressed && !isLoading && styles.buttonPressed,
-                isLoading && styles.disabledButton,
+                pressed &&
+                  !isRejectLoading &&
+                  !isApproveLoading &&
+                  styles.buttonPressed,
+                isRejectLoading && styles.disabledButton,
               ]}
             >
               <Ionicons
@@ -88,12 +94,15 @@ const UserCaseModal = ({
             </Pressable>
 
             <Pressable
-              disabled={isLoading}
+              disabled={isApproveLoading || isRejectLoading}
               onPress={onApprove}
               style={({ pressed }) => [
                 styles.approveButton,
-                pressed && !isLoading && styles.buttonPressed,
-                isLoading && styles.disabledButton,
+                pressed &&
+                  !isApproveLoading &&
+                  !isRejectLoading &&
+                  styles.buttonPressed,
+                isApproveLoading && styles.disabledButton,
               ]}
             >
               <Ionicons
@@ -109,138 +118,5 @@ const UserCaseModal = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: UserManagementColors.overlayBackground,
-    paddingHorizontal: 20,
-  },
-  sheet: {
-    backgroundColor: UserManagementColors.cardBackground,
-    borderRadius: 22,
-    padding: 20,
-    width: "100%",
-  },
-  closeButton: {
-    alignSelf: "flex-end",
-    padding: 4,
-    marginBottom: 4,
-  },
-  userHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 22,
-  },
-  avatar: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    marginRight: 14,
-    backgroundColor: UserManagementColors.white,
-  },
-  avatarPlaceholder: {
-    width: 66,
-    height: 66,
-    borderRadius: 33,
-    marginRight: 14,
-    backgroundColor: UserManagementColors.avatarBackground,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: {
-    color: UserManagementColors.danger,
-    fontSize: 26,
-    fontWeight: "800",
-  },
-  userText: {
-    flex: 1,
-  },
-  name: {
-    color: UserManagementColors.textDark,
-    fontSize: 19,
-    fontWeight: "800",
-    marginBottom: 4,
-  },
-  sourceText: {
-    color: UserManagementColors.textMuted,
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  detailsCard: {
-    width: "100%",
-  },
-  label: {
-    color: UserManagementColors.danger,
-    fontSize: 14,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  fieldBox: {
-    backgroundColor: UserManagementColors.fieldBackground,
-    borderWidth: 1,
-    borderColor: UserManagementColors.fieldBorder,
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 18,
-  },
-  fieldText: {
-    color: UserManagementColors.textDark,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  detailsBox: {
-    backgroundColor: UserManagementColors.fieldBackground,
-    borderWidth: 1,
-    borderColor: UserManagementColors.fieldBorder,
-    borderRadius: 14,
-    padding: 14,
-    minHeight: 110,
-    marginBottom: 22,
-  },
-  detailsText: {
-    color: UserManagementColors.textDark,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 12,
-    width: "100%",
-  },
-  approveButton: {
-    flex: 1,
-    backgroundColor: UserManagementColors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  rejectButton: {
-    flex: 1,
-    backgroundColor: UserManagementColors.danger,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  actionText: {
-    color: UserManagementColors.white,
-    fontSize: 15,
-    fontWeight: "800",
-  },
-  buttonPressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.97 }],
-  },
-  disabledButton: {
-    opacity: 0.6,
-  },
-});
 
 export default UserCaseModal;

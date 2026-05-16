@@ -72,11 +72,12 @@ export default function UserTabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              focused={focused}
-              activeName="home"
-              inactiveName="home-outline"
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -86,11 +87,12 @@ export default function UserTabLayout() {
         name="addReport"
         options={{
           title: "Report",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              focused={focused}
-              activeName="add-circle"
-              inactiveName="add-circle-outline"
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={28}
+              color={color}
             />
           ),
         }}
@@ -100,11 +102,12 @@ export default function UserTabLayout() {
         name="map"
         options={{
           title: "Map",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              focused={focused}
-              activeName="map"
-              inactiveName="map-outline"
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "map" : "map-outline"}
+              size={28}
+              color={color}
             />
           ),
         }}
@@ -114,25 +117,12 @@ export default function UserTabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              focused={focused}
-              activeName="person"
-              inactiveName="person-outline"
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="messages"
-        options={{
-          title: "Messages",
-          tabBarIcon: ({ focused }) => (
-            <TabIcon
-              focused={focused}
-              activeName="chatbubbles"
-              inactiveName="chatbubbles-outline"
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color={color}
             />
           ),
         }}
@@ -147,17 +137,3 @@ export default function UserTabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  activeIconBox: {
-    backgroundColor: ACTIVE_BG,
-  },
-});
