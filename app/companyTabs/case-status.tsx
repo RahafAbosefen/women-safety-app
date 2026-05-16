@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { doc, updateDoc } from "firebase/firestore";
+
 import { db } from "@/services/firebaseConfig";
 import { styles } from "@/styles/CaseStatus.styles";
 import { AppColors } from "@/constants/theme";
@@ -15,6 +16,8 @@ export default function CaseStatusScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
+  const fromArchive = params.fromArchive as string;
+
   const id = params.id as string;
   const source = params.source as "reports" | "mapReports";
   const currentStatus = params.status as string;
@@ -25,8 +28,38 @@ export default function CaseStatusScreen() {
   const [selectedProgress, setSelectedProgress] = useState(
     currentStatus || "approved"
   );
+
   const [selectedPriority, setSelectedPriority] = useState("Low");
+
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const backPath =
+    fromArchive === "true"
+      ? "/companyTabs/archive-cases"
+      : "/companyTabs/CasesList";
+
+  const getReportTagStyle = () => {
+    if (reportType === "Harassment") {
+      return {
+        backgroundColor: "#F3F0FF",
+        color: "#6D5BD0",
+      };
+    }
+
+    if (reportType === "Physical violence") {
+      return {
+        backgroundColor: "#FFE7EA",
+        color: "#C2414B",
+      };
+    }
+
+    return {
+      backgroundColor: "#FFF0E2",
+      color: "#B85C00",
+    };
+  };
+
+  const tagStyle = getReportTagStyle();
 
   const handleConfirm = async () => {
     try {
@@ -45,7 +78,7 @@ export default function CaseStatusScreen() {
         updatedAt: new Date(),
       });
 
-      router.replace("/companyTabs/CasesList" as any);
+      router.replace(backPath as any);
     } catch (error) {
       console.error("Update case status error:", error);
       Alert.alert("Error", "Could not update case status");
@@ -56,60 +89,95 @@ export default function CaseStatusScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Pressable
-            onPress={() => router.replace("/companyTabs/CasesList" as any)}
-            style={{ marginBottom: 12 }}
-          >
-            <Ionicons name="arrow-back" size={28} color={AppColors.primary} />
+          <Pressable onPress={() => router.replace(backPath as any)}>
+            <Ionicons
+              name="arrow-back"
+              size={30}
+              color={AppColors.primary}
+            />
           </Pressable>
 
           <Text style={styles.title}>Case Status</Text>
         </View>
 
-        <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>
-            {userName || "Unknown user"}
-          </Text>
+        <View style={styles.userCard}>
+          <View style={styles.userRow}>
+            <View style={styles.profileIconBox}>
+              <Ionicons
+                name="person-outline"
+                size={34}
+                color={AppColors.primary}
+              />
+            </View>
 
-          <Text style={[styles.radioLabel, { marginTop: 8 }]}>
-            Case Type: {reportType || "Report"}
-          </Text>
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>
+                {userName || "Unknown user"}
+              </Text>
 
-          <Text style={[styles.radioLabel, { marginTop: 12 }]}>
-            Details: {details || "No details provided"}
-          </Text>
-        </View>
+              <View
+                style={[
+                  styles.reportTag,
+                  {
+                    backgroundColor: tagStyle.backgroundColor,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.reportTagText,
+                    {
+                      color: tagStyle.color,
+                    },
+                  ]}
+                >
+                  {reportType || "Report"}
+                </Text>
+              </View>
 
-        <View style={styles.mapContainer}>
-          <View
-            style={[
-              styles.map,
-              {
-                backgroundColor: AppColors.card,
-                justifyContent: "center",
-                alignItems: "center",
-              },
-            ]}
-          >
-            <Ionicons name="map-outline" size={50} color={AppColors.primary} />
+              <View style={styles.statusRow}>
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={18}
+                  color="#34A853"
+                />
+
+                <Text style={styles.statusText}>
+                  {selectedProgress}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.detailsBox}>
+            <Text style={styles.detailsTitle}>
+              Details
+            </Text>
+
+            <Text style={styles.detailsText}>
+              {details || "No details provided"}
+            </Text>
           </View>
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Case Progress</Text>
+          <Text style={styles.sectionTitle}>
+            Case Progress
+          </Text>
 
           {PROGRESS_OPTIONS.map((option) => (
             <Pressable
               key={option}
-              style={styles.radioRow}
+              style={styles.progressRow}
               onPress={() => setSelectedProgress(option)}
             >
               <View
                 style={[
                   styles.radioCircle,
-                  selectedProgress === option && styles.radioSelected,
+                  selectedProgress === option &&
+                    styles.radioSelected,
                 ]}
               >
                 {selectedProgress === option && (
@@ -117,25 +185,30 @@ export default function CaseStatusScreen() {
                 )}
               </View>
 
-              <Text style={styles.radioLabel}>{option}</Text>
+              <Text style={styles.progressText}>
+                {option}
+              </Text>
             </Pressable>
           ))}
         </View>
 
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Priority Level</Text>
+          <Text style={styles.sectionTitle}>
+            Priority Level
+          </Text>
 
-          <View style={{ flexDirection: "row", gap: 20 }}>
+          <View style={styles.priorityContainer}>
             {PRIORITY_OPTIONS.map((option) => (
               <Pressable
                 key={option}
-                style={styles.radioRow}
                 onPress={() => setSelectedPriority(option)}
+                style={styles.priorityItem}
               >
                 <View
                   style={[
                     styles.radioCircle,
-                    selectedPriority === option && styles.radioSelected,
+                    selectedPriority === option &&
+                      styles.radioSelected,
                   ]}
                 >
                   {selectedPriority === option && (
@@ -143,21 +216,20 @@ export default function CaseStatusScreen() {
                   )}
                 </View>
 
-                <Text style={styles.radioLabel}>{option}</Text>
+                <Text style={styles.priorityText}>
+                  {option}
+                </Text>
               </Pressable>
             ))}
           </View>
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.confirmButton,
-            pressed && styles.confirmButtonPressed,
-          ]}
+          style={styles.updateButton}
           onPress={handleConfirm}
           disabled={isUpdating}
         >
-          <Text style={styles.confirmButtonText}>
+          <Text style={styles.updateButtonText}>
             {isUpdating ? "UPDATING..." : "UPDATE STATUS"}
           </Text>
         </Pressable>

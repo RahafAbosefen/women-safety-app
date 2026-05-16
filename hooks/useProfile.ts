@@ -9,6 +9,7 @@ import { useMediaManager } from "./useMediaManager";
 import { useAlertManager } from "./useAlertManager";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CloudinaryService } from "@/services/CloudinaryService";
+import { NotificationService } from "@/services/NotificationService";
 
 interface ProfileFormData {
   name: string;
@@ -158,13 +159,18 @@ export const useProfile = () => {
   const handleNotificationsChange = async () => {
     const uid = await getUserId();
 
+    const newValue = !(data?.isNotificationsEnabled ?? false);
+
     await UsersService.updateUserProfile(uid, {
-      isNotificationsEnabled: !(data?.isNotificationsEnabled ?? false),
+      isNotificationsEnabled: newValue,
     });
 
     queryClient.invalidateQueries({ queryKey: ["userProfile"] });
-  };
 
+    if (newValue) {
+      await NotificationService.requestPermissions();
+    }
+  };
   const confirmLogout = useCallback(async () => {
     closeAlert();
     await logout();

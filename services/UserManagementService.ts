@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -86,8 +87,5 @@ export const approveUserReport = async (report: UserReport) => {
 export const rejectUserReport = async (report: UserReport) => {
   const reportRef = doc(db, report.source, report.id);
 
-  await updateDoc(reportRef, {
-    status: "rejected",
-    reviewedAt: new Date(),
-  });
+  await deleteDoc(reportRef);
 };

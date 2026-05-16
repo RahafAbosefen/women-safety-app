@@ -36,7 +36,7 @@ export const UsersService = {
         ...data,
         updatedAt: new Date().toISOString(),
       },
-      { merge: true }
+      { merge: true },
     );
   },
 

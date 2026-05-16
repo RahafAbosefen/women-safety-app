@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import app from "./firebaseConfig";
 import { UsersService } from "./UsersService";
-import StorageService from "./StorageService"; // <--- تأكدي من استيراد الـ StorageService هنا
+import StorageService from "./StorageService"; 
 
 const auth = getAuth(app);
 
@@ -31,7 +31,7 @@ export const signUp = async (payload: any) => {
   );
   const user = response.user;
 
-  // 👇 الخطوة الناقصة: تخزين بيانات المستخدم فوراً بعد إنشاء الحساب
+  
   await StorageService.saveUser(user); 
 
   if (payload.role === "company") {
@@ -56,7 +56,7 @@ export const signUp = async (payload: any) => {
 export const logout = async () => {
   const auth = getAuth(app);
   await signOut(auth);
-  await StorageService.removeUser(); // <--- أو اسم الدالة اللي بتمسح التخزين عندك
+  await StorageService.removeUser();
 };
 
 export const getUserRole = async (uid: string) => {
