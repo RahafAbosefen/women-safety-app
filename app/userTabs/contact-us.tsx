@@ -65,6 +65,10 @@ export default function ContactUsScreen() {
     if (!db) return;
 
     const rows = await db.getAllAsync<Company>("SELECT * FROM companies;");
+<<<<<<< HEAD
+
+=======
+>>>>>>> main
     setCompanies(rows);
   }, [db]);
 
@@ -87,7 +91,7 @@ export default function ContactUsScreen() {
           String(company.name || ""),
           String(company.type || ""),
           String(company.phone || ""),
-          String(company.email || "")
+          String(company.email || ""),
         );
       }
 
@@ -135,17 +139,19 @@ export default function ContactUsScreen() {
         Alert.alert("Error", error.message ?? "Could not open chat");
       }
     },
-    [router]
+    [router],
   );
 
   const renderCompany = useCallback(
     ({ item }: { item: Company }) => (
       <Pressable
-        style={({ pressed }) => [
-          styles.card,
-          pressed && styles.cardPressed,
-        ]}
-        onPress={() => openChatWithCompany(item)}
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+        onPress={() =>
+          router.push({
+            pathname: "/userTabs/company-details/[id]" as any,
+            params: { id: item.id },
+          })
+        }
       >
         <View style={styles.iconContainer}>
           <Ionicons
@@ -160,14 +166,21 @@ export default function ContactUsScreen() {
           <Text style={styles.cardType}>{item.type}</Text>
         </View>
 
-        <Ionicons
-          name="chatbubble-ellipses-outline"
-          size={22}
-          color={AppColors.primary}
-        />
+        <Pressable
+          onPress={(e) => {
+            e.stopPropagation();
+            openChatWithCompany(item);
+          }}
+        >
+          <Ionicons
+            name="chatbubble-ellipses-outline"
+            size={22}
+            color={AppColors.primary}
+          />
+        </Pressable>
       </Pressable>
     ),
-    [openChatWithCompany]
+    [openChatWithCompany, router],
   );
 
   if (isLoading && companies.length === 0) {
