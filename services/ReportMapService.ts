@@ -4,6 +4,8 @@ import { db } from "./firebaseConfig";
 export type MapReportType = {
   userId: string;
   userEmail: string;
+  userName?: string;
+  userImage?: string;
   reportType: string;
   details: string;
   location: {
@@ -12,15 +14,10 @@ export type MapReportType = {
   } | null;
   locationName: string;
   imageUrls: string[];
-<<<<<<< Updated upstream
-  audioUri : string | null;
-=======
   audioUrl: string | null;
   status: "pending" | "approved" | "rejected";
->>>>>>> Stashed changes
   createdAt: Date;
 };
-
 export const addReportMap = async (report: MapReportType) => {
   const docRef = await addDoc(collection(db, "mapReports"), report);
   return docRef;

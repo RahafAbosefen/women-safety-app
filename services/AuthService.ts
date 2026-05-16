@@ -16,15 +16,8 @@ export const login = async (payload: any) => {
     payload.password,
   );
   const user = response.user;
-  const token = await user.getIdToken();
-  await StorageService.saveUser(user);
-  await StorageService.saveToken(token);
   return user;
 };
-
-
-
-
 export const signUp = async (payload: any) => {
   const response = await createUserWithEmailAndPassword(
     auth,
@@ -53,16 +46,11 @@ export const signUp = async (payload: any) => {
 };
 
 export const logout = async () => {
-    const auth = getAuth(app);
-    await signOut(auth);
+  const auth = getAuth(app);
+  await signOut(auth);
+};
 
-<<<<<<< Updated upstream
-    await StorageService.removeUser();
-    await StorageService.removeToken();
-}
-=======
 export const getUserRole = async (uid: string) => {
   const profile = await UsersService.getUserProfile(uid);
   return profile?.role || null;
 };
->>>>>>> Stashed changes

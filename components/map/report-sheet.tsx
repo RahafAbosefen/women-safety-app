@@ -23,6 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MediaPickerModal } from "../ui/MediaPickerModal";
 import { useMediaManager } from "@/hooks/useMediaManager";
 import { CloudinaryService } from "@/services/CloudinaryService";
+import AudioFeature from "@/components/AudioFeature";
 
 type ReportLocation = {
   latitude: number;
@@ -68,12 +69,26 @@ const ReportSheet = ({
 
   const selectedIncident = watch("reportType");
 
-  const [reportImage, setReportImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
   const saveImage = useCallback((uri: string) => {
-    setReportImage(uri || null);
+    if (uri) {
+      setImages((prev) => [...prev, uri]);
+    }
   }, []);
 
   const media = useMediaManager(saveImage);
+
+  const removeImage = (indexToRemove: number) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const removeAllImages = () => {
+    setImages([]);
+    media.closeModal();
+  };
+
+  const [audioUri, setAudioUri] = useState<string | null>(null);
+  const [audioResetKey, setAudioResetKey] = useState(0);
 
   const onFormSubmit = async (data: ReportFormData) => {
     Keyboard.dismiss();
@@ -106,31 +121,38 @@ const ReportSheet = ({
 
       let imageUrls: string[] = [];
 
-      if (reportImage) {
-        const uploadedImageUrl =
-          await CloudinaryService.uploadImage(reportImage);
-        imageUrls = [uploadedImageUrl];
+      if (images.length > 0) {
+        imageUrls = await Promise.all(
+          images.map((imageUri) => CloudinaryService.uploadImage(imageUri)),
+        );
+      }
+      let uploadedAudioUrl: string | null = null;
+
+      if (audioUri) {
+        uploadedAudioUrl = await CloudinaryService.uploadAudio(audioUri);
       }
 
       await addReportMap({
         userId: user.uid,
         userEmail: user.email || "",
+        userName: user.displayName || user.email || "Unknown user",
+        userImage: user.photoURL || "",
         reportType: data.reportType,
+
         details: data.details,
         location,
         locationName: `${location.latitude}, ${location.longitude}`,
         imageUrls,
-<<<<<<< Updated upstream
-        audioUri: null,
-=======
         audioUrl: uploadedAudioUrl,
         status: "pending",
->>>>>>> Stashed changes
         createdAt: new Date(),
       });
 
       reset({ reportType: "", details: "" });
-      setReportImage(null);
+      setImages([]);
+      setAudioUri(null);
+      setAudioResetKey((prev) => prev + 1);
+
       onSubmit();
     } catch (error: any) {
       console.log("Firestore error:", error);
@@ -243,17 +265,41 @@ const ReportSheet = ({
                     size={20}
                     color={MapColors.primary}
                   />
-
                   <Text style={styles.evidenceBtnText}>Audio</Text>
                 </Pressable>
               </View>
 
-              {reportImage && (
-                <Image
-                  source={{ uri: reportImage }}
-                  style={styles.reportImage}
-                />
+              {images.length > 0 && (
+                <View style={styles.imagesContainer}>
+                  {images.map((imageUri, index) => (
+                    <View key={`${imageUri}-${index}`} style={styles.imageBox}>
+                      <Image
+                        source={{ uri: imageUri }}
+                        style={styles.previewImage}
+                      />
+
+                      <Pressable
+                        style={styles.removeImageButton}
+                        onPress={() => removeImage(index)}
+                      >
+                        <Ionicons
+                          name="close"
+                          size={18}
+                          color={MapColors.sheetBackground}
+                        />
+                      </Pressable>
+                    </View>
+                  ))}
+                </View>
               )}
+
+              <AudioFeature
+                key={`audio-${audioResetKey}`}
+                resetKey={audioResetKey}
+                onAudioRecorded={(uri) => {
+                  setAudioUri(uri);
+                }}
+              />
 
               <Pressable
                 onPress={handleSubmit(onFormSubmit)}
@@ -276,11 +322,11 @@ const ReportSheet = ({
       </KeyboardAvoidingView>
       <MediaPickerModal
         visible={media.visible}
-        title="Report evidence"
-        hasImage={Boolean(reportImage)}
+        title="Report Image"
+        hasImage={images.length > 0}
         onCamera={media.openCamera}
         onGallery={media.openGallery}
-        onRemove={media.removeImage}
+        onRemove={removeAllImages}
         onClose={media.closeModal}
       />
     </Modal>
@@ -382,15 +428,23 @@ const styles = StyleSheet.create({
   evidenceBtn: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     borderWidth: 1,
     borderColor: MapColors.primary,
-    borderRadius: 8,
-    padding: 10,
-    paddingHorizontal: 20,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    backgroundColor: MapColors.sheetBackground,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   evidenceBtnPressed: {
     opacity: 0.7,
+    transform: [{ scale: 0.97 }],
   },
   evidenceBtnText: {
     color: MapColors.primary,
@@ -402,6 +456,35 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     backgroundColor: MapColors.pageBackground,
+  },
+  imagesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 16,
+    justifyContent: "center",
+  },
+  imageBox: {
+    width: 95,
+    height: 95,
+    borderRadius: 12,
+    position: "relative",
+  },
+  previewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: -7,
+    right: -7,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: AppColors.error,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

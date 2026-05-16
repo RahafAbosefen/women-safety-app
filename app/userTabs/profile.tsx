@@ -213,28 +213,6 @@ export default function ProfileScreen() {
             />
             <Text style={styles.myReportsBtnText}>My Reports</Text>
           </Pressable>
-<<<<<<< Updated upstream:app/(tabs)/profile.tsx
-          <Pressable
-            style={[
-              styles.myReportsBtn,
-              { marginTop: 15, backgroundColor: AppColors.card },
-            ]}
-            onPress={() => router.push("/contact-us")}
-          >
-            <Ionicons
-              name="chatbubbles-outline"
-              size={20}
-              color={AppColors.primary}
-              style={{ marginRight: 10 }}
-            />
-            <Text
-              style={[styles.myReportsBtnText, { color: AppColors.primary }]}
-            >
-              Contact Us
-            </Text>
-          </Pressable>
-=======
->>>>>>> Stashed changes:app/userTabs/profile.tsx
         </ScrollView>
         <AppAlert
           visible={alert.visible}

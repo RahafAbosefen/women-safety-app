@@ -57,8 +57,24 @@ export const MapColors = {
   dangerMarker: "#C94444",
   neutralMarker: "#D7DDE0",
   activeMarkerRingBackground: "rgba(33,69,86,0.08)",
-  overlayBackground: 'rgba(0,0,0,0.3)',
-  mutedText: '#9E9E9E',
+  overlayBackground: "rgba(0,0,0,0.3)",
+  mutedText: "#9E9E9E",
+};
+export const UserManagementColors = {
+  pageBackground: "#FAF5F3",
+  cardBackground: "#EAD3CB",
+
+  primary: "#214556",
+  danger: "#845460",
+
+  textDark: "#1F2933",
+  textMuted: "#6B7280",
+  white: "#FFFFFF",
+
+  avatarBackground: "#D8AAA1",
+  fieldBackground: "rgba(255,255,255,0.55)",
+  fieldBorder: "rgba(132,84,96,0.18)",
+  overlayBackground: "rgba(0,0,0,0.55)",
 };
 export const AppColors = {
   primary: "#2d4a5e",
@@ -66,19 +82,14 @@ export const AppColors = {
   background: "#f5f5f5",
   card: "#dee5ed",
   white: "#ffffff",
-  error: '#C0392B',
+  error: "#C0392B",
   text: "#2d4a5e",
   success: "#4CAF50",
   gray: "#9EA2AE",
-<<<<<<< Updated upstream
-  border: "#dde8e8",
-  
-=======
   border: "#F1F5F9",
   textSecondary: "#64748b",
   muted: "#94a3b8",
   shadow: "#000",
   badge: "#EEF2F7",
   overlayLight: "rgba(255,255,255,0.2)",
->>>>>>> Stashed changes
 };
