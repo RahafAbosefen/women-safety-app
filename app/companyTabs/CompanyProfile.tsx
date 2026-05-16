@@ -24,6 +24,7 @@ export default function CompanyProfile() {
           onRemove={profileLogic.removeProfileImage} 
           onClose={profileLogic.media.closeModal}
         />
+        
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
