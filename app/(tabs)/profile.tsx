@@ -201,7 +201,10 @@ export default function ProfileScreen() {
             />
             <Text style={styles.checkboxText}>Anonymous User</Text>
           </Pressable>
-          <Pressable style={styles.myReportsBtn}>
+          <Pressable
+            onPress={() => router.push("/my-reports")}
+            style={styles.myReportsBtn}
+          >
             <Ionicons
               name="document-text-outline"
               size={20}
@@ -210,6 +213,7 @@ export default function ProfileScreen() {
             />
             <Text style={styles.myReportsBtnText}>My Reports</Text>
           </Pressable>
+<<<<<<< Updated upstream:app/(tabs)/profile.tsx
           <Pressable
             style={[
               styles.myReportsBtn,
@@ -229,6 +233,8 @@ export default function ProfileScreen() {
               Contact Us
             </Text>
           </Pressable>
+=======
+>>>>>>> Stashed changes:app/userTabs/profile.tsx
         </ScrollView>
         <AppAlert
           visible={alert.visible}

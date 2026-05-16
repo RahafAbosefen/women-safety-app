@@ -120,7 +120,12 @@ const ReportSheet = ({
         location,
         locationName: `${location.latitude}, ${location.longitude}`,
         imageUrls,
+<<<<<<< Updated upstream
         audioUri: null,
+=======
+        audioUrl: uploadedAudioUrl,
+        status: "pending",
+>>>>>>> Stashed changes
         createdAt: new Date(),
       });
 

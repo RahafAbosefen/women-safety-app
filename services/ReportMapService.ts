@@ -12,7 +12,12 @@ export type MapReportType = {
   } | null;
   locationName: string;
   imageUrls: string[];
+<<<<<<< Updated upstream
   audioUri : string | null;
+=======
+  audioUrl: string | null;
+  status: "pending" | "approved" | "rejected";
+>>>>>>> Stashed changes
   createdAt: Date;
 };
 

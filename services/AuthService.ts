@@ -1,6 +1,10 @@
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import app from "./firebaseConfig";
-import StorageService from "@/services/StorageService";
 import { UsersService } from "./UsersService";
 
 const auth = getAuth(app);
@@ -28,7 +32,7 @@ export const signUp = async (payload: any) => {
     payload.password,
   );
   const user = response.user;
-  
+
   if (payload.role === "company") {
     await UsersService.createUserProfile(user.uid, {
       email: payload.email,
@@ -44,7 +48,7 @@ export const signUp = async (payload: any) => {
       role: "user",
     });
   }
-  
+
   return user;
 };
 
@@ -52,6 +56,13 @@ export const logout = async () => {
     const auth = getAuth(app);
     await signOut(auth);
 
+<<<<<<< Updated upstream
     await StorageService.removeUser();
     await StorageService.removeToken();
 }
+=======
+export const getUserRole = async (uid: string) => {
+  const profile = await UsersService.getUserProfile(uid);
+  return profile?.role || null;
+};
+>>>>>>> Stashed changes
