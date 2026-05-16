@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { router, Stack } from "expo-router";
+import {  Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function CompanyIndex() {
