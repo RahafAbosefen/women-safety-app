@@ -201,7 +201,10 @@ export default function ProfileScreen() {
             />
             <Text style={styles.checkboxText}>Anonymous User</Text>
           </Pressable>
-          <Pressable style={styles.myReportsBtn}>
+          <Pressable
+            onPress={() => router.push("/my-reports")}
+            style={styles.myReportsBtn}
+          >
             <Ionicons
               name="document-text-outline"
               size={20}
@@ -209,25 +212,6 @@ export default function ProfileScreen() {
               style={{ marginRight: 10 }}
             />
             <Text style={styles.myReportsBtnText}>My Reports</Text>
-          </Pressable>
-          <Pressable
-            style={[
-              styles.myReportsBtn,
-              { marginTop: 15, backgroundColor: AppColors.card },
-            ]}
-            onPress={() => router.push("/userTabs/contact-us")}
-          >
-            <Ionicons
-              name="chatbubbles-outline"
-              size={20}
-              color={AppColors.primary}
-              style={{ marginRight: 10 }}
-            />
-            <Text
-              style={[styles.myReportsBtnText, { color: AppColors.primary }]}
-            >
-              Contact Us
-            </Text>
           </Pressable>
         </ScrollView>
         <AppAlert

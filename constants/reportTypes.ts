@@ -10,22 +10,22 @@ export type IncidentOption = {
 export const incidentOptions: IncidentOption[] = [
   {
     label: "Harassment",
-    value: "harassment",
+    value: "Harassment",
     icon: "alert-circle-outline",
   },
   {
     label: "Physical violence",
-    value: "physical_violence",
+    value: "Physical violence",
     icon: "shield-outline",
   },
   {
     label: "Verbal abuse",
-    value: "verbal_abuse",
+    value: "Verbal abuse",
     icon: "chatbubble-ellipses-outline",
   },
   {
     label: "Others",
-    value: "others",
+    value: "Others",
     icon: "ellipsis-horizontal-circle-outline",
   },
 ];

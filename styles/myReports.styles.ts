@@ -1,0 +1,132 @@
+import { StyleSheet } from "react-native";
+import { AppColors } from "@/constants/theme";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: AppColors.background,
+  },
+
+  content: {
+    paddingTop: 55,
+    paddingBottom: 90,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    marginBottom: 22,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "900",
+    color: AppColors.primary,
+    marginLeft: 10,
+    letterSpacing: -0.5,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    backgroundColor: AppColors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  stateBox: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 120,
+    paddingHorizontal: 30,
+  },
+  stateText: {
+    marginTop: 14,
+    fontSize: 18,
+    fontWeight: "800",
+    color: AppColors.primary,
+    textAlign: "center",
+  },
+  subText: {
+    marginTop: 6,
+    fontSize: 14,
+    color: AppColors.gray,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  card: {
+    backgroundColor: AppColors.white,
+    marginHorizontal: 18,
+    marginBottom: 16,
+    borderRadius: 24,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconBox: {
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    backgroundColor: AppColors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+  },
+  cardContent: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  CardTitle: {
+    fontSize: 17,
+    fontWeight: "900",
+    color: AppColors.secondary,
+    marginBottom: 5,
+    textTransform: "capitalize",
+  },
+  desc: {
+    fontSize: 13,
+    color: AppColors.textSecondary,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    backgroundColor: AppColors.badge,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 30,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: AppColors.primary,
+    letterSpacing: 0.3,
+  },
+  arrowBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: AppColors.border,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  metaText: {
+    fontSize: 11,
+    color: "#94A3B8",
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+});
