@@ -3,15 +3,12 @@ import { Platform } from "react-native";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 import { db } from "@/services/firebaseConfig";
-
-let handlerReady = false;
+import { UsersService } from "./UsersService";
 
 type NotificationType = "sos" | "report" | "mapReport" | "general";
 
 export const NotificationService = {
   setup: () => {
-    if (handlerReady) return;
-
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowBanner: true,
@@ -20,8 +17,6 @@ export const NotificationService = {
         shouldSetBadge: false,
       }),
     });
-
-    handlerReady = true;
   },
 
   requestPermissions: async () => {
@@ -38,7 +33,6 @@ export const NotificationService = {
     }
 
     if (finalStatus !== "granted") {
-      console.log("Notification permission not granted");
       return false;
     }
 
@@ -107,6 +101,8 @@ export const NotificationService = {
     body: string;
     type?: NotificationType;
   }) => {
+    const user = await UsersService.getUserProfile(userId);
+
     await NotificationService.saveInAppNotification({
       userId,
       title,
@@ -114,9 +110,11 @@ export const NotificationService = {
       type,
     });
 
-    await NotificationService.showLocalNotification({
-      title,
-      body,
-    });
+    if (user?.isNotificationsEnabled) {
+      await NotificationService.showLocalNotification({
+        title,
+        body,
+      });
+    }
   },
 };
