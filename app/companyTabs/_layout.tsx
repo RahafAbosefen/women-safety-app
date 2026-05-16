@@ -81,7 +81,12 @@ export default function CompanyTabLayout() {
       <Tabs.Screen name="CasesList" options={{ href: null }} />
       <Tabs.Screen name="case-status" options={{ href: null }} />
       <Tabs.Screen name="archive-cases" options={{ href: null }} />
-      <Tabs.Screen name="company-details" options={{ href: null }} />
-    </Tabs>
+<Tabs.Screen 
+  name="company-details/[id]" 
+  options={{ 
+    href: null,
+    headerShown: false
+  }} 
+/>    </Tabs>
   );
 }

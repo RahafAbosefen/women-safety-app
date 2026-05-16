@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { UsersService } from "@/services/UsersService"; // تأكدي أن المسار صحيح حسب مشروعكم
 
 export default function CompanyDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -23,31 +24,46 @@ export default function CompanyDetailsScreen() {
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const mockData = {
-          companyName: "Hello gdhdb",
-          serviceType: "Psychological Support",
-          email: "ragha@gmail.com",
-          phoneNumber: "05999595",
-          emergencyPhone: "0599",
-          companyLocation: "Ramallah",
-          serviceStartTime: "4:31 AM",
-          serviceEndTime: "4:00 PM",
-          companyDescription: "vdvdbd يارب اخلص",
-        };
-        setCompany(mockData);
+        setLoading(true);
+        // 🟢 استدعاء البيانات الحقيقية من السيرفر
+        const data = await UsersService.getUserProfile(id as string);
+       console.log("🔥 Firebase Data:", data);
+        setCompany(data);
       } catch (error) {
         console.log("Error fetching company:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCompany();
+
+    if (id) {
+      fetchCompany();
+    }
   }, [id]);
+
+  // ⏰ دالة ذكية لتنسيق الوقت الحقيقي وجعله مقروءاً بوضوح
+  const formatTime = (timeString: string) => {
+    if (!timeString) return "—";
+    try {
+      // إذا كان الوقت يحتوي على ثواني مثل 16:00:00، نأخذ الساعات والدقائق فقط
+      const [hoursStr, minutesStr] = timeString.split(":");
+      let hours = parseInt(hoursStr, 10);
+      const minutes = minutesStr ? minutesStr.substring(0, 2) : "00";
+      
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // الساعة 0 تتحول لـ 12
+      
+      return `${hours}:${minutes} ${ampm}`;
+    } catch (e) {
+      return timeString; // لو الصيغة غريبة يعرضها كما هي كخطة احتياطية
+    }
+  };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#7B4DDB" />
+        <ActivityIndicator size="large" color="AppColors.gray" />
       </View>
     );
   }
@@ -59,6 +75,11 @@ export default function CompanyDetailsScreen() {
       </View>
     );
   }
+
+  // دمج وقت البداية والنهاية بعد التنسيق
+  const workingHours = (company.serviceStartTime || company.serviceEndTime)
+    ? `${formatTime(company.serviceStartTime)} - ${formatTime(company.serviceEndTime)}`
+    : "—";
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -82,17 +103,22 @@ export default function CompanyDetailsScreen() {
             </Pressable>
           </View>
 
-          {/* منطقة الصورة المرفوعة لتأتي فوق الهيدر والاسم */}
+          {/* منطقة الصورة الحقيقية للبروفايل والاسم */}
           <View style={styles.profileImageContainer}>
             <View style={styles.imagePlaceholder}>
-              {company.logo ? (
-                <Image source={{ uri: company.logo }} style={styles.logoImage} />
+              {/* 🖼️ التعديل الأول: استقبال وعرض صورة البروفايل الحقيقية من السيرفر إذا وجدت */}
+              {company.profilePicture || company.logo || company.image ? (
+                <Image 
+                  source={{ uri: company.profilePicture || company.logo || company.image }} 
+                  style={styles.logoImage} 
+                />
               ) : (
-                <Ionicons name="business-outline" size={44} color="#7B4DDB" />
+                // أيقونة احتياطية لو المستخدم مش حاطط صورة بروفايل
+                <Ionicons name="business-outline" size={44} color="AppColors.gray" />
               )}
             </View>
-            <Text style={styles.companyName}>{company.companyName}</Text>
-            <Text style={styles.serviceType}>{company.serviceType}</Text>
+            <Text style={styles.companyName}>{company.companyName || company.name}</Text>
+            <Text style={styles.serviceType}>{company.serviceType || "Provider"}</Text>
           </View>
 
           {/* كارد المعلومات الأبيض مع الخطوط الفاصلة */}
@@ -106,13 +132,14 @@ export default function CompanyDetailsScreen() {
             <InfoRow icon="alert-circle-outline" label="EMERGENCY PHONE" value={company.emergencyPhone} valueColor="#D32F2F" />
             <View style={styles.divider} />
 
-            <InfoRow icon="location-outline" label="LOCATION" value={company.companyLocation} />
+            <InfoRow icon="location-outline" label="LOCATION" value={company.companyLocation || company.location} />
             <View style={styles.divider} />
 
-            <InfoRow icon="time-outline" label="WORKING HOURS" value={`${company.serviceStartTime} - ${company.serviceEndTime}`} />
+            {/* ⏰ التعديل الثاني: عرض الساعات بطريقة منسقة ومقروءة */}
+            <InfoRow icon="time-outline" label="WORKING HOURS" value={workingHours} />
             <View style={styles.divider} />
 
-            <InfoRow icon="document-text-outline" label="ABOUT COMPANY" value={company.companyDescription} />
+            <InfoRow icon="document-text-outline" label="ABOUT COMPANY" value={company.companyDescription || company.description} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -124,7 +151,7 @@ function InfoRow({ icon, label, value, valueColor }: { icon: any; label: string;
   return (
     <View style={styles.infoRow}>
       <View style={styles.iconWrapper}>
-        <Ionicons name={icon} size={20} color="#7B4DDB" />
+        <Ionicons name={icon} size={20} color="AppColors.gray" />
       </View>
       <View style={styles.infoText}>
         <Text style={styles.infoLabel}>{label}</Text>
