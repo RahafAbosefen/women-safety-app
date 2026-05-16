@@ -65,10 +65,6 @@ export default function ContactUsScreen() {
     if (!db) return;
 
     const rows = await db.getAllAsync<Company>("SELECT * FROM companies;");
-<<<<<<< HEAD
-
-=======
->>>>>>> main
     setCompanies(rows);
   }, [db]);
 
