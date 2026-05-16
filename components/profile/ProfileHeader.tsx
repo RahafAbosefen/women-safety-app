@@ -30,7 +30,7 @@ export const ProfileHeader = ({
           <Text style={styles.navText}>{isEditing ? "Cancel" : "Edit"}</Text>
         </Pressable>
 
-       
+        <Pressable onPress={onLogout} style={styles.navTextButton}></Pressable>
       </View>
 
       <View style={styles.profileContent}>
@@ -45,11 +45,11 @@ export const ProfileHeader = ({
             )}
           </Pressable>
 
-          {/* {isEditing && (
+          {isEditing && (
             <Pressable style={styles.cameraButton} onPress={onCameraPress}>
               <Ionicons name="camera" size={16} color="#fff" />
             </Pressable>
-          )} */}
+          )}
         </View>
       </View>
     </View>

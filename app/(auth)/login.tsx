@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { Text, View, KeyboardAvoidingView, ScrollView, Platform, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Pressable,
+  TextInput,
+} from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+
 import { getUserRole, login } from "@/services/AuthService";
-import { AppButton } from "@/components/ui/AppButton";
-import { AppInput } from "@/components/ui/AppInput";
 import { styles } from "@/styles/Login.styles";
 
 type FormData = {
@@ -17,20 +24,22 @@ type FormData = {
 export default function LoginScreen() {
   const router = useRouter();
   const { control, handleSubmit } = useForm<FormData>({ mode: "all" });
+
   const [showPassword, setShowPassword] = useState(true);
   const [loginError, setLoginError] = useState("");
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoginError("");
-      const user = await login(data);
-const role = await getUserRole(user.uid);
 
-if (role === "company") {
-  router.replace("/companyTabs" as any);
-} else {
-  router.replace("/userTabs" as any);
-}
+      const user = await login(data);
+      const role = await getUserRole(user.uid);
+
+      if (role === "company") {
+        router.replace("/companyTabs" as any);
+      } else {
+        router.replace("/userTabs" as any);
+      }
     } catch (error) {
       console.log(error);
       setLoginError("Email or password is incorrect");
@@ -46,28 +55,45 @@ if (role === "company") {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.title}>Welcome back!</Text>
-
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Login</Text>
+            <Text style={styles.title}>Welcome back!</Text>
+            <Text style={styles.subtitle}>Login to continue</Text>
 
             <Controller
               control={control}
               name="email"
               rules={{ required: "Email is required" }}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
                 <View style={styles.inputContainer}>
-                  <AppInput
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    placeholder="Email"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    error={!!error}
-                  />
-                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+                  <View style={styles.inputWrapper}>
+                    <View style={styles.iconCircle}>
+                      <Ionicons
+                        name="mail-outline"
+                        size={24}
+                        color="#2d4a5e"
+                      />
+                    </View>
+
+                    <TextInput
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      placeholder="Email"
+                      placeholderTextColor="#9A9A9A"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      style={styles.textInput}
+                    />
+                  </View>
+
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
                 </View>
               )}
             />
@@ -76,28 +102,45 @@ if (role === "company") {
               control={control}
               name="password"
               rules={{ required: "Password is required" }}
-              render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
                 <View style={styles.inputContainer}>
-                  <View style={styles.passwordContainer}>
-                    <AppInput
+                  <View style={styles.inputWrapper}>
+                    <View style={styles.iconCircle}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={24}
+                        color="#2d4a5e"
+                      />
+                    </View>
+
+                    <TextInput
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
                       placeholder="Password"
+                      placeholderTextColor="#9A9A9A"
                       secureTextEntry={showPassword}
+                      style={styles.textInput}
                     />
+
                     <Pressable
                       style={styles.eyeButton}
-                      onPress={() => setShowPassword(prev => !prev)}
+                      onPress={() => setShowPassword((prev) => !prev)}
                     >
                       <Ionicons
                         name={showPassword ? "eye-off" : "eye"}
-                        size={22}
+                        size={24}
                         color="#2d4a5e"
                       />
                     </Pressable>
                   </View>
-                  {error && <Text style={styles.errorText}>{error.message}</Text>}
+
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
                 </View>
               )}
             />
@@ -106,7 +149,12 @@ if (role === "company") {
               <Text style={styles.loginError}>{loginError}</Text>
             ) : null}
 
-            <AppButton title="Login" onPress={handleSubmit(onSubmit)} />
+            <Pressable
+              style={styles.loginButton}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text style={styles.loginButtonText}>Login</Text>
+            </Pressable>
 
             <Pressable
               style={styles.backButton}

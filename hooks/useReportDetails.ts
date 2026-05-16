@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   fetchReportById,
-  SourceType,
+  
 } from "@/services/reportsService";import { Audio } from "expo-av";
-export const useReportDetails = (id: string,source?: SourceType) => {
+export const useReportDetails = (id: string,source?: string) => {
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [sound, setSound] = useState<Audio.Sound | null>(null);

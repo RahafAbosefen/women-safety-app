@@ -13,7 +13,7 @@ import { collection, getDocs } from "firebase/firestore";
 
 import { db } from "@/services/firebaseConfig";
 import { styles } from "@/styles/ContactUs.styles";
-import { casesListStyles } from "@/styles/CasesList.styles";
+import { archiveCasesStyles } from "@/styles/ArchiveCases.styles";
 import { AppColors } from "@/constants/theme";
 
 type Case = {
@@ -25,13 +25,12 @@ type Case = {
   details: string;
 };
 
-export default function CasesListScreen() {
+export default function ArchiveCasesScreen() {
   const router = useRouter();
-
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchCases = async () => {
+  const fetchArchivedCases = async () => {
     try {
       setLoading(true);
 
@@ -47,7 +46,7 @@ export default function CasesListScreen() {
           id: document.id,
           source: "reports" as const,
           userName: data.userName || data.userEmail || "Unknown user",
-          status: data.status || "approved",
+          status: data.status || "",
           reportType: data.reportType || "Report",
           details: data.details || "",
         };
@@ -60,22 +59,19 @@ export default function CasesListScreen() {
           id: document.id,
           source: "mapReports" as const,
           userName: data.userName || data.userEmail || "Unknown user",
-          status: data.status || "approved",
+          status: data.status || "",
           reportType: data.reportType || "Map Report",
           details: data.details || "",
         };
       });
 
-      const activeCases = [...reports, ...mapReports].filter(
-        (item) =>
-          item.status !== "pending" &&
-          item.status !== "rejected" &&
-          item.status !== "Resolved"
+      const archivedCases = [...reports, ...mapReports].filter(
+        (item) => item.status === "Resolved"
       );
 
-      setCases(activeCases);
+      setCases(archivedCases);
     } catch (error) {
-      console.error("Fetch cases error:", error);
+      console.error("Fetch archived cases error:", error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +79,7 @@ export default function CasesListScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCases();
+      fetchArchivedCases();
     }, [])
   );
 
@@ -92,7 +88,7 @@ export default function CasesListScreen() {
       <Pressable
         style={({ pressed }) => [
           styles.card,
-          casesListStyles.caseCard,
+          archiveCasesStyles.archiveCard,
           pressed && styles.cardPressed,
         ]}
       >
@@ -105,46 +101,24 @@ export default function CasesListScreen() {
         </View>
 
         <View style={styles.cardInfo}>
-          <Text style={[styles.cardName, casesListStyles.caseName]}>
+          <Text style={[styles.cardName, archiveCasesStyles.archiveName]}>
             {item.userName}
           </Text>
 
-          <View
-            style={[
-              casesListStyles.tag,
-              {
-                backgroundColor:
-                  item.reportType === "Harassment"
-                    ? "#F3F0FF"
-                    : "#FFE7EA",
-              },
-            ]}
-          >
-            <Text
-              style={[
-                casesListStyles.tagText,
-                {
-                  color:
-                    item.reportType === "Harassment"
-                      ? "#6D5BD0"
-                      : "#C2414B",
-                },
-              ]}
-            >
+          <View style={archiveCasesStyles.reportTag}>
+            <Text style={archiveCasesStyles.reportTagText}>
               {item.reportType}
             </Text>
           </View>
 
-          <View style={casesListStyles.statusRow}>
+          <View style={archiveCasesStyles.resolvedRow}>
             <Ionicons
               name="checkmark-circle-outline"
               size={18}
               color="#34A853"
             />
 
-            <Text style={casesListStyles.statusText}>
-              {item.status}
-            </Text>
+            <Text style={archiveCasesStyles.resolvedText}>Resolved</Text>
           </View>
         </View>
 
@@ -159,14 +133,13 @@ export default function CasesListScreen() {
                 userName: item.userName,
                 reportType: item.reportType,
                 details: item.details,
+                fromArchive: "true",
               },
             } as any)
           }
-          style={casesListStyles.statusButton}
+          style={archiveCasesStyles.detailsButton}
         >
-          <Text style={casesListStyles.statusButtonText}>
-            Status →
-          </Text>
+          <Text style={archiveCasesStyles.detailsButtonText}>Details →</Text>
         </Pressable>
       </Pressable>
     ),
@@ -183,45 +156,18 @@ export default function CasesListScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={casesListStyles.headerContainer}>
-        <View style={casesListStyles.headerRow}>
-          <View style={casesListStyles.titleRow}>
-            <Pressable
-              onPress={() =>
-                router.replace("/companyTabs/users-management" as any)
-              }
-            >
-              <Ionicons
-                name="arrow-back"
-                size={28}
-                color={AppColors.primary}
-              />
-            </Pressable>
-
-            <Text style={styles.title}>Cases</Text>
-          </View>
-
+      <View style={archiveCasesStyles.headerContainer}>
+        <View style={archiveCasesStyles.headerRow}>
           <Pressable
-            onPress={() =>
-              router.push("/companyTabs/archive-cases" as any)
-            }
-            style={casesListStyles.archiveButton}
+            onPress={() => router.replace("/companyTabs/CasesList" as any)}
           >
-            <Ionicons
-              name="archive-outline"
-              size={18}
-              color={AppColors.primary}
-            />
-
-            <Text style={casesListStyles.archiveButtonText}>
-              Archive
-            </Text>
+            <Ionicons name="arrow-back" size={28} color={AppColors.primary} />
           </Pressable>
+
+          <Text style={styles.title}>Archive</Text>
         </View>
 
-        <Text style={styles.subtitle}>
-          Manage active cases
-        </Text>
+        <Text style={styles.subtitle}>Resolved cases</Text>
       </View>
 
       <FlatList
@@ -231,9 +177,7 @@ export default function CasesListScreen() {
         renderItem={renderCase}
         ListEmptyComponent={
           <View style={styles.loadingContainer}>
-            <Text style={styles.errorText}>
-              No cases found
-            </Text>
+            <Text style={styles.errorText}>No archived cases found</Text>
           </View>
         }
       />

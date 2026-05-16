@@ -129,4 +129,22 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 4,
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  sourcePill: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: "#F1F5F9",
+  },
+
+  sourceText: {
+    fontSize: 10,
+    color: "#64748B",
+    fontWeight: "600",
+  },
 });
