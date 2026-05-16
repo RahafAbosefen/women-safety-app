@@ -45,10 +45,8 @@ export default function CompanyTabLayout() {
       <Tabs.Screen
         name="case-status"
         options={{
-          title: "Cases",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "folder" : "folder-outline"} size={24} color={color} />
-          ),
+          href: null,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
