@@ -13,7 +13,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-
+import { UsersService } from "@/services/UsersService";
 import ReportTypeDropdown from "@/components/ReportTypeDropdown";
 import ResultSOSModal from "@/components/ResultSOSModal";
 import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
@@ -87,6 +87,13 @@ export default function AddReport() {
         return;
       }
 
+      const userProfile = await UsersService.getUserProfile(user.uid);
+
+const submittedUserName =
+  userProfile?.firstName && userProfile?.lastName
+    ? `${userProfile.firstName} ${userProfile.lastName}`
+    : userProfile?.name || user.email || "Unknown user";
+
       const finalReportType =
         reportType === "Other" ? otherReportType.trim() : reportType;
 
@@ -106,18 +113,21 @@ export default function AddReport() {
 
       if (images.length > 0) {
         uploadedImageUrls = await Promise.all(
-          images.map((imageUri) => CloudinaryService.uploadImage(imageUri))
+          images.map((imageUri) => CloudinaryService.uploadImage(imageUri)),
         );
       }
 
       await addReport({
         userId: user.uid,
         userEmail: user.email || "",
+     userName: submittedUserName,
+        userImage: user.photoURL || "",
         reportType: finalReportType,
         details: data.details,
         location: location,
         imageUrls: uploadedImageUrls,
         audioUrl: uploadedAudioUrl,
+        status: "pending",
         createdAt: new Date(),
       });
 
