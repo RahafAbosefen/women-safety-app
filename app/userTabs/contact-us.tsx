@@ -130,37 +130,37 @@ export default function ContactUsScreen() {
     [router]
   );
 
-  const renderCompany = useCallback(
-    ({ item }: { item: Company }) => (
-      <Pressable
-        style={({ pressed }) => [
-          styles.card,
-          pressed && styles.cardPressed,
-        ]}
-        onPress={() => openChatWithCompany(item)}
+
+const renderCompany = useCallback(
+  ({ item }: { item: Company }) => (
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => router.push({
+        pathname: "/userTabs/company-details/[id]" as any,
+        params: { id: item.id }
+      })}
+    >
+      <View style={styles.iconContainer}>
+        <Ionicons name="business-outline" size={24} color={AppColors.primary} />
+      </View>
+
+      <View style={styles.cardInfo}>
+        <Text style={styles.cardName}>{item.name}</Text>
+        <Text style={styles.cardType}>{item.type}</Text>
+      </View>
+
+      <Pressable 
+        onPress={(e) => {
+          e.stopPropagation();
+          openChatWithCompany(item);
+        }}
       >
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name="business-outline"
-            size={24}
-            color={AppColors.primary}
-          />
-        </View>
-
-        <View style={styles.cardInfo}>
-          <Text style={styles.cardName}>{item.name}</Text>
-          <Text style={styles.cardType}>{item.type}</Text>
-        </View>
-
-        <Ionicons
-          name="chatbubble-ellipses-outline"
-          size={22}
-          color={AppColors.primary}
-        />
+        <Ionicons name="chatbubble-ellipses-outline" size={22} color={AppColors.primary} />
       </Pressable>
-    ),
-    [openChatWithCompany]
-  );
+    </Pressable>
+  ),
+  [openChatWithCompany, router]
+);
 
   if (isLoading && companies.length === 0) {
     return (
