@@ -35,7 +35,7 @@ export default function SignUp() {
         role,
       });
 
-      // console.log("Success:", user);
+      console.log("Success:", user);
       // alert("Registration successful!");
 
       if (role === "company") {
