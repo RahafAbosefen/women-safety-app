@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { useState } from "react";
 // import {
 //   ActivityIndicator,
@@ -22,6 +23,32 @@
 // } from "@/services/UserManagementService";
 // import NotificationBell from "@/components/NotificationBell";
 // import { NotificationService } from "@/services/NotificationService";
+=======
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+
+import { UserManagementColors } from "@/constants/theme";
+import { usersManagementStyles as styles } from "@/styles/UserManagement.styles";
+import UserCard from "@/components/company/user-card";
+import UserCaseModal from "@/components/company/user-case-modal";
+import NotificationBell from "@/components/NotificationBell";
+import { useUserReports } from "@/hooks/useUserReports";
+import {
+  approveUserReport,
+  rejectUserReport,
+  type UserReport,
+} from "@/services/UserManagementService";
+import { NotificationService } from "@/services/NotificationService";
+>>>>>>> 05047883ef500a10952e21b3ef62f99961726ecc
 
 // const UsersManagement = () => {
 //   const router = useRouter();
@@ -30,6 +57,7 @@
 //   const queryClient = useQueryClient();
 //   const { data, isLoading, error, refetch } = useUserReports();
 
+<<<<<<< HEAD
 //   const approveMutation = useMutation({
 //     mutationFn: async (report: UserReport) => {
 //       await approveUserReport(report);
@@ -60,6 +88,26 @@
 //       console.error("Approve error:", error);
 //     },
 //   });
+=======
+  const approveMutation = useMutation({
+    mutationFn: approveUserReport,
+
+    onSuccess: async () => {
+      console.log("Approve success!");
+      setSelectedReport(null);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["userReports"],
+      });
+
+      router.replace("/companyTabs/CasesList" as any);
+    },
+
+    onError: (error) => {
+      console.error("Approve error:", error);
+    },
+  });
+>>>>>>> 05047883ef500a10952e21b3ef62f99961726ecc
 
 //   const rejectMutation = useMutation({
 //     mutationFn: async (report: UserReport) => {
@@ -76,6 +124,7 @@
 //         }
 //       }
 
+<<<<<<< HEAD
 //       await rejectUserReport(report);
 //     },
 //     onSuccess: async () => {
@@ -86,6 +135,23 @@
 //       console.log("Reject error:", error);
 //     },
 //   });
+=======
+      await rejectUserReport(report);
+    },
+
+    onSuccess: async () => {
+      setSelectedReport(null);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["userReports"],
+      });
+    },
+
+    onError: (error) => {
+      console.log("Reject error:", error);
+    },
+  });
+>>>>>>> 05047883ef500a10952e21b3ef62f99961726ecc
 
 //   const isApproveLoading = approveMutation.isPending;
 //   const isRejectLoading = rejectMutation.isPending;
@@ -193,6 +259,7 @@
 //   );
 // };
 
+<<<<<<< HEAD
 // const styles = StyleSheet.create({
 //   screen: {
 //     flex: 1,
@@ -303,3 +370,6 @@
 // });
 
 // export default UsersManagement;
+=======
+export default UsersManagement;
+>>>>>>> 05047883ef500a10952e21b3ef62f99961726ecc

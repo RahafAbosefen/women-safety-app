@@ -106,12 +106,28 @@ export const usersManagementStyles = StyleSheet.create({
     fontWeight: "800",
     marginBottom: 8,
   },
-
   emptyText: {
     color: UserManagementColors.textMuted,
     fontSize: 13,
     textAlign: "center",
   },
+
+  casesButton: {
+    backgroundColor: UserManagementColors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+  },
+
+  casesButtonText: {
+    color: UserManagementColors.white,
+    fontWeight: "800",
+    fontSize: 15,
+  },
+
 });
 
 export const userCardStyles = StyleSheet.create({
@@ -329,4 +345,5 @@ export const userCaseModalStyles = StyleSheet.create({
   disabledButton: {
     opacity: 0.6,
   },
+    
 });
