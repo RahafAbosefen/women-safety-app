@@ -2,6 +2,7 @@ import React from "react";
 import { Stack } from "expo-router";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
+import { AppAlert } from "@/components/ui/CustomAlert";
 import { useCompanyProfile } from "@/hooks/useCompanyProfile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { CompanyDetailsForm } from "@/components/profile/CompanyDetailsForm";
@@ -21,7 +22,7 @@ export default function CompanyProfile() {
           hasImage={Boolean(profileLogic.companyImage)}
           onCamera={profileLogic.media.openCamera}
           onGallery={profileLogic.media.openGallery}
-          onRemove={profileLogic.removeProfileImage} 
+          onRemove={profileLogic.removeProfileImage}
           onClose={profileLogic.media.closeModal}
         />
 
@@ -38,16 +39,24 @@ export default function CompanyProfile() {
               }
               onImagePress={profileLogic.media.openModal}
               onCameraPress={profileLogic.media.openCamera}
-              onLogout={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onLogout={profileLogic.triggerLogoutAlert}
             />
+
             <CompanyDetailsForm
               {...profileLogic}
               onSave={profileLogic.handleSubmit(profileLogic.onSubmit)}
             />
           </ScrollView>
         </KeyboardAvoidingView>
+
+        <AppAlert
+          visible={profileLogic.alert.visible}
+          title={profileLogic.alert.title}
+          message={profileLogic.alert.message}
+          confirmText={profileLogic.alert.confirmText}
+          onConfirm={profileLogic.alert.onConfirm}
+          onCancel={profileLogic.closeAlert}
+        />
       </View>
     </>
   );
