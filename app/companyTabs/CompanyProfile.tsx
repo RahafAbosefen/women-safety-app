@@ -1,11 +1,7 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-
-// 👇 استدعاء المودال المسؤول عن فتح الكاميرا والاستوديو فقط
 import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
-
-// 👇 استدعاءات الـ Hook المطور والـ Components الخاصة بالبروفايل والـ Styles
 import { useCompanyProfile } from "@/hooks/useCompanyProfile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { CompanyDetailsForm } from "@/components/profile/CompanyDetailsForm";
@@ -19,14 +15,13 @@ export default function CompanyProfile() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={styles.container}>
-        {/* مودال اختيار الصورة */}
         <MediaPickerModal
           visible={profileLogic.media.visible}
           title="Company Logo"
           hasImage={Boolean(profileLogic.companyImage)}
           onCamera={profileLogic.media.openCamera}
           onGallery={profileLogic.media.openGallery}
-          onRemove={profileLogic.removeProfileImage} // 👈 بربط مباشر مع دالة حذف الصورة الجاهزة في الهوك
+          onRemove={profileLogic.removeProfileImage} 
           onClose={profileLogic.media.closeModal}
         />
 
@@ -35,7 +30,6 @@ export default function CompanyProfile() {
           style={{ flex: 1 }}
         >
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            {/* الهيدر العلوي (يحتوي فقط على زر Edit وصورة الشركة) */}
             <ProfileHeader
               isEditing={profileLogic.isEditing}
               companyImage={profileLogic.companyImage}
@@ -48,8 +42,6 @@ export default function CompanyProfile() {
                 throw new Error("Function not implemented.");
               }}
             />
-
-            {/* الفورم الذي يحتوي على الحقول والبيانات وزر الحفظ */}
             <CompanyDetailsForm
               {...profileLogic}
               onSave={profileLogic.handleSubmit(profileLogic.onSubmit)}
