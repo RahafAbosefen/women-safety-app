@@ -1,0 +1,131 @@
+import { StyleSheet, Platform } from "react-native";
+import { AppColors } from "@/constants/theme";
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9F9F9",
+  },
+  scrollContent: {
+    paddingBottom: 120, 
+  },
+
+  headerWrapper: {
+    position: "relative",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  
+  curvedBg: {
+    position: "absolute",
+    top: 0,
+    left: "-25%",
+    width: "150%",
+    height: 200,
+    backgroundColor: AppColors.primary, 
+    borderBottomLeftRadius: 400,
+    borderBottomRightRadius: 400,
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between", 
+    width: "100%",
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === "ios" ? 60 : 40,
+    zIndex: 10,
+  },
+  navTextButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  navText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  profileContent: {
+    alignItems: "center",
+    marginTop: 30,
+    zIndex: 10,
+  },
+  imageContainer: {
+    position: "relative",
+    marginBottom: 8,
+  },
+  profileImage: {
+    width: 170,
+    height: 170,
+    borderRadius: 85, 
+    borderWidth: 2,
+    borderColor: "#F9F9F9",
+  },
+  imagePlaceholder: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 2,
+    borderColor: "#F9F9F9",
+    backgroundColor: "#EAD3CB",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeContainer: {
+    position: "absolute",
+    bottom: 8,
+    left: 8,
+    backgroundColor: AppColors.success, 
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: AppColors.white, 
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cameraButton: {
+    position: "absolute",
+    bottom: 8,
+    right: 8,
+    backgroundColor: AppColors.primary,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: AppColors.white, 
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  companyNameText: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: "#1F2933",
+    marginTop: 4,
+  },
+  companyEmailText: {
+    fontSize: 15,
+    color: "#6B7280",
+    marginBottom: 10,
+  },
+  formContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+  button: {
+    backgroundColor: AppColors.primary, 
+    paddingVertical: 14,
+    marginHorizontal: 10, 
+    borderRadius: 12, 
+    alignItems: "center",
+    marginTop: 30,
+    elevation: 3, 
+    shadowColor: "#000", 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+});
