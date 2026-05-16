@@ -38,7 +38,7 @@ export function FormInput<T extends FieldValues>({
                 <Ionicons
                   name={icon}
                   size={22}
-                  color="#7B4DDB"
+                  color="#9EA2AE"
                   style={styles.icon}
                 />
               )}
