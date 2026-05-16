@@ -8,8 +8,6 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
-export type SourceType = "reports" | "mapReports";
-
 export const fetchMapReports = async () => {
   const snapshot = await getDocs(collection(db, "mapReports"));
 
@@ -39,7 +37,7 @@ export const fetchAllReports = async () => {
   return [...mapReports, ...reports];
 };
 
-export const fetchReportById = async (id: string, source: SourceType) => {
+export const fetchReportById = async (id: string, source: string) => {
   const snapshot = await getDoc(doc(db, source, id));
 
   if (!snapshot.exists()) {
@@ -71,5 +69,8 @@ export const fetchMyReports = async (userId: string) => {
     source: "mapReports" as const,
   }));
 
-  return [...reports, ...mapReports];
+  return [...reports, ...mapReports].sort(
+    (a: any, b: any) =>
+      b.createdAt?.toDate()?.getTime() - a.createdAt?.toDate()?.getTime(),
+  );
 };

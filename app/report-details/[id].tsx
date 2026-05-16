@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useReportDetails } from "@/hooks/useReportDetails";
 import { styles } from "@/styles/report.styles";
 import { AppColors } from "@/constants/theme";
+import { REPORT_CONFIG } from "@/constants/reportConfig";
 
 export default function ReportDetailsScreen() {
   const { id, source } = useLocalSearchParams();
@@ -20,6 +21,8 @@ export default function ReportDetailsScreen() {
     String(id),
     String(source),
   );
+
+  const config = REPORT_CONFIG[report?.reportType] ?? REPORT_CONFIG.Other;
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -38,7 +41,9 @@ export default function ReportDetailsScreen() {
           style={styles.container}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
+          <View
+            style={[styles.header, { backgroundColor: config.color as any }]}
+          >
             <View style={styles.headerTop}>
               <Pressable
                 style={styles.backButton}
@@ -50,9 +55,8 @@ export default function ReportDetailsScreen() {
 
             <View style={styles.headerContent}>
               <View style={styles.iconContainer}>
-                <Ionicons name="document-text-outline" size={28} color="#fff" />
+                <Ionicons name={config.icon as any} size={28} color="#fff" />
               </View>
-
               <View>
                 <Text style={styles.reportType}>{report.reportType}</Text>
               </View>
