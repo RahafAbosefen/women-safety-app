@@ -63,6 +63,16 @@ export default function CompanyTabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: "Messages",
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
 
       <Tabs.Screen name="CasesList" options={{ href: null }} />
       <Tabs.Screen name="case-status" options={{ href: null }} />
