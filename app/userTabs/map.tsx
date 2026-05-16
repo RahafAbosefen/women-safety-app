@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Marker } from "react-native-maps";
-import { MapColors } from "@/constants/theme";
 import ReportButton from "@/components/map/report-button";
 import ReportSheet from "@/components/map/report-sheet";
 import SuccessSheet from "@/components/map/success-sheet";
 import CustomMarker from "@/components/map/custom-marker";
 import useCurrentLocation from "@/hooks/useCurrentLocation";
 import { mockMapMarkers } from "@/constants/mockMapMarkers";
+import NotificationBell from "@/components/NotificationBell";
+import { mapScreenStyles as styles } from "@/styles/Map.styles";
 
 const DEFAULT_REGION = {
   latitude: 31.506,
@@ -53,40 +54,52 @@ const MapScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={{
-          latitude: userLocation?.latitude ?? DEFAULT_REGION.latitude,
-          longitude: userLocation?.longitude ?? DEFAULT_REGION.longitude,
-          latitudeDelta: DEFAULT_REGION.latitudeDelta,
-          longitudeDelta: DEFAULT_REGION.longitudeDelta,
-        }}
-      >
-        {mockMapMarkers.map((marker) => (
-          <Marker
-            key={marker.id}
-            coordinate={{
-              latitude: marker.latitude,
-              longitude: marker.longitude,
-            }}
-          >
-            <CustomMarker variant={marker.variant} />
-          </Marker>
-        ))}
+    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+      <View style={styles.headerRow}>
+        <View style={styles.headerSide} />
 
-        {userLocation && (
-          <Marker coordinate={userLocation}>
-            <CustomMarker variant="active" />
-          </Marker>
-        )}
-      </MapView>
+        <Text style={styles.headerTitle}>Map</Text>
 
-      <ReportButton
-        disabled={!userLocation || isLocationLoading}
-        onPress={handleOpenReport}
-      />
+        <View style={styles.headerSide}>
+          <NotificationBell />
+        </View>
+      </View>
+
+      <View style={styles.mapContainer}>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          initialRegion={{
+            latitude: userLocation?.latitude ?? DEFAULT_REGION.latitude,
+            longitude: userLocation?.longitude ?? DEFAULT_REGION.longitude,
+            latitudeDelta: DEFAULT_REGION.latitudeDelta,
+            longitudeDelta: DEFAULT_REGION.longitudeDelta,
+          }}
+        >
+          {mockMapMarkers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+            >
+              <CustomMarker variant={marker.variant} />
+            </Marker>
+          ))}
+
+          {userLocation && (
+            <Marker coordinate={userLocation}>
+              <CustomMarker variant="active" />
+            </Marker>
+          )}
+        </MapView>
+
+        <ReportButton
+          disabled={!userLocation || isLocationLoading}
+          onPress={handleOpenReport}
+        />
+      </View>
 
       <ReportSheet
         isVisible={isReportVisible}
@@ -102,15 +115,5 @@ const MapScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: MapColors.pageBackground,
-  },
-  map: {
-    flex: 1,
-  },
-});
 
 export default MapScreen;

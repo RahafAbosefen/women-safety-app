@@ -47,7 +47,7 @@
 //               <RadioButton value="Verbal abuse" />
 //               <Text style={styles.itemText}>Verbal abuse</Text>
 //             </Pressable>
-          
+
 //              <Pressable style={styles.item} onPress={() => onSelect("Other")}>
 //               <RadioButton value="Other" />
 //               <Text style={styles.itemText}>Other</Text>
@@ -96,11 +96,11 @@
 //   },
 // });
 
-
 import React from "react";
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import { RadioButton, TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
+import { MapColors, AppColors } from "@/constants/theme";
 
 type Props = {
   open: boolean;
@@ -110,6 +110,8 @@ type Props = {
   onSelect: (value: string) => void;
   onOtherChange: (value: string) => void;
   onClose: () => void;
+  variant?: "default" | "map";
+  error?: boolean;
 };
 
 export default function ReportTypeDropdown({
@@ -120,11 +122,24 @@ export default function ReportTypeDropdown({
   onSelect,
   onOtherChange,
   onClose,
+  variant = "default",
+  error = false,
 }: Props) {
+  const isMapVariant = variant === "map";
+
   return (
     <>
-      <Pressable style={styles.dropdown} onPress={onToggle}>
-        <Text style={styles.dropdownText}>
+      <Pressable
+        style={[
+          styles.dropdown,
+          isMapVariant && styles.mapDropdown,
+          error && styles.dropdownError,
+        ]}
+        onPress={onToggle}
+      >
+        <Text
+          style={[styles.dropdownText, isMapVariant && styles.mapDropdownText]}
+        >
           {reportType === "Other" && otherReportType
             ? otherReportType
             : reportType}
@@ -133,19 +148,29 @@ export default function ReportTypeDropdown({
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
           size={22}
-          color="#2B5C73"
+          color={isMapVariant ? MapColors.primary : "#2B5C73"}
         />
       </Pressable>
 
       {open && (
-        <View style={styles.menuBox}>
+        <View style={[styles.menuBox, isMapVariant && styles.mapMenuBox]}>
           <RadioButton.Group onValueChange={onSelect} value={reportType}>
             <Pressable
               style={styles.item}
               onPress={() => onSelect("Harassment")}
             >
-              <RadioButton value="Harassment" />
-              <Text style={styles.itemText}>Harassment</Text>
+              <RadioButton
+                value="Harassment"
+                color={isMapVariant ? MapColors.primary : "#2B5C73"}
+                uncheckedColor={
+                  isMapVariant ? MapColors.submitButton : "#B7C5CC"
+                }
+              />
+              <Text
+                style={[styles.itemText, isMapVariant && styles.mapItemText]}
+              >
+                Harassment
+              </Text>
             </Pressable>
 
             <Pressable
@@ -177,8 +202,12 @@ export default function ReportTypeDropdown({
                 value={otherReportType}
                 onChangeText={onOtherChange}
                 onBlur={onClose}
-                outlineColor="#B8C7CF"
-                activeOutlineColor="#204E64"
+                outlineColor={
+                  isMapVariant ? MapColors.pageBackground : "#B8C7CF"
+                }
+                activeOutlineColor={
+                  isMapVariant ? MapColors.primary : "#204E64"
+                }
                 style={styles.otherInput}
                 contentStyle={styles.otherInputContent}
               />
@@ -233,5 +262,59 @@ const styles = StyleSheet.create({
   },
   otherInputContent: {
     color: "#204E64",
+  },
+  dropdownError: {
+    borderColor: AppColors.error,
+  },
+
+  mapDropdown: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: MapColors.pageBackground,
+    borderRadius: 12,
+    backgroundColor: MapColors.sheetBackground,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    height: "auto",
+    minHeight: 52,
+  },
+
+  mapDropdownText: {
+    fontSize: 14,
+    color: MapColors.primary,
+    fontWeight: "500",
+  },
+
+  mapMenuBox: {
+    marginTop: 6,
+    backgroundColor: MapColors.sheetBackground,
+    borderWidth: 1,
+    borderColor: MapColors.pageBackground,
+    borderRadius: 12,
+    overflow: "hidden",
+    paddingVertical: 0,
+    marginBottom: 8,
+  },
+
+  mapItem: {
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    backgroundColor: MapColors.sheetBackground,
+  },
+
+  mapItemText: {
+    fontSize: 14,
+    color: MapColors.primary,
+  },
+
+  mapPressedOption: {
+    opacity: 0.75,
+  },
+
+  mapOtherInput: {
+    marginHorizontal: 14,
+    marginTop: 8,
+    marginBottom: 12,
+    backgroundColor: MapColors.sheetBackground,
   },
 });
