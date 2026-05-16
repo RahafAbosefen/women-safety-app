@@ -215,7 +215,7 @@ export default function ProfileScreen() {
               styles.myReportsBtn,
               { marginTop: 15, backgroundColor: AppColors.card },
             ]}
-            onPress={() => router.push("/contact-us")}
+            onPress={() => router.push("/userTabs/contact-us")}
           >
             <Ionicons
               name="chatbubbles-outline"
