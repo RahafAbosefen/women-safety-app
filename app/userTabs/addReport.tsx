@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   View,
@@ -6,28 +7,25 @@ import {
   Text,
   ScrollView,
   Image,
-  Alert,
   Keyboard,
 } from "react-native";
 
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import { UsersService } from "@/services/UsersService";
+
 import ReportTypeDropdown from "@/components/ReportTypeDropdown";
-import ResultSOSModal from "@/components/ResultSOSModal";
+import ResultSOSModal from "@/components/SOS/ResultSOSModal";
 import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
 import AudioFeature from "@/components/AudioFeature";
 import LocationFeature from "@/components/LocationFeature";
 import NotificationBell from "@/components/NotificationBell";
 
 import { useMediaManager } from "@/hooks/useMediaManager";
+import { useReportSubmit } from "@/hooks/useReportSubmit";
 
 import { router } from "expo-router";
-import { addReport } from "@/services/ReportService";
-import { auth } from "@/services/firebaseConfig";
-import { CloudinaryService } from "@/services/CloudinaryService";
-import { NotificationService } from "@/services/NotificationService";
+import BackButton from "@/components/ui/BackButton";
 
 type ReportFormData = {
   details: string;
@@ -48,9 +46,10 @@ export default function AddReport() {
     latitude: number;
     longitude: number;
   } | null>(null);
+
   const [locationResetKey, setLocationResetKey] = useState(0);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, submitReport } = useReportSubmit();
 
   const { control, handleSubmit, reset } = useForm<ReportFormData>({
     defaultValues: {
@@ -79,85 +78,31 @@ export default function AddReport() {
   };
 
   const onSubmit = async (data: ReportFormData) => {
-    try {
-      const user = auth.currentUser;
+    const success = await submitReport({
+      reportType,
+      otherReportType,
+      details: data.details,
+      location,
+      images,
+      audioUri,
+    });
 
-      if (!user) {
-        Alert.alert("Error", "User not logged in");
-        return;
-      }
+    if (!success) return;
 
-      const userProfile = await UsersService.getUserProfile(user.uid);
+    setReportType("Harassment");
+    setOtherReportType("");
+    reset({ details: "" });
 
-const submittedUserName =
-  userProfile?.firstName && userProfile?.lastName
-    ? `${userProfile.firstName} ${userProfile.lastName}`
-    : userProfile?.name || user.email || "Unknown user";
+    setImages([]);
 
-      const finalReportType =
-        reportType === "Other" ? otherReportType.trim() : reportType;
+    setAudioUri(null);
+    setAudioResetKey((prev) => prev + 1);
 
-      if (reportType === "Other" && !otherReportType.trim()) {
-        Alert.alert("Error", "Please write the report type.");
-        return;
-      }
+    setLocation(null);
+    setLocationResetKey((prev) => prev + 1);
 
-      setIsSubmitting(true);
-
-      let uploadedAudioUrl = "";
-      let uploadedImageUrls: string[] = [];
-
-      if (audioUri) {
-        uploadedAudioUrl = await CloudinaryService.uploadAudio(audioUri);
-      }
-
-      if (images.length > 0) {
-        uploadedImageUrls = await Promise.all(
-          images.map((imageUri) => CloudinaryService.uploadImage(imageUri)),
-        );
-      }
-
-      await addReport({
-        userId: user.uid,
-        userEmail: user.email || "",
-     userName: submittedUserName,
-        userImage: user.photoURL || "",
-        reportType: finalReportType,
-        details: data.details,
-        location: location,
-        imageUrls: uploadedImageUrls,
-        audioUrl: uploadedAudioUrl,
-        status: "pending",
-        createdAt: new Date(),
-      });
-
-      await NotificationService.notifyUser({
-        userId: user.uid,
-        title: "Report Submitted",
-        body: "Your report was submitted successfully.",
-        type: "report",
-      });
-
-      setReportType("Harassment");
-      setOtherReportType("");
-      reset({ details: "" });
-
-      setImages([]);
-
-      setAudioUri(null);
-      setAudioResetKey((prev) => prev + 1);
-
-      setLocation(null);
-      setLocationResetKey((prev) => prev + 1);
-
-      setOpen(false);
-      setResultVisible(true);
-    } catch (error: any) {
-      console.log("Firestore error:", error);
-      Alert.alert("Error", error.message || "Something went wrong");
-    } finally {
-      setIsSubmitting(false);
-    }
+    setOpen(false);
+    setResultVisible(true);
   };
 
   return (
@@ -170,16 +115,17 @@ const submittedUserName =
     >
       <View style={styles.topSpace} />
 
-      <View style={styles.headerRow}>
-        <View style={styles.headerSide} />
+   <View style={styles.headerRow}>
+     <View style={styles.leftHeader}>
+     <BackButton />
+     </View>
 
-        <Text style={styles.headerTitle}>Add Report</Text>
+     <Text style={styles.headerTitle}>Add Report</Text>
 
-        <View style={styles.headerSide}>
-          <NotificationBell />
-        </View>
+     <View style={styles.rightHeader}>
+       <NotificationBell />
       </View>
-
+    </View>
       <ReportTypeDropdown
         open={open}
         reportType={reportType}
@@ -276,7 +222,7 @@ const submittedUserName =
         buttonText="Back to home"
         onDismiss={() => {
           setResultVisible(false);
-          router.push("/");
+          router.push("/userTabs" as any);
         }}
       />
 
@@ -322,27 +268,39 @@ const styles = StyleSheet.create({
     height: 28,
   },
 
-  headerRow: {
-    marginBottom: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+headerRow: {
+  height: 58,
+  marginBottom: 30,
+  position: "relative",
+  justifyContent: "center",
+  alignItems: "center",
+},
 
-  headerSide: {
-    width: 52,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+leftHeader: {
+  position: "absolute",
+  left: 0,
+  top: 0,
+  height: 58,
+  justifyContent: "center",
+  alignItems: "flex-start",
+},
 
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: "900",
-    color: "#204E64",
-    textAlign: "center",
-    letterSpacing: -0.4,
-  },
+rightHeader: {
+  position: "absolute",
+  right: 0,
+  top: 0,
+  height: 58,
+  justifyContent: "center",
+  alignItems: "flex-end",
+},
 
+headerTitle: {
+  fontSize: 30,
+  fontWeight: "900",
+  color: "#204E64",
+  textAlign: "center",
+  letterSpacing: -0.4,
+},
   detailsInput: {
     marginTop: 18,
     backgroundColor: "#fff",
@@ -366,9 +324,9 @@ const styles = StyleSheet.create({
 
   evidenceTitle: {
     textAlign: "center",
-    color: "#B1848D",
+    color:"#d7a4aa" ,
     fontSize: 16,
-    fontWeight: "800",
+    fontWeight: "700",
     marginBottom: 25,
     marginTop: 15,
     lineHeight: 23,
@@ -434,7 +392,7 @@ const styles = StyleSheet.create({
     width: "70%",
     minHeight: 58,
     alignSelf: "center",
-    backgroundColor: "#a1767e",
+    backgroundColor: "#d7a4aa",
     borderRadius: 18,
     paddingVertical: 16,
     paddingHorizontal: 32,
