@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Keyboard } from "react-native";
+import { useRouter } from "expo-router";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import StorageService from "@/services/StorageService";
 import { UsersService } from "@/services/UsersService";
-import { Keyboard } from "react-native"; 
 import { logout } from "@/services/AuthService";
-import { useRouter } from "expo-router";
+import { CloudinaryService } from "@/services/CloudinaryService";
 import { useMediaManager } from "./useMediaManager";
 import { useAlertManager } from "./useAlertManager";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CloudinaryService } from "@/services/CloudinaryService";
 
 export type FormData = {
   companyName: string;
@@ -26,14 +27,23 @@ export type FormData = {
 export const useCompanyProfile = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const [startTime, setStartTime] = useState(new Date());
   const [showStartPicker, setShowStartPicker] = useState(false);
+
   const [endTime, setEndTime] = useState(new Date());
   const [showEndPicker, setShowEndPicker] = useState(false);
 
-  const { control, handleSubmit, setValue, watch, reset, formState: { errors, isDirty } } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<FormData>({
     mode: "all",
   });
 
@@ -41,11 +51,15 @@ export const useCompanyProfile = () => {
   const selectedLocation = watch("companyLocation");
   const selectedServiceType = watch("serviceType");
 
-  const {  openAlert, closeAlert } = useAlertManager();
+  const { alert, openAlert, closeAlert } = useAlertManager();
 
   const getUserId = async () => {
     const user = await StorageService.getUser();
-    if (!user?.uid) throw new Error("No UID found");
+
+    if (!user?.uid) {
+      throw new Error("No UID found");
+    }
+
     return user.uid;
   };
 
@@ -59,6 +73,7 @@ export const useCompanyProfile = () => {
 
   useEffect(() => {
     if (!error) return;
+
     openAlert({
       type: "error",
       title: "Error",
@@ -70,9 +85,16 @@ export const useCompanyProfile = () => {
 
   useEffect(() => {
     if (!data || isLoading) return;
+
     reset(data as FormData);
-    if (data.serviceStartTime) setStartTime(new Date(data.serviceStartTime));
-    if (data.serviceEndTime) setEndTime(new Date(data.serviceEndTime));
+
+    if (data.serviceStartTime) {
+      setStartTime(new Date(data.serviceStartTime));
+    }
+
+    if (data.serviceEndTime) {
+      setEndTime(new Date(data.serviceEndTime));
+    }
   }, [data, reset, isLoading]);
 
   const updateProfileMutation = useMutation({
@@ -80,8 +102,12 @@ export const useCompanyProfile = () => {
       const uid = await getUserId();
       return UsersService.updateUserProfile(uid, formData);
     },
+
     onSuccess: async (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["companyProfile"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["companyProfile"],
+      });
+
       reset(variables);
       setIsEditing(false);
       Keyboard.dismiss();
@@ -94,6 +120,7 @@ export const useCompanyProfile = () => {
         onConfirm: closeAlert,
       });
     },
+
     onError: () => {
       openAlert({
         type: "error",
@@ -112,15 +139,26 @@ export const useCompanyProfile = () => {
   const updateImageMutation = useMutation({
     mutationFn: async (uri: string | null) => {
       const uid = await getUserId();
+
       if (!uri) {
-        return UsersService.updateUserProfile(uid, { companyImage: "" });
+        return UsersService.updateUserProfile(uid, {
+          companyImage: "",
+        });
       }
+
       const url = await CloudinaryService.uploadImage(uri);
-      return UsersService.updateUserProfile(uid, { companyImage: url });
+
+      return UsersService.updateUserProfile(uid, {
+        companyImage: url,
+      });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companyProfile"] });
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["companyProfile"],
+      });
     },
+
     onError: () => {
       openAlert({
         type: "error",
@@ -142,24 +180,34 @@ export const useCompanyProfile = () => {
 
   const handleStartTimeChange = (event: any, selectedTime?: Date) => {
     setShowStartPicker(false);
+
     if (selectedTime) {
       setStartTime(selectedTime);
-      setValue("serviceStartTime", selectedTime.toISOString(), { shouldValidate: true });
+
+      setValue("serviceStartTime", selectedTime.toISOString(), {
+        shouldValidate: true,
+      });
     }
   };
 
   const handleEndTimeChange = (event: any, selectedTime?: Date) => {
     setShowEndPicker(false);
+
     if (selectedTime) {
       setEndTime(selectedTime);
-      setValue("serviceEndTime", selectedTime.toISOString(), { shouldValidate: true });
+
+      setValue("serviceEndTime", selectedTime.toISOString(), {
+        shouldValidate: true,
+      });
     }
   };
 
   const confirmLogout = useCallback(async () => {
     closeAlert();
+
     await logout();
-    router.replace("/login");
+
+    router.replace("/(auth)/login" as any);
   }, [router, closeAlert]);
 
   const triggerLogoutAlert = () => {
@@ -178,25 +226,37 @@ export const useCompanyProfile = () => {
     control,
     errors,
     isDirty,
-    isLoading: isLoading || updateProfileMutation.isPending || updateImageMutation.isPending, 
+    isLoading:
+      isLoading ||
+      updateProfileMutation.isPending ||
+      updateImageMutation.isPending,
+
     isEditing,
     setIsEditing,
+
     companyImage,
     media,
+
     selectedLocation,
     selectedServiceType,
+
     startTime,
     showStartPicker,
     setShowStartPicker,
     handleStartTimeChange,
+
     endTime,
     showEndPicker,
     setShowEndPicker,
     handleEndTimeChange,
+
     onSubmit,
     handleSubmit,
-    setValue, 
+    setValue,
+
     removeProfileImage,
+
+    alert,
     triggerLogoutAlert,
     closeAlert,
   };

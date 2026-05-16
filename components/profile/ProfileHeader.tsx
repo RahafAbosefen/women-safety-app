@@ -30,7 +30,13 @@ export const ProfileHeader = ({
           <Text style={styles.navText}>{isEditing ? "Cancel" : "Edit"}</Text>
         </Pressable>
 
-        <Pressable onPress={onLogout} style={styles.navTextButton}></Pressable>
+       <Pressable onPress={onLogout} style={styles.navTextButton}>
+  <Ionicons
+    name="log-out-outline"
+    size={24}
+    color="white"
+  />
+</Pressable>
       </View>
 
       <View style={styles.profileContent}>
