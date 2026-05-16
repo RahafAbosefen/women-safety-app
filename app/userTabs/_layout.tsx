@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native"; // 🟢 تم إضافة StyleSheet هنا
 
 const ACTIVE_COLOR = "#204E64";
 const INACTIVE_COLOR = "#9AAAB4";
@@ -42,11 +42,13 @@ export default function UserTabLayout() {
           height: 78,
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
+          
           borderTopColor: "#EEF2F5",
-
+          
           paddingTop: 8,
+          
           paddingBottom: 10,
-
+          
           elevation: 10,
           shadowColor: "#000",
           shadowOpacity: 0.08,
@@ -55,15 +57,11 @@ export default function UserTabLayout() {
             width: 0,
             height: -2,
           },
-        },
-
-        tabBarItemStyle: {
+        },tabBarItemStyle: {
           height: 60,
           alignItems: "center",
           justifyContent: "center",
-        },
-
-        tabBarIconStyle: {
+        },tabBarIconStyle: {
           marginTop: 0,
         },
       }}
@@ -73,12 +71,8 @@ export default function UserTabLayout() {
         options={{
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              size={24}
-              color={color}
-            />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} activeName="home" inactiveName="home-outline" />
           ),
         }}
       />
@@ -88,12 +82,8 @@ export default function UserTabLayout() {
         options={{
           title: "Report",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "add-circle" : "add-circle-outline"}
-              size={28}
-              color={color}
-            />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} activeName="add-circle" inactiveName="add-circle-outline" />
           ),
         }}
       />
@@ -103,12 +93,8 @@ export default function UserTabLayout() {
         options={{
           title: "Map",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "map" : "map-outline"}
-              size={28}
-              color={color}
-            />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} activeName="map" inactiveName="map-outline" />
           ),
         }}
       />
@@ -118,22 +104,33 @@ export default function UserTabLayout() {
         options={{
           title: "Profile",
           headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              size={24}
-              color={color}
-            />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} activeName="person" inactiveName="person-outline" />
           ),
         }}
       />
 
-      <Tabs.Screen
-        name="contact-us"
-        options={{
+      <Tabs.Screen 
+        name="company-details/[id]" 
+        options={{ 
           href: null,
-        }}
+          tabBarButton: () => null, 
+          headerShown: false
+        }} 
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconBox: {
+    width: 48,
+    height: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 24,
+  },
+  activeIconBox: {
+    backgroundColor: ACTIVE_BG,
+  },
+});
