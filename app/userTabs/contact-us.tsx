@@ -15,6 +15,7 @@ import { auth } from "@/services/firebaseConfig";
 import { styles } from "@/styles/ContactUs.styles";
 import { AppColors } from "@/constants/theme";
 import * as SQLite from "expo-sqlite";
+import NetInfo from "@react-native-community/netinfo";
 import { useCompanies } from "@/hooks/useCompanies";
 
 type Company = {
@@ -63,10 +64,7 @@ export default function ContactUsScreen() {
   const reload = useCallback(async () => {
     if (!db) return;
 
-    const rows = await db.getAllAsync<Company>(
-      "SELECT * FROM companies;"
-    );
-
+    const rows = await db.getAllAsync<Company>("SELECT * FROM companies;");
     setCompanies(rows);
   }, [db]);
 
@@ -106,6 +104,16 @@ export default function ContactUsScreen() {
 
         if (!user) {
           Alert.alert("Error", "User not logged in");
+          return;
+        }
+
+        const networkState = await NetInfo.fetch();
+
+        if (!networkState.isConnected) {
+          Alert.alert(
+            "No Internet Connection",
+            "Companies are available offline, but chat needs internet connection."
+          );
           return;
         }
 
@@ -181,8 +189,24 @@ export default function ContactUsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+
+        <Pressable
+          onPress={() => router.back()}
+          style={{ marginBottom: 15 }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={AppColors.primary}
+          />
+        </Pressable>
+
         <Text style={styles.title}>Contact Us</Text>
-        <Text style={styles.subtitle}>Choose a company to chat with</Text>
+
+        <Text style={styles.subtitle}>
+          Choose a company to chat with
+        </Text>
+
       </View>
 
       <FlatList
