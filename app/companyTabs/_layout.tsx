@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { View } from "react-native";
 
 export default function CompanyTabLayout() {
   return (
@@ -10,6 +9,7 @@ export default function CompanyTabLayout() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#204E64",
         tabBarInactiveTintColor: "#A0A0A0",
+        headerShown: false,
         tabBarStyle: {
           position: "absolute",
           bottom: 10,
@@ -26,7 +26,6 @@ export default function CompanyTabLayout() {
         name="index"
         options={{
           title: "Home",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
@@ -36,11 +35,25 @@ export default function CompanyTabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="users-management"
+        options={{
+          title: "Users",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "business" : "business-outline"}
+              size={24}
+              color={color}
+            />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="CompanyProfile"
         options={{
           title: "Profile",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "business" : "business-outline"}
@@ -51,14 +64,7 @@ export default function CompanyTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="case-status"
-        options={{
-          href: null,
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="users-management"
+        name="messages"
         options={{
           title: "Users",
           headerShown: false,
@@ -71,6 +77,10 @@ export default function CompanyTabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen name="CasesList" options={{ href: null }} />
+      <Tabs.Screen name="case-status" options={{ href: null }} />
+      <Tabs.Screen name="archive-cases" options={{ href: null }} />
       <Tabs.Screen name="company-details" options={{ href: null }} />
     </Tabs>
   );
