@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 import { UserManagementColors } from "@/constants/theme";
 import UserCard from "@/components/company/user-card";
@@ -21,6 +22,7 @@ import {
 } from "@/services/UserManagementService";
 
 const UsersManagement = () => {
+  const router = useRouter();
   const [selectedReport, setSelectedReport] = useState<UserReport | null>(null);
 
   const queryClient = useQueryClient();
@@ -29,8 +31,13 @@ const UsersManagement = () => {
   const approveMutation = useMutation({
     mutationFn: approveUserReport,
     onSuccess: () => {
+      console.log("Approve success!");
       setSelectedReport(null);
       void queryClient.invalidateQueries({ queryKey: ["userReports"] });
+      router.replace("/companyTabs/CasesList" as any);
+    },
+    onError: (error) => {
+      console.error("Approve error:", error);
     },
   });
 
@@ -91,6 +98,13 @@ const UsersManagement = () => {
           />
         </View>
       </View>
+
+      <Pressable
+        style={styles.casesButton}
+        onPress={() => router.push("/companyTabs/CasesList" as any)}
+      >
+        <Text style={styles.casesButtonText}>View Cases</Text>
+      </Pressable>
 
       <ScrollView
         contentContainerStyle={[
@@ -241,6 +255,18 @@ const styles = StyleSheet.create({
     color: UserManagementColors.textMuted,
     fontSize: 13,
     textAlign: "center",
+  },
+  casesButton: {
+    backgroundColor: UserManagementColors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  casesButtonText: {
+    color: UserManagementColors.white,
+    fontWeight: "700",
   },
 });
 

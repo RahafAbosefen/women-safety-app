@@ -14,7 +14,7 @@ export type MapReportType = {
   } | null;
   locationName: string;
   imageUrls: string[];
-  audioUri: string | null;
+  audioUrl: string | null;
   status: "pending" | "approved" | "rejected";
   createdAt: Date;
 };

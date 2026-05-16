@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Controller, Control, FieldValues } from "react-hook-form";
+import { AppColors } from "@/constants/theme";
 
 type FormInputProps<T extends FieldValues> = {
   name: string;
@@ -30,7 +31,10 @@ export function FormInput<T extends FieldValues>({
       control={control}
       name={name as any}
       rules={rules}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
         <View style={styles.container}>
           <View style={[styles.inputBox, error && styles.errorInput]}>
             <View style={styles.row}>
@@ -38,7 +42,7 @@ export function FormInput<T extends FieldValues>({
                 <Ionicons
                   name={icon}
                   size={22}
-                  color="#9EA2AE"
+                  color={AppColors.gray}
                   style={styles.icon}
                 />
               )}
@@ -52,7 +56,7 @@ export function FormInput<T extends FieldValues>({
                   onChangeText={onChange}
                   value={value}
                   {...inputProps}
-                  placeholderTextColor="#999"
+                  placeholderTextColor={AppColors.muted}
                 />
               </View>
             </View>
@@ -75,7 +79,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 10,
-backgroundColor: "#FAFAFA",  },
+    backgroundColor: "#FAFAFA",
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",

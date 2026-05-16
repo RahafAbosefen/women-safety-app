@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { AppColors } from "@/constants/theme";
 
 type CompanyDropdownProps = {
   label: string;
@@ -25,7 +26,7 @@ export function CompanyDropdown({
         style={styles.container}
         onPress={() => setOpen(!open)}
       >
-        <Ionicons name={icon} size={28} color="#9EA2AE" />
+        <Ionicons name={icon} size={28} color={AppColors.gray} />
 
         <View style={styles.textContainer}>
           <Text style={styles.label}>{label}</Text>
@@ -39,7 +40,7 @@ export function CompanyDropdown({
 </Text>
         </View>
 
-        <Ionicons name="chevron-down-outline" size={22} color="#9EA2AE" />
+        <Ionicons name="chevron-down-outline" size={22} color={AppColors.gray}/>
       </Pressable>
 
       {open && (

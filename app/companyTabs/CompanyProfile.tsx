@@ -24,6 +24,10 @@ export default function CompanyProfile() {
           onRemove={profileLogic.removeProfileImage} 
           onClose={profileLogic.media.closeModal}
         />
+<<<<<<< HEAD
+=======
+        
+>>>>>>> main
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -38,9 +42,13 @@ export default function CompanyProfile() {
               }
               onImagePress={profileLogic.media.openModal}
               onCameraPress={profileLogic.media.openCamera}
+<<<<<<< HEAD
               onLogout={function (): void {
                 throw new Error("Function not implemented.");
               }}
+=======
+              onLogout={profileLogic.triggerLogoutAlert}
+>>>>>>> main
             />
             <CompanyDetailsForm
               {...profileLogic}
