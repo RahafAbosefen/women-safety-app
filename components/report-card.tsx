@@ -27,9 +27,15 @@ export const ReportCard = ({ id, reportType, details, source }: Props) => {
         </View>
         <View style={styles.cardContent}>
           <Text style={styles.CardTitle}>{reportType?.trim()}</Text>
+
           <Text style={styles.desc} numberOfLines={1}>
             {details}
           </Text>
+          <View style={styles.sourcePill}>
+            <Text style={styles.sourceText}>
+              {source === "reports" ? "NORMAL" : "MAP"}
+            </Text>
+          </View>
         </View>
         <View style={styles.arrowBox}>
           <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
