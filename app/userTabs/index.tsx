@@ -254,7 +254,7 @@ export default function HomeScreen() {
           <View style={styles.supportSection}>
             <Text style={styles.sectionTitle}>Need support?</Text>
 
-            <Pressable
+            {/* <Pressable
               onPress={() => router.push("/contact-us")}
               style={({ pressed }) => [
                 styles.organizationCard,
@@ -273,7 +273,7 @@ export default function HomeScreen() {
               </View>
 
               <Ionicons name="chevron-forward" size={22} color="#B8C7CF" />
-            </Pressable>
+            </Pressable> */}
 
             
 

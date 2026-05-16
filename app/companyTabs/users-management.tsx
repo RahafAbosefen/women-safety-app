@@ -9,6 +9,8 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { usersManagementStyles as styles } from "@/styles/UserManagement.styles";
+import { useRouter } from "expo-router";
+
 import { UserManagementColors } from "@/constants/theme";
 import UserCard from "@/components/company/user-card";
 import UserCaseModal from "@/components/company/user-case-modal";
@@ -22,6 +24,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { NotificationService } from "@/services/NotificationService";
 
 const UsersManagement = () => {
+  const router = useRouter();
   const [selectedReport, setSelectedReport] = useState<UserReport | null>(null);
 
   const queryClient = useQueryClient();
@@ -45,8 +48,16 @@ const UsersManagement = () => {
       }
     },
     onSuccess: async () => {
+    mutationFn: approveUserReport,
+    onSuccess: () => {
+      console.log("Approve success!");
       setSelectedReport(null);
       await queryClient.invalidateQueries({ queryKey: ["userReports"] });
+      void queryClient.invalidateQueries({ queryKey: ["userReports"] });
+      router.replace("/companyTabs/CasesList" as any);
+    },
+    onError: (error) => {
+      console.error("Approve error:", error);
     },
   });
 
@@ -120,6 +131,14 @@ const UsersManagement = () => {
           <NotificationBell />
         </View>
       </View>
+
+      <Pressable
+        style={styles.casesButton}
+        onPress={() => router.push("/companyTabs/CasesList" as any)}
+      >
+        <Text style={styles.casesButtonText}>View Cases</Text>
+      </Pressable>
+
       <ScrollView
         contentContainerStyle={[
           styles.listContent,
@@ -173,5 +192,114 @@ const UsersManagement = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: UserManagementColors.pageBackground,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+  },
+  header: {
+    marginBottom: 22,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerSide: {
+    width: 42,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: "center",
+  },
+  title: {
+    color: UserManagementColors.textDark,
+    fontSize: 22,
+    fontWeight: "800",
+    textAlign: "center",
+  },
+  subtitle: {
+    color: UserManagementColors.textMuted,
+    fontSize: 13,
+    marginTop: 6,
+    textAlign: "center",
+  },
+  listContent: {
+    paddingBottom: 30,
+  },
+  emptyListContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  centerContainer: {
+    flex: 1,
+    backgroundColor: UserManagementColors.pageBackground,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: UserManagementColors.primary,
+    fontSize: 15,
+  },
+  errorText: {
+    color: UserManagementColors.danger,
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+  retryButton: {
+    backgroundColor: UserManagementColors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+  },
+  retryText: {
+    color: UserManagementColors.white,
+    fontWeight: "700",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 80,
+  },
+  emptyIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: UserManagementColors.danger,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+  },
+  emptyTitle: {
+    color: UserManagementColors.danger,
+    fontSize: 14,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
+  emptyText: {
+    color: UserManagementColors.textMuted,
+    fontSize: 13,
+    textAlign: "center",
+  },
+  casesButton: {
+    backgroundColor: UserManagementColors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  casesButtonText: {
+    color: UserManagementColors.white,
+    fontWeight: "700",
+  },
+});
 
 export default UsersManagement;

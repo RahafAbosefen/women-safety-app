@@ -155,7 +155,7 @@ const ReportSheet = ({
         location,
         locationName: `${location.latitude}, ${location.longitude}`,
         imageUrls,
-        audioUri: uploadedAudioUrl,
+        audioUrl: uploadedAudioUrl,
         status: "pending",
         createdAt: new Date(),
       });

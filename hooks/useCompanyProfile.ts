@@ -1,46 +1,56 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import StorageService from "@/services/StorageService";
 import { UsersService } from "@/services/UsersService";
-import { Keyboard } from "react-native";
+import { Keyboard } from "react-native"; 
 import { logout } from "@/services/AuthService";
 import { useRouter } from "expo-router";
 import { useMediaManager } from "./useMediaManager";
 import { useAlertManager } from "./useAlertManager";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CloudinaryService } from "@/services/CloudinaryService";
-import { NotificationService } from "@/services/NotificationService";
 
-interface ProfileFormData {
-  name: string;
+export type FormData = {
+  companyName: string;
   email: string;
-  phone: string;
-}
+  phoneNumber: string;
+  companyDescription: string;
+  companyLocation: string;
+  serviceType: string;
+  emergencyPhone: string;
+  serviceStartTime: string;
+  serviceEndTime: string;
+  companyImage?: string;
+};
 
-export const useProfile = () => {
+export const useCompanyProfile = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [startTime, setStartTime] = useState(new Date());
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [endTime, setEndTime] = useState(new Date());
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm<ProfileFormData>({
-    defaultValues: { name: "", email: "", phone: "" },
-    mode: "onChange",
+  const { control, handleSubmit, setValue, watch, reset, formState: { errors, isDirty } } = useForm<FormData>({
+    mode: "all",
   });
 
-  const { alert, openAlert, closeAlert } = useAlertManager();
+  const companyImage = watch("companyImage");
+  const selectedLocation = watch("companyLocation");
+  const selectedServiceType = watch("serviceType");
+
+  const {  openAlert, closeAlert } = useAlertManager();
 
   const getUserId = async () => {
     const user = await StorageService.getUser();
-    if (!user?.uid) throw new Error("No UID");
+    if (!user?.uid) throw new Error("No UID found");
     return user.uid;
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["userProfile"],
+    queryKey: ["companyProfile"],
     queryFn: async () => {
       const uid = await getUserId();
       return UsersService.getUserProfile(uid);
@@ -49,11 +59,10 @@ export const useProfile = () => {
 
   useEffect(() => {
     if (!error) return;
-
     openAlert({
       type: "error",
       title: "Error",
-      message: "Failed to load profile",
+      message: "Failed to load company profile",
       confirmText: "OK",
       onConfirm: closeAlert,
     });
@@ -61,29 +70,20 @@ export const useProfile = () => {
 
   useEffect(() => {
     if (!data || isLoading) return;
-
-    reset({
-      name: `${data.firstName} ${data.lastName}`,
-      email: data.email,
-      phone: data.phone,
-    });
+    reset(data as FormData);
+    if (data.serviceStartTime) setStartTime(new Date(data.serviceStartTime));
+    if (data.serviceEndTime) setEndTime(new Date(data.serviceEndTime));
   }, [data, reset, isLoading]);
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (formData: ProfileFormData) => {
+    mutationFn: async (formData: FormData) => {
       const uid = await getUserId();
-      const [firstName, ...last] = formData.name.split(" ");
-
-      return UsersService.updateUserProfile(uid, {
-        firstName,
-        lastName: last.join(" "),
-        email: formData.email,
-        phone: formData.phone,
-      });
+      return UsersService.updateUserProfile(uid, formData);
     },
     onSuccess: async (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["companyProfile"] });
       reset(variables);
+      setIsEditing(false);
       Keyboard.dismiss();
 
       openAlert({
@@ -105,25 +105,21 @@ export const useProfile = () => {
     },
   });
 
-  const onSubmit = (data: ProfileFormData) => {
-    updateProfileMutation.mutate(data);
+  const onSubmit = (formData: FormData) => {
+    updateProfileMutation.mutate(formData);
   };
 
-  const updateImage = useMutation({
+  const updateImageMutation = useMutation({
     mutationFn: async (uri: string | null) => {
       const uid = await getUserId();
       if (!uri) {
-        return UsersService.updateUserProfile(uid, {
-          profileImage: "",
-        });
+        return UsersService.updateUserProfile(uid, { companyImage: "" });
       }
       const url = await CloudinaryService.uploadImage(uri);
-      return UsersService.updateUserProfile(uid, {
-        profileImage: url,
-      });
+      return UsersService.updateUserProfile(uid, { companyImage: url });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["companyProfile"] });
     },
     onError: () => {
       openAlert({
@@ -137,40 +133,29 @@ export const useProfile = () => {
   });
 
   const media = useMediaManager(async (uri) => {
-    updateImage.mutate(uri);
+    updateImageMutation.mutate(uri);
   });
 
   const removeProfileImage = () => {
-    updateImage.mutate(null);
+    updateImageMutation.mutate(null);
   };
 
-  const isAnonymous = data?.isAnonymous ?? false;
-  const isNotificationsEnabled = data?.isNotificationsEnabled ?? false;
-
-  const handleAnonymousChange = async () => {
-    const uid = await getUserId();
-    await UsersService.updateUserProfile(uid, {
-      isAnonymous: !(data?.isAnonymous ?? false),
-    });
-
-    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
-  };
-
-  const handleNotificationsChange = async () => {
-    const uid = await getUserId();
-
-    const newValue = !(data?.isNotificationsEnabled ?? false);
-
-    await UsersService.updateUserProfile(uid, {
-      isNotificationsEnabled: newValue,
-    });
-
-    queryClient.invalidateQueries({ queryKey: ["userProfile"] });
-
-    if (newValue) {
-      await NotificationService.requestPermissions();
+  const handleStartTimeChange = (event: any, selectedTime?: Date) => {
+    setShowStartPicker(false);
+    if (selectedTime) {
+      setStartTime(selectedTime);
+      setValue("serviceStartTime", selectedTime.toISOString(), { shouldValidate: true });
     }
   };
+
+  const handleEndTimeChange = (event: any, selectedTime?: Date) => {
+    setShowEndPicker(false);
+    if (selectedTime) {
+      setEndTime(selectedTime);
+      setValue("serviceEndTime", selectedTime.toISOString(), { shouldValidate: true });
+    }
+  };
+
   const confirmLogout = useCallback(async () => {
     closeAlert();
     await logout();
@@ -193,20 +178,26 @@ export const useProfile = () => {
     control,
     errors,
     isDirty,
-    isLoading,
-    isAnonymous,
-    isNotificationsEnabled,
-    profileImage: data?.profileImage ?? null,
-    alert,
+    isLoading: isLoading || updateProfileMutation.isPending || updateImageMutation.isPending, 
+    isEditing,
+    setIsEditing,
+    companyImage,
     media,
-    error,
+    selectedLocation,
+    selectedServiceType,
+    startTime,
+    showStartPicker,
+    setShowStartPicker,
+    handleStartTimeChange,
+    endTime,
+    showEndPicker,
+    setShowEndPicker,
+    handleEndTimeChange,
     onSubmit,
     handleSubmit,
+    setValue, 
     removeProfileImage,
-    handleAnonymousChange,
-    handleNotificationsChange,
     triggerLogoutAlert,
-    confirmLogout,
     closeAlert,
   };
 };
