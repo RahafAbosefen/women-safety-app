@@ -5,12 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-   Pressable
+  Pressable,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { UsersService } from "@/services/UsersService";
 
 export default function CompanyDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -21,8 +23,18 @@ export default function CompanyDetailsScreen() {
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const data = await UsersService.getUserProfile(id as string);
-        setCompany(data);
+        const mockData = {
+          companyName: "Hello gdhdb",
+          serviceType: "Psychological Support",
+          email: "ragha@gmail.com",
+          phoneNumber: "05999595",
+          emergencyPhone: "0599",
+          companyLocation: "Ramallah",
+          serviceStartTime: "4:31 AM",
+          serviceEndTime: "4:00 PM",
+          companyDescription: "vdvdbd يارب اخلص",
+        };
+        setCompany(mockData);
       } catch (error) {
         console.log("Error fetching company:", error);
       } finally {
@@ -49,43 +61,74 @@ export default function CompanyDetailsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <Stack.Screen options={{ headerShown: false }} />
 
-<Pressable 
-  onPress={() => router.push("/userTabs/contact-us" as any)} 
-  style={styles.backButton}
->     <Ionicons name="arrow-back" size={24} color="#204E64" />
-      </Pressable>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <View style={styles.imagePlaceholder}>
-            <Ionicons name="business-outline" size={40} color="#7B4DDB" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* الهيدر الأزرق المنحني */}
+          <View style={styles.curvedHeader}>
+            <Pressable
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <Ionicons name="arrow-back" size={24} color="#fff" />
+            </Pressable>
           </View>
-          <Text style={styles.companyName}>{company.companyName}</Text>
-          <Text style={styles.serviceType}>{company.serviceType}</Text>
-        </View>
 
-        <View style={styles.card}>
-          <InfoRow icon="mail-outline" label="Email" value={company.email} />
-          <InfoRow icon="call-outline" label="Phone" value={company.phoneNumber} />
-          <InfoRow icon="alert-circle-outline" label="Emergency" value={company.emergencyPhone} />
-          <InfoRow icon="location-outline" label="Location" value={company.companyLocation} />
-          <InfoRow icon="time-outline" label="Working Hours" value={`${company.serviceStartTime} - ${company.serviceEndTime}`} />
-          <InfoRow icon="document-text-outline" label="Description" value={company.companyDescription} />
-        </View>
-      </ScrollView>
+          {/* منطقة الصورة المرفوعة لتأتي فوق الهيدر والاسم */}
+          <View style={styles.profileImageContainer}>
+            <View style={styles.imagePlaceholder}>
+              {company.logo ? (
+                <Image source={{ uri: company.logo }} style={styles.logoImage} />
+              ) : (
+                <Ionicons name="business-outline" size={44} color="#7B4DDB" />
+              )}
+            </View>
+            <Text style={styles.companyName}>{company.companyName}</Text>
+            <Text style={styles.serviceType}>{company.serviceType}</Text>
+          </View>
+
+          {/* كارد المعلومات الأبيض مع الخطوط الفاصلة */}
+          <View style={styles.card}>
+            <InfoRow icon="mail-outline" label="EMAIL ADDRESS" value={company.email} />
+            <View style={styles.divider} />
+
+            <InfoRow icon="call-outline" label="PHONE NUMBER" value={company.phoneNumber} />
+            <View style={styles.divider} />
+
+            <InfoRow icon="alert-circle-outline" label="EMERGENCY PHONE" value={company.emergencyPhone} valueColor="#D32F2F" />
+            <View style={styles.divider} />
+
+            <InfoRow icon="location-outline" label="LOCATION" value={company.companyLocation} />
+            <View style={styles.divider} />
+
+            <InfoRow icon="time-outline" label="WORKING HOURS" value={`${company.serviceStartTime} - ${company.serviceEndTime}`} />
+            <View style={styles.divider} />
+
+            <InfoRow icon="document-text-outline" label="ABOUT COMPANY" value={company.companyDescription} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-function InfoRow({ icon, label, value }: { icon: any; label: string; value: string }) {
+function InfoRow({ icon, label, value, valueColor }: { icon: any; label: string; value: string; valueColor?: string }) {
   return (
     <View style={styles.infoRow}>
-      <Ionicons name={icon} size={20} color="#7B4DDB" />
+      <View style={styles.iconWrapper}>
+        <Ionicons name={icon} size={20} color="#7B4DDB" />
+      </View>
       <View style={styles.infoText}>
         <Text style={styles.infoLabel}>{label}</Text>
-        <Text style={styles.infoValue}>{value || "—"}</Text>
+        <Text style={[styles.infoValue, valueColor ? { color: valueColor } : null]}>{value || "—"}</Text>
       </View>
     </View>
   );
@@ -94,23 +137,84 @@ function InfoRow({ icon, label, value }: { icon: any; label: string; value: stri
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  backButton: { padding: 16 },
-  content: { padding: 20, paddingBottom: 100 },
-  header: { alignItems: "center", marginBottom: 24 },
+  scrollContent: { flexGrow: 1, paddingBottom: 40 },
+  
+  curvedHeader: {
+    backgroundColor: "#204E64",
+    height: 160,
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  profileImageContainer: {
+    alignItems: "center",
+    marginTop: -60,
+    marginBottom: 24,
+  },
   imagePlaceholder: {
-    width: 100, height: 100, borderRadius: 50,
-    backgroundColor: "#F4F0FF",
-    justifyContent: "center", alignItems: "center",
-    marginBottom: 12,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    marginBottom: 14,
   },
-  companyName: { fontSize: 24, fontWeight: "bold", color: "#204E64" },
-  serviceType: { fontSize: 14, color: "#888", marginTop: 4 },
+  logoImage: { width: 110, height: 110, borderRadius: 55 },
+  
+  companyName: { fontSize: 24, fontWeight: "bold", color: "#204E64", textAlign: "center" },
+  serviceType: { fontSize: 14, color: "#777", marginTop: 4, fontWeight: "500" },
+
   card: {
-    backgroundColor: "#F9F9F9", borderRadius: 20,
-    padding: 16, gap: 16,
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    marginHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 15,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
   },
-  infoRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  infoRow: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    paddingVertical: 12 
+  },
+  iconWrapper: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: "#F4F0FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+  },
   infoText: { flex: 1 },
-  infoLabel: { fontSize: 12, color: "#888" },
-  infoValue: { fontSize: 15, color: "#204E64", fontWeight: "600" },
+  infoLabel: { fontSize: 11, color: "#999", fontWeight: "700", letterSpacing: 0.5 },
+  infoValue: { fontSize: 15, color: "#204E64", fontWeight: "600", marginTop: 3 },
+  
+  divider: {
+    height: 1,
+    backgroundColor: "#EFEFEF",
+    marginLeft: 52,
+  },
 });
