@@ -10,8 +10,8 @@ type BackButtonProps = {
 };
 
 export default function BackButton({
-  color = "#0f172a",
-  size = 22,
+  color = "#0b1e4a",
+  size = 30,
   style,
 }: BackButtonProps) {
   const router = useRouter();
@@ -34,14 +34,14 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: "#FFFFFF",
+    // borderRadius: 22,
+    // backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+
+    // shadowColor: "#000",
+    // shadowOpacity: 0.08,
+    // shadowRadius: 8,
   },
 
   pressed: {
