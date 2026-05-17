@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +33,7 @@ export default function ContactUsScreen() {
 
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -73,30 +75,33 @@ export default function ContactUsScreen() {
   }, [reload]);
 
   useEffect(() => {
-    if (!db || !onlineCompanies) return;
+  if (!db || !onlineCompanies) return;
 
-    const saveCompaniesToSQLite = async () => {
-      await db.execAsync(`DELETE FROM companies;`);
+  const saveCompaniesToSQLite = async () => {
+    await db.execAsync(`DELETE FROM companies;`);
 
-      for (const company of onlineCompanies) {
-        await db.runAsync(
-          `INSERT OR REPLACE INTO companies 
-          (id, name, type, phone, email) 
-          VALUES (?, ?, ?, ?, ?);`,
-          String(company.id),
-          String(company.name || ""),
-          String(company.type || ""),
-          String(company.phone || ""),
-          String(company.email || ""),
-        );
-      }
+    for (const company of onlineCompanies) {
+      await db.runAsync(
+        `INSERT OR REPLACE INTO companies 
+        (id, name, type, phone, email) 
+        VALUES (?, ?, ?, ?, ?);`,
+        String(company.id),
+       String(company.name || ""),
+        String(company.type || ""),
+        String(company.phone || ""),
+        String(company.email || "")
+      );
+    }
 
-      await reload();
-    };
+    await reload();
+  };
 
-    saveCompaniesToSQLite();
-  }, [db, onlineCompanies, reload]);
+  saveCompaniesToSQLite();
+}, [db, onlineCompanies, reload]);
 
+const filteredCompanies = companies.filter((company) =>
+  company.name.toLowerCase().includes(search.toLowerCase())
+);
   const openChatWithCompany = useCallback(
     async (company: Company) => {
       try {
@@ -135,7 +140,7 @@ export default function ContactUsScreen() {
         Alert.alert("Error", error.message ?? "Could not open chat");
       }
     },
-    [router],
+    [router]
   );
 
   const renderCompany = useCallback(
@@ -152,31 +157,34 @@ export default function ContactUsScreen() {
         <View style={styles.iconContainer}>
           <Ionicons
             name="business-outline"
-            size={24}
+            size={28}
             color={AppColors.primary}
           />
         </View>
 
         <View style={styles.cardInfo}>
-          <Text style={styles.cardName}>{item.name}</Text>
-          <Text style={styles.cardType}>{item.type}</Text>
+          <Text numberOfLines={1} style={styles.cardName}>
+            {item.name || "Company"}
+          </Text>
+
+          <Text numberOfLines={1} style={styles.cardType}>
+            {item.type || "Company"}
+          </Text>
         </View>
 
         <Pressable
+          style={styles.chatButton}
           onPress={(e) => {
             e.stopPropagation();
             openChatWithCompany(item);
           }}
         >
-          <Ionicons
-            name="chatbubble-ellipses-outline"
-            size={22}
-            color={AppColors.primary}
-          />
+          <Text style={styles.chatText}>Chat</Text>
+          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
         </Pressable>
       </Pressable>
     ),
-    [openChatWithCompany, router],
+    [openChatWithCompany, router]
   );
 
   if (isLoading && companies.length === 0) {
@@ -198,34 +206,51 @@ export default function ContactUsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-
-        <Pressable
-          onPress={() => router.back()}
-          style={{ marginBottom: 15 }}
-        >
-          <Ionicons
-            name="arrow-back"
-            size={28}
-            color={AppColors.primary}
-          />
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={28} color={AppColors.primary} />
         </Pressable>
 
         <Text style={styles.title}>Contact Us</Text>
 
-        <Text style={styles.subtitle}>
-          Choose a company to chat with
-        </Text>
+        <Text style={styles.subtitle}>Choose a company to chat with</Text>
+      </View>
 
+      <View style={styles.searchContainer}>
+        <Ionicons name="search-outline" size={22} color="#9AA1B4" />
+
+        <TextInput
+          placeholder="Search company..."
+          placeholderTextColor="#9AA1B4"
+          value={search}
+          onChangeText={setSearch}
+          style={styles.searchInput}
+        />
       </View>
 
       <FlatList
-        data={companies}
+        data={filteredCompanies}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={renderCompany}
         ListEmptyComponent={
           <View style={styles.loadingContainer}>
             <Text style={styles.errorText}>No companies found</Text>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.supportCard}>
+            <View style={styles.supportLeft}>
+              <View style={styles.supportIcon}>
+                <Ionicons name="heart-outline" size={24} color="#8B6CFF" />
+              </View>
+
+              <View>
+                <Text style={styles.supportTitle}>Need help?</Text>
+                <Text style={styles.supportSubtitle}>
+                  We're here to support you.
+                </Text>
+              </View>
+            </View>
           </View>
         }
       />

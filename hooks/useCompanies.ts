@@ -21,13 +21,13 @@ const getCompanies = async (): Promise<Company[]> => {
     const snapshot = await getDocs(companiesQuery);
     return snapshot.docs.map((doc) => {
       const data = doc.data();
-      return {
-        id: doc.id,
-        name: data.name ?? data.email,
-        type: data.type ?? "Company",
-        email: data.email ?? "",
-        phone: data.phone ?? "",
-      };
+    return {
+  id: doc.id,
+  name: data.companyName ?? data.name ?? data.email,
+  type: data.type ?? "Company",
+  email: data.email ?? "",
+  phone: data.phone ?? "",
+};
     });
   } catch (error) {
     console.error("Get companies error:", error);
