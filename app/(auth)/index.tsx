@@ -8,35 +8,48 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { auth } from "@/services/firebaseConfig";
-import { getUserRole } from "@/services/AuthService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const role = await getUserRole(user.uid);
-        if (role === "company") {
-          router.replace("/companyTabs" as any);
+    const checkStoredAuth = async () => {
+      try {
+        const authData = await AsyncStorage.getItem("auth");
+      
+
+        if (authData) {
+          const auth = JSON.parse(authData);
+
+          if (auth.role === "company") {
+            router.replace("/companyTabs" as any);
+          } else if (auth.role === "user") {
+            router.replace("/userTabs" as any);
+          } else {
+            setCheckingAuth(false);
+          }
         } else {
-          router.replace("/userTabs" as any);
+          setCheckingAuth(false);
         }
-      } else {
+      } catch (error) {
+        console.log("Auth check error:", error);
         setCheckingAuth(false);
       }
-    });
-    return () => unsubscribe();
+    };
+
+    checkStoredAuth();
   }, [router]);
 
-  if (checkingAuth)
+  if (checkingAuth) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2d4a5e" />
       </View>
     );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
