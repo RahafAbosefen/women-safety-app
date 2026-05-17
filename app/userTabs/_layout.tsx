@@ -43,7 +43,6 @@ export default function UserTabLayout() {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
           borderTopColor: "#EEF2F5",
-
           paddingTop: 8,
           paddingBottom: 10,
 
@@ -72,12 +71,11 @@ export default function UserTabLayout() {
         name="index"
         options={{
           title: "Home",
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              size={24}
-              color={color}
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              activeName="home"
+              inactiveName="home-outline"
             />
           ),
         }}
@@ -87,12 +85,11 @@ export default function UserTabLayout() {
         name="addReport"
         options={{
           title: "Report",
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "add-circle" : "add-circle-outline"}
-              size={28}
-              color={color}
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              activeName="add-circle"
+              inactiveName="add-circle-outline"
             />
           ),
         }}
@@ -102,12 +99,11 @@ export default function UserTabLayout() {
         name="map"
         options={{
           title: "Map",
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "map" : "map-outline"}
-              size={28}
-              color={color}
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              activeName="map"
+              inactiveName="map-outline"
             />
           ),
         }}
@@ -117,19 +113,40 @@ export default function UserTabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "person" : "person-outline"}
-              size={24}
-              color={color}
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              activeName="person"
+              inactiveName="person-outline"
             />
           ),
         }}
       />
 
       <Tabs.Screen
+        name="messages"
+        options={{
+          title: "Messages",
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              activeName="chatbubbles"
+              inactiveName="chatbubbles-outline"
+            />
+          ),
+        }}
+      />
+
+      {/* Hidden screens - موجودين بالفولدر بس ما بدنا يبينوا بالتاب */}
+      <Tabs.Screen
         name="contact-us"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="company-details/[id]"
         options={{
           href: null,
         }}
@@ -137,3 +154,17 @@ export default function UserTabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  activeIconBox: {
+    backgroundColor: ACTIVE_BG,
+  },
+});

@@ -6,6 +6,7 @@ import {
   ScrollView,
   Modal,
   StatusBar,
+  Image,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -85,13 +86,6 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.hero}>
-          {/* <View style={styles.heroCircleOne} />
-          <View style={styles.heroCircleTwo} />
-          <View style={styles.heroLeafOne} />
-          <View style={styles.heroLeafTwo} />
-           <View style={styles.heroDotOne} />
-          <View style={styles.heroDotTwo} />  */}
-
           <View style={styles.heroTopRow}>
             <View style={styles.brandWrapper}>
               <Text
@@ -105,9 +99,8 @@ export default function HomeScreen() {
                 AURA
               </Text>
 
-              <Text style={styles.helloText}>
-                Hi {displayName} <Text style={styles.heart}>♥</Text>
-              </Text>
+              <Text style={styles.helloText}>Hi {displayName}</Text>
+              
             </View>
 
             <View style={styles.notificationWrapper}>
@@ -118,9 +111,11 @@ export default function HomeScreen() {
 
         <View style={styles.safeCard}>
           <View style={styles.safeIconGlow}>
-            <View style={styles.safeIcon}>
-              <Ionicons name="shield-checkmark" size={38} color="#FFFFFF" />
-            </View>
+            <Image
+              source={require("../../assets/images/android-icon-background1.png")}
+              style={styles.safeImage}
+              resizeMode="contain"
+            />
           </View>
 
           <View style={styles.safeTextWrapper}>
@@ -186,28 +181,29 @@ export default function HomeScreen() {
       </ScrollView>
 
       <Portal>
-        <SendingSOSModal
-          visible={visible}
-          count={count}
-          onCancel={cancelSOS}
-        />
+        <SendingSOSModal visible={visible} count={count} onCancel={cancelSOS} />
 
         <ResultSOSModal
           visible={resultVisible}
           onDismiss={() => setResultVisible(false)}
         />
       </Portal>
-       <Modal transparent visible={cancelVisible} animationType="fade" statusBarTranslucent>
-         <StatusBar backgroundColor="rgba(17, 24, 39, 0.42)" translucent />
+
+      <Modal
+        transparent
+        visible={cancelVisible}
+        animationType="fade"
+        statusBarTranslucent
+      >
+        <StatusBar backgroundColor="rgba(17, 24, 39, 0.42)" translucent />
+
         <View style={styles.cancelOverlay}>
           <View style={styles.cancelCard}>
-           
             <Ionicons
               name="close-circle-outline"
               size={50}
-               color="#D94343"
+              color="#D94343"
             />
-            
 
             <Text style={styles.cancelTitle}>SOS Cancelled</Text>
 
@@ -247,124 +243,67 @@ const styles = StyleSheet.create({
   },
 
   hero: {
-    minHeight: 200,
+    minHeight: 185,
     backgroundColor: "#063747",
     borderBottomLeftRadius: 34,
     borderBottomRightRadius: 34,
     paddingHorizontal: 24,
-    paddingTop: 34,
+    paddingTop: 28,
     overflow: "hidden",
   },
 
-  heroCircleOne: {
-    position: "absolute",
-    width: 210,
-    height: 210,
-    borderRadius: 105,
-    backgroundColor: "rgba(255,255,255,0.07)",
-    right: -55,
-    top: -25,
+  heroTopRow: {
+    position: "relative",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
-
-  heroCircleTwo: {
-    position: "absolute",
-    width: 155,
-    height: 155,
-    borderRadius: 78,
-    backgroundColor: "rgba(255,255,255,0.10)",
-    left: -64,
-    bottom: 25,
-  },
-
-  heroLeafOne: {
-    position: "absolute",
-    right: 34,
-    bottom: 92,
-    width: 116,
-    height: 38,
-    borderRadius: 40,
-    backgroundColor: "rgba(255,255,255,0.09)",
-    transform: [{ rotate: "-31deg" }],
-  },
-
-  heroLeafTwo: {
-    position: "absolute",
-    right: 76,
-    bottom: 76,
-    width: 118,
-    height: 42,
-    borderRadius: 40,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    transform: [{ rotate: "-28deg" }],
-  },
-
-  heroDotOne: {
-    position: "absolute",
-    top: 150,
-    right: 226,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: "rgba(255,255,255,0.5)",
-  },
-
-  heroDotTwo: {
-    position: "absolute",
-    top: 112,
-    right: 198,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.55)",
-  },
-
-heroTopRow: {
-  position: "relative",
-  width: "100%",
-  alignItems: "center",
-  justifyContent: "center",
-},
 
   brandWrapper: {
-  width: "100%",
-  
-  alignItems: "center",
-},
-appName: {
-  fontSize: 58,
-  color: "#F4C9CF",
-  letterSpacing: 5,
-  textAlign: "center",
-},
- helloText: {
-  alignSelf: "flex-start",
-  marginTop: 10,
-  color: "#FFFFFF",
-  fontSize: 25,
-  fontWeight: "900",
-},
-
-  heart: {
-    color: "#c4a8ad",
+    width: "100%",
+    alignItems: "center",
   },
 
- notificationWrapper: {
-  position: "absolute",
-  right: 0,
-  top: 18,
+  appName: {
+    fontSize: 56,
+    color: "#F4C9CF",
+    letterSpacing: 5,
+    textAlign: "center",
+  },
 
-},
+  helloText: {
+    alignSelf: "flex-start",
+    marginTop: 4,
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "900",
+  },
+
+  subHelloText: {
+    alignSelf: "flex-start",
+    marginTop: 3,
+    color: "#D7E5EA",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+
+  notificationWrapper: {
+    position: "absolute",
+    right: 0,
+    top: 18,
+  },
+
   safeCard: {
     marginHorizontal: 30,
-    marginTop: -30,
-    backgroundColor: "#ffefef",
+    marginTop: -22,
+    backgroundColor: "#fff6f6",
     borderRadius: 26,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E8D8D6",
+    borderColor: "#ebe8e8",
     elevation: 10,
     shadowColor: "#000",
     shadowOpacity: 0.15,
@@ -373,27 +312,18 @@ appName: {
   },
 
   safeIconGlow: {
-    width: 70,
-    height: 70,
-    borderRadius: 39,
-    backgroundColor: "#FDE4E6",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#fffcfc",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
   },
 
-  safeIcon: {
+  safeImage: {
     width: 58,
     height: 58,
-    borderRadius: 18,
-    backgroundColor: "#f7b7be",
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 5,
-    shadowColor: "#D96673",
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    transform: [{ rotate: "-6deg" }],
   },
 
   safeTextWrapper: {
@@ -402,21 +332,21 @@ appName: {
 
   safeCardTitle: {
     color: "#204E64",
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: "900",
-    marginBottom: 5,
+    marginBottom: 4,
   },
 
   safeCardSubtitle: {
     color: "#6B7D86",
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 18,
     fontWeight: "600",
   },
 
   sosSection: {
     marginHorizontal: 18,
-    marginTop: 30,
+    marginTop: 34,
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 6,
@@ -424,7 +354,7 @@ appName: {
   },
 
   mainTitle: {
-    fontSize: 31,
+    fontSize: 29,
     fontWeight: "900",
     color: "#204E64",
     textAlign: "center",
@@ -433,10 +363,10 @@ appName: {
 
   helperText: {
     color: "#8A6870",
-    fontSize: 18,
+    fontSize: 16,
     textAlign: "center",
-    lineHeight: 25,
-    marginBottom: 28,
+    lineHeight: 23,
+    marginBottom: 26,
     paddingHorizontal: 14,
   },
 
@@ -582,18 +512,6 @@ appName: {
     borderColor: "#EEF2F5",
     elevation: 10,
   },
-
-  // cancelIconCircle: {
-  //   width: 78,
-  //   height: 78,
-  //   borderRadius: 39,
-  //   backgroundColor: "#ffdcdc",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   marginBottom: 16,
-  //   borderWidth: 1,
-  //   borderColor: "#ffffff",
-  // },
 
   cancelTitle: {
     fontSize: 22,
