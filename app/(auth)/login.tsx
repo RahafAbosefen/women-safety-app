@@ -30,33 +30,36 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState("");
 
   const onSubmit = async (data: FormData) => {
-    try {
-      setLoginError("");
+  try {
+    setLoginError("");
 
-      const user = await login(data);
-      const role = await getUserRole(user.uid);
+    const user = await login(data);
+    const role = await getUserRole(user.uid);
 
-const userRole = role === "company" ? "company" : "user";
+    const userRole = role === "company" ? "company" : "user";
 
-await AsyncStorage.setItem(
-  "auth",
-  JSON.stringify({
-    isLoggedIn: true,
-    uid: user.uid,
-    email: user.email,
-    role: userRole,
-  })
-);
+    await AsyncStorage.removeItem("auth");
 
-if (userRole === "company") {
-  router.replace("/companyTabs" as any);
-} else {
-  router.replace("/userTabs" as any);
-}
-    } catch (error) {
-      console.log(error);
-      setLoginError("Email or password is incorrect");
+    await AsyncStorage.setItem(
+      "auth",
+      JSON.stringify({
+        isLoggedIn: true,
+        uid: user.uid,
+        email: user.email,
+        role: userRole,
+      })
+    );
+
+    if (userRole === "company") {
+      router.replace("/companyTabs" as any);
+    } else {
+      router.replace("/userTabs" as any);
     }
+  } catch (error) {
+    console.log(error);
+    setLoginError("Email or password is incorrect");
+  }
+
   };
 
   return (
