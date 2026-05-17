@@ -143,9 +143,9 @@ export default function UserTabLayout() {
         options={{
           href: null,
         }}
-      />
+      /> 
 
-      <Tabs.Screen
+       <Tabs.Screen
         name="company-details/[id]"
         options={{
           href: null,
