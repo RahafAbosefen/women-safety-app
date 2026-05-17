@@ -13,7 +13,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-
 import ReportTypeDropdown from "@/components/ReportTypeDropdown";
 import ResultSOSModal from "@/components/SOS/ResultSOSModal";
 import { MediaPickerModal } from "@/components/ui/MediaPickerModal";
