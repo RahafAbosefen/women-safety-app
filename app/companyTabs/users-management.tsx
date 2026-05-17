@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import {
@@ -19,6 +18,7 @@ import UserCard from "@/components/company/user-card";
 import UserCaseModal from "@/components/company/user-case-modal";
 
 import { useUserReports } from "@/hooks/useUserReports";
+
 import {
   approveUserReport,
   rejectUserReport,
@@ -53,6 +53,7 @@ const UsersManagement = () => {
     // تم إصلاح مشكلة الـ Merge هنا
     onSuccess: async () => {
       console.log("Approve success!");
+
       setSelectedReport(null);
       await queryClient.invalidateQueries({ queryKey: ["userReports"] });
       router.replace("/companyTabs/CasesList" as any);},

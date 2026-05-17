@@ -12,6 +12,7 @@ import { Controller, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getUserRole, login } from "@/services/AuthService";
 import { styles } from "@/styles/Login.styles";
@@ -29,21 +30,36 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState("");
 
   const onSubmit = async (data: FormData) => {
-    try {
-      setLoginError("");
+  try {
+    setLoginError("");
 
-      const user = await login(data);
-      const role = await getUserRole(user.uid);
+    const user = await login(data);
+    const role = await getUserRole(user.uid);
 
-      if (role === "company") {
-        router.replace("/companyTabs" as any);
-      } else {
-        router.replace("/userTabs" as any);
-      }
-    } catch (error) {
-      console.log(error);
-      setLoginError("Email or password is incorrect");
+    const userRole = role === "company" ? "company" : "user";
+
+    await AsyncStorage.removeItem("auth");
+
+    await AsyncStorage.setItem(
+      "auth",
+      JSON.stringify({
+        isLoggedIn: true,
+        uid: user.uid,
+        email: user.email,
+        role: userRole,
+      })
+    );
+
+    if (userRole === "company") {
+      router.replace("/companyTabs" as any);
+    } else {
+      router.replace("/userTabs" as any);
     }
+  } catch (error) {
+    console.log(error);
+    setLoginError("Email or password is incorrect");
+  }
+
   };
 
   return (

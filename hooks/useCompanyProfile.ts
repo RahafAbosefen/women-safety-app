@@ -10,6 +10,7 @@ import { logout } from "@/services/AuthService";
 import { CloudinaryService } from "@/services/CloudinaryService";
 import { useMediaManager } from "./useMediaManager";
 import { useAlertManager } from "./useAlertManager";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type FormData = {
   companyName: string;
@@ -202,13 +203,18 @@ export const useCompanyProfile = () => {
     }
   };
 
-  const confirmLogout = useCallback(async () => {
-    closeAlert();
+const confirmLogout = useCallback(async () => {
+  closeAlert();
 
-    await logout();
+  await StorageService.removeUser();
+  await StorageService.removeToken();
+  await AsyncStorage.removeItem("auth");
 
-    router.replace("/(auth)/login" as any);
-  }, [router, closeAlert]);
+  await logout();
+
+  router.replace("/(auth)" as any);
+}, [router, closeAlert]);
+
 
   const triggerLogoutAlert = () => {
     openAlert({

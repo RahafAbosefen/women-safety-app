@@ -8,17 +8,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auth } from "@/services/firebaseConfig";
+
 import { getUserRole } from "@/services/AuthService";
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    try {
       if (user) {
         const role = await getUserRole(user.uid);
+
         if (role === "company") {
           router.replace("/companyTabs" as any);
         } else {
@@ -27,16 +30,22 @@ export default function WelcomeScreen() {
       } else {
         setCheckingAuth(false);
       }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    } catch (error) {
+      console.log("Auth check error:", error);
+      setCheckingAuth(false);
+    }
+  });
 
-  if (checkingAuth)
+  return () => unsubscribe();
+}, [router]);
+  if (checkingAuth) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2d4a5e" />
       </View>
     );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
