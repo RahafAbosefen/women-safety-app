@@ -1,47 +1,24 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
-const ACTIVE_COLOR = "#571d1d";
-const INACTIVE_COLOR = "rgb(66, 5, 5), 154, 154)";
-const ACTIVE_BG = "#f2e3e3";
+import React from "react";
 
 export default function CompanyTabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
-
+        tabBarActiveTintColor: "#204E64",
+        tabBarInactiveTintColor: "#A0A0A0",
+        headerShown: false,
         tabBarStyle: {
-          height: 78,
-          backgroundColor: "#FFFFFF",
-          borderTopWidth: 1,
-          borderTopColor: "#EEF2F5",
-          paddingTop: 8,
-          paddingBottom: 10,
-
-          elevation: 10,
-          shadowColor: "#000",
-          shadowOpacity: 0.08,
-          shadowRadius: 10,
-          shadowOffset: {
-            width: 0,
-            height: -2,
-          },
-        },
-
-        tabBarItemStyle: {
-          height: 60,
-          alignItems: "center",
-          justifyContent: "center",
-        },
-
-        tabBarIconStyle: {
-          marginTop: 0,
+          position: "absolute",
+          bottom: 10,
+          left: 20,
+          right: 20,
+          height: 70,
+          borderRadius: 35,
+          backgroundColor: "#F5F5F5",
+          borderTopWidth: 0,
         },
       }}
     >
@@ -50,13 +27,11 @@ export default function CompanyTabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconBox, focused && styles.activeIconBox]}>
-              <Ionicons
-                name={focused ? "home" : "home-outline"}
-                size={24}
-                color={color}
-              />
-            </View>
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -66,13 +41,11 @@ export default function CompanyTabLayout() {
         options={{
           title: "Users",
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconBox, focused && styles.activeIconBox]}>
-              <Ionicons
-                name={focused ? "people" : "people-outline"}
-                size={24}
-                color={color}
-              />
-            </View>
+            <Ionicons
+              name={focused ? "business" : "business-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -82,30 +55,25 @@ export default function CompanyTabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconBox, focused && styles.activeIconBox]}>
-              <Ionicons
-                name={focused ? "business" : "business-outline"}
-                size={24}
-                color={color}
-              />
-            </View>
+            <Ionicons
+              name={focused ? "business" : "business-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
-
       <Tabs.Screen
         name="messages"
         options={{
-          title: "Messages",
+          title: "Users",
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <View style={[styles.iconBox, focused && styles.activeIconBox]}>
-              <Ionicons
-                name={focused ? "chatbubbles" : "chatbubbles-outline"}
-                size={24}
-                color={color}
-              />
-            </View>
+            <Ionicons
+              name={focused ? "people" : "people-outline"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -113,28 +81,6 @@ export default function CompanyTabLayout() {
       <Tabs.Screen name="CasesList" options={{ href: null }} />
       <Tabs.Screen name="case-status" options={{ href: null }} />
       <Tabs.Screen name="archive-cases" options={{ href: null }} />
-
-      <Tabs.Screen
-        name="company-details/[id]"
-        options={{
-          href: null,
-          headerShown: false,
-        }}
-      />
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  activeIconBox: {
-    backgroundColor: ACTIVE_BG,
-  },
-});

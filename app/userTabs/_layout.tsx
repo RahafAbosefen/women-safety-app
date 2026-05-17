@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native"; 
 
 const ACTIVE_COLOR = "#204E64";
 const INACTIVE_COLOR = "#9AAAB4";
@@ -42,10 +42,12 @@ export default function UserTabLayout() {
           height: 78,
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
+          
           borderTopColor: "#EEF2F5",
           paddingTop: 8,
+          
           paddingBottom: 10,
-
+          
           elevation: 10,
           shadowColor: "#000",
           shadowOpacity: 0.08,
@@ -54,15 +56,11 @@ export default function UserTabLayout() {
             width: 0,
             height: -2,
           },
-        },
-
-        tabBarItemStyle: {
+        },tabBarItemStyle: {
           height: 60,
           alignItems: "center",
           justifyContent: "center",
-        },
-
-        tabBarIconStyle: {
+        },tabBarIconStyle: {
           marginTop: 0,
         },
       }}
@@ -137,7 +135,6 @@ export default function UserTabLayout() {
         }}
       />
 
-      {/* Hidden screens - موجودين بالفولدر بس ما بدنا يبينوا بالتاب */}
       <Tabs.Screen
         name="contact-us"
         options={{

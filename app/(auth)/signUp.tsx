@@ -45,7 +45,7 @@ export default function SignUp() {
       }
     } catch (error: any) {
       console.error("Sign Up Error:", error);
-      alert("Something went wrong, please try again.");
+      // alert("Something went wrong, please try again.");
     }
   };
 
